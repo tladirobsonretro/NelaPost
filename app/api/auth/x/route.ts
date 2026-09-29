@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server'
 
 function base64url(input:Uint8Array){
-  return Buffer.from(input).toString('base64').replace(/=/g,'').replace(/\\+/g,'-').replace(/\\//g,'_')
+  return Buffer.from(input).toString('base64').replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')
 }
 async function challenge(verifier:string){
   const data=new TextEncoder().encode(verifier)
