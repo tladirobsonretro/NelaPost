@@ -55,7 +55,7 @@ export default function Home(){
       <header className="header">
         <div>
           <div className="eyebrow">NELAPOST</div>
-          <h1>{view==='create'?'Create post':view==='accounts'?'Connected accounts':'Content calendar'}</h1>
+          <h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1>
           <p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Manage the accounts NelaPost can publish to.':'Keep every scheduled post in one place.'}</p>
         </div>
         {view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}
@@ -121,7 +121,7 @@ export default function Home(){
       </section>}
 
       {view==='accounts'&&<section className="card accountsPanel">
-        <div className="accountHero"><div><b>Connected accounts</b><span>Give NelaPost permission to publish on your behalf.</span></div></div>
+        <div className="accountHero"><div><b>Link your platforms</b><span>Connect up to 3 social platforms to NelaPost.</span></div><strong>0 / 3 linked</strong></div>
         <div className="accountRow"><div className="accountIcon instagramIcon">◎</div><div className="accountCopy"><b>Instagram</b><span>Authorize NelaPost to publish to your Instagram account.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta?platform=instagram')}>Connect Instagram</button></div>
         <div className="accountRow"><div className="accountIcon facebookIcon">f</div><div className="accountCopy"><b>Facebook</b><span>Authorize NelaPost to publish to your Facebook Page.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta?platform=facebook')}>Connect Facebook</button></div>
         <div className="accountRow"><div className="accountIcon xIcon">𝕏</div><div className="accountCopy"><b>X</b><span>Authorize NelaPost to publish posts to X.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/x')}>Connect X</button></div>
