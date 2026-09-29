@@ -1,16 +1,30 @@
 import {NextResponse} from 'next/server'
-import {cookies} from 'next/headers'
 import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {createHmac,timingSafeEqual} from 'crypto'
+
+function verifyState(state:string,secret:string){
+ const parts=state.split('.')
+ if(parts.length!==3)return null
+ const [platform,nonce,signature]=parts
+ if((platform!=='instagram'&&platform!=='facebook')||!nonce||!signature)return null
+ const expected=createHmac('sha256',secret).update(platform+'.'+nonce).digest('hex')
+ if(signature.length!==expected.length)return null
+ if(!timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null
+ return platform
+}
 
 export async function GET(request:Request){
  const u=new URL(request.url)
  const code=u.searchParams.get('code')
  const state=u.searchParams.get('state')
- const c=await cookies()
- if(!code||!state||state!==c.get('meta_oauth_state')?.value)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
+ if(!code||!state)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
 
- const platform=c.get('meta_oauth_platform')?.value
- if(platform!=='instagram'&&platform!=='facebook')return NextResponse.json({error:'Invalid Meta platform.'},{status:400})
+ const parts=state.split('.')
+ const statePlatform=parts[0]
+ const stateSecret=statePlatform==='instagram'?process.env.META_INSTAGRAM_APP_SECRET:statePlatform==='facebook'?process.env.META_APP_SECRET:undefined
+ if(!stateSecret)return NextResponse.json({error:'Meta OAuth is not configured.'},{status:503})
+ const platform=verifyState(state,stateSecret)
+ if(!platform)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
 
  const redirect=process.env.META_REDIRECT_URI||new URL('/api/auth/meta/callback',request.url).toString()
  const appOrigin=new URL(redirect).origin
@@ -65,11 +79,7 @@ export async function GET(request:Request){
     metadata:{username:me.username||'',instagram_user_id:me.user_id||null}
    })
 
-   const response=NextResponse.redirect(new URL('/?connected=instagram',appOrigin))
-   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
-   response.cookies.delete('meta_oauth_state')
-   response.cookies.delete('meta_oauth_platform')
-   return response
+   return NextResponse.redirect(new URL('/?connected=instagram',appOrigin))
   }
 
   const appId=process.env.META_APP_ID
@@ -99,11 +109,7 @@ export async function GET(request:Request){
    metadata:{page_id:page.id,page_name:page.name||''}
   })
 
-  const response=NextResponse.redirect(new URL('/?connected=facebook',appOrigin))
-  response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
-  response.cookies.delete('meta_oauth_state')
-  response.cookies.delete('meta_oauth_platform')
-  return response
+  return NextResponse.redirect(new URL('/?connected=facebook',appOrigin))
  }catch(error:any){
   return NextResponse.json({error:error?.message||'Meta connection failed.'},{status:500})
  }
