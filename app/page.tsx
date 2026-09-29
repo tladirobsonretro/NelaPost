@@ -54,7 +54,7 @@ export default function Home(){
     <main className="content">
       <header className="header">
         <div>
-          <div className="eyebrow">NELAPOST</div>
+          <div className="brandHeader">NELAPOST</div>
           <h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1>
           <p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Manage the accounts NelaPost can publish to.':'Keep every scheduled post in one place.'}</p>
         </div>
