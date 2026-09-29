@@ -22,7 +22,7 @@ button{cursor:pointer}
 .freeBadge b{font-size:11px;display:block}.freeBadge span{font-size:10px;color:#777b89;display:block;margin-top:4px}
 .content{width:min(1260px,calc(100% - 248px));padding:38px 46px 60px}
 .header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:30px}
-.eyebrow{font-size:10px;letter-spacing:1.8px;font-weight:800;color:#171923;margin-bottom:7px}
+.brandHeader{font-size:42px;letter-spacing:-2px;font-weight:800;line-height:1;color:#171923;margin-bottom:8px}
 .header h1{margin:0;font-size:31px;letter-spacing:-1.2px}
 .header p{margin:7px 0 0;color:#777b88;font-size:13px}
 .headerButton{border:1px solid #dedfe6;background:#fff;color:#20222b;border-radius:10px;padding:10px 14px;font-weight:700;box-shadow:0 2px 5px #17192308}
