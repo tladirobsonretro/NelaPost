@@ -28,11 +28,11 @@ export async function POST(request:Request){
   const {data:connections,error:connectionError}=await db.from('social_connections').select('platform').eq('installation_id',id).in('platform',platforms)
   if(connectionError)throw connectionError
   const connected=new Set((connections||[]).map(x=>x.platform))
-  const missing=platforms.filter(p=>!connected.has(p))
+  const missing=platforms.filter((p:string)=>!connected.has(p))
   if(missing.length)return NextResponse.json({error:`Link these platforms first: ${missing.join(', ')}`},{status:400})
   const {data:post,error:postError}=await db.from('posts').insert({installation_id:id,caption,media_url,media_type,scheduled_for,status:mode==='schedule'?'scheduled':'publishing'}).select().single()
   if(postError)throw postError
-  const targets=platforms.map(platform=>({post_id:post.id,installation_id:id,platform,status:mode==='schedule'?'pending':'publishing'}))
+  const targets=platforms.map((platform:string)=>({post_id:post.id,installation_id:id,platform,status:mode==='schedule'?'pending':'publishing'}))
   const {error:targetError}=await db.from('post_targets').insert(targets)
   if(targetError)throw targetError
   if(mode==='schedule'){
