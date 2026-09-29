@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
-import {installationId,saveConnection,canConnect} from '../../../../lib/server'
+import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
 export async function GET(request:Request){
  const u=new URL(request.url);const code=u.searchParams.get('code');const state=u.searchParams.get('state');const c=await cookies()
  if(!code||!state||state!==c.get('meta_oauth_state')?.value)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
