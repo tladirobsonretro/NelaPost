@@ -6,7 +6,8 @@ type Post={id:number;caption:string;platforms:string[];when:string;status:string
 
 const NELA_LOGO='https://media.canva.com/v2/document-image/hash:438808723/height=447/id:DAHWl0QCodc/type:B/width=447?brand=BAD5Clcd_zQ&csig=AAAAAAAAAAAAAAAAAAAAADafIGfhBxq6HHxsVhlgezs4LkJ7LsrQEJOphcUqD6Pr&disableexport=T&exp=1790699570&fallback=https%3A%2F%2Fs3.amazonaws.com%2Fdocument-export.canva.com%2FQCodc%2FDAHWl0QCodc%2F3%2Fthumbnail%2F0001.png%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQYCGKMUHTDF2ZFFQ%252F20260929%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Date%3D20260929T152143Z%26X-Amz-Expires%3D6967%26X-Amz-Signature%3D8be1a67deaa12bba4455e6a189a2b87e5b70fcb17782c3a1e9243ee427ff7508%26X-Amz-SignedHeaders%3Dhost%26response-expires%3DTue%252C%252029%2520Sep%25202026%252017%253A17%253A50%2520GMT&osig=AAAAAAAAAAAAAAAAAAAAAMLPwwOH7jqwKnGjR02ubDJsQc5HxLMqRpOVRkBgHa9&page=1&signed=brand%2Cdisableexport%2Cfallback%2Cpage%2Cversion&signer=document-rpc&version=4'
 
-const platforms=['Instagram','Facebook']
+const platforms=['Instagram','Facebook','X']
+const [initialPlatform]=platforms
 
 export default function Home(){
   const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create')
@@ -18,6 +19,7 @@ export default function Home(){
   const [media,setMedia]=useState<string>()
   const [posts,setPosts]=useState<Post[]>([])
   const [calendar,setCalendar]=useState(false)
+  const [previewPlatform,setPreviewPlatform]=useState('Instagram')
 
   const toggle=(platform:string)=>setSelected(current=>current.includes(platform)?current.filter(x=>x!==platform):[...current,platform])
   const connect=(path:string)=>{window.location.href=path}
@@ -78,7 +80,7 @@ export default function Home(){
           <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select where this post should go</small></div></div></div>
           <div className="platformGrid">
             {platforms.map(platform=><button key={platform} className={selected.includes(platform)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform)}>
-              <span className={platform==='Instagram'?'instagramIcon':'facebookIcon'}>{platform==='Instagram'?'◎':'f'}</span>
+              <span className={platform==='Instagram'?'instagramIcon':platform==='Facebook'?'facebookIcon':'xIcon'}>{platform==='Instagram'?'◎':platform==='Facebook'?'f':'𝕏'}</span>
               <span><b>{platform}</b><small>{selected.includes(platform)?'Selected':'Not selected'}</small></span>
               <i>{selected.includes(platform)?'✓':'+'}</i>
             </button>)}
@@ -102,9 +104,10 @@ export default function Home(){
           </section>
 
           <section className="previewCard">
-            <div className="previewHeader"><span>LIVE PREVIEW</span><b>{selected.length?selected.join(' + '):'No platform selected'}</b></div>
-            <div className="socialPreview">
-              <div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Preview post</span></div></div>
+            <div className="previewHeader"><span>LIVE PREVIEW</span><b>{previewPlatform}</b></div>
+            <div className="previewTabs">{platforms.map(platform=><button key={platform} className={previewPlatform===platform?'active':''} onClick={()=>setPreviewPlatform(platform)}>{platform}</button>)}</div>
+            <div className={`socialPreview ${previewPlatform.toLowerCase()}Preview`}>
+              <div className="previewProfile"><div className="avatar">N</div><div><b>{previewPlatform==='X'?'@nelapost':'NelaPost'}</b><span>{previewPlatform} preview</span></div></div>
               {media?<img src={media} className="previewImage" alt="Preview" />:<div className="previewPlaceholder"><span>Media preview</span></div>}
               <p>{caption||'Your caption will appear here.'}</p>
             </div>
@@ -119,7 +122,9 @@ export default function Home(){
 
       {view==='accounts'&&<section className="card accountsPanel">
         <div className="accountHero"><div><b>Connected accounts</b><span>Give NelaPost permission to publish on your behalf.</span></div></div>
-        <div className="accountRow"><div className="accountIcon instagramIcon">◎</div><div className="accountCopy"><b>Instagram + Facebook</b><span>Connect through Meta and grant publishing permission.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta')}>Connect Meta</button></div>
+        <div className="accountRow"><div className="accountIcon instagramIcon">◎</div><div className="accountCopy"><b>Instagram</b><span>Authorize NelaPost to publish to your Instagram account.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta?platform=instagram')}>Connect Instagram</button></div>
+        <div className="accountRow"><div className="accountIcon facebookIcon">f</div><div className="accountCopy"><b>Facebook</b><span>Authorize NelaPost to publish to your Facebook Page.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta?platform=facebook')}>Connect Facebook</button></div>
+        <div className="accountRow"><div className="accountIcon xIcon">𝕏</div><div className="accountCopy"><b>X</b><span>Authorize NelaPost to publish posts to X.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/x')}>Connect X</button></div>
         <div className="accountRow"><div className="accountIcon calendarIcon">◷</div><div className="accountCopy"><b>Google Calendar</b><span>Link your calendar for scheduled content planning.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/google')}>{calendar?'Connected':'Connect'}</button></div>
       </section>}
     </main>
