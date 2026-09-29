@@ -41,7 +41,7 @@ export default function Home(){
     })
   }
 
-  const connect=(url:string)=>{window.location.href=url}
+  const connect=(platform:string)=>{const routes:Record<string,string>={Instagram:'/api/auth/meta?platform=instagram',Facebook:'/api/auth/meta?platform=facebook',X:'/api/auth/x'};window.location.href=routes[platform]||platforms.find(p=>p.name===platform)?.login||'/'}
 
   const submit=()=>{
     if(!caption.trim()&&!media)return
@@ -102,7 +102,7 @@ export default function Home(){
             {platforms.map(platform=><div key={platform.name} className={selected.includes(platform.name)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform.name)}>
               <span className={platform.className}>{platform.icon}</span>
               <span className="platformMain"><b>{platform.name}</b><small>{selected.includes(platform.name)?'Selected':selected.length>=3?'Limit reached':'Not selected'}</small></span>
-              <button type="button" className="platformConnect" onClick={e=>{e.stopPropagation();connect(platform.login)}}>Link</button>
+              <button type="button" className="platformConnect" onClick={e=>{e.stopPropagation();connect(platform.name)}}>Link</button>
               <i>{selected.includes(platform.name)?'✓':'+'}</i>
             </div>)}
           </div>
@@ -144,7 +144,7 @@ export default function Home(){
 
       {view==='accounts'&&<section className="card accountsPanel">
         <div className="accountHero"><div><b>Link your platforms</b><span>Choose up to 3 social and business platforms.</span></div><strong>{selected.length} / 3 selected</strong></div>
-        {platforms.map(platform=><div className="accountRow" key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><b>{platform.name}</b><span>{platform.description}</span></div><button className="headerButton" onClick={()=>connect(platform.login)}>{selected.includes(platform.name)?'Open':'Link'}</button></div>)}
+        {platforms.map(platform=><div className="accountRow" key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><b>{platform.name}</b><span>{platform.description}</span></div><button className="headerButton" onClick={()=>connect(platform.name)}{selected.includes(platform.name)?'Connected':'Link'}</button></div>)}
       </section>}
     </main>
   </div>
