@@ -13,6 +13,7 @@ export async function GET(request:Request){
  if(platform!=='instagram'&&platform!=='facebook')return NextResponse.json({error:'Invalid Meta platform.'},{status:400})
 
  const redirect=process.env.META_REDIRECT_URI||new URL('/api/auth/meta/callback',request.url).toString()
+ const appOrigin=new URL(redirect).origin
  const version=process.env.META_GRAPH_VERSION||'v24.0'
 
  try{
@@ -64,7 +65,7 @@ export async function GET(request:Request){
     metadata:{username:me.username||'',instagram_user_id:me.user_id||null}
    })
 
-   const response=NextResponse.redirect(new URL('/?connected=instagram',u.origin))
+   const response=NextResponse.redirect(new URL('/?connected=instagram',appOrigin))
    response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
    response.cookies.delete('meta_oauth_state')
    response.cookies.delete('meta_oauth_platform')
@@ -98,7 +99,7 @@ export async function GET(request:Request){
    metadata:{page_id:page.id,page_name:page.name||''}
   })
 
-  const response=NextResponse.redirect(new URL('/?connected=facebook',u.origin))
+  const response=NextResponse.redirect(new URL('/?connected=facebook',appOrigin))
   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
   response.cookies.delete('meta_oauth_state')
   response.cookies.delete('meta_oauth_platform')
