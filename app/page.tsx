@@ -107,9 +107,9 @@ export default function Home(){
             <div className="previewHeader"><span>LIVE PREVIEW</span><b>{previewPlatform}</b></div>
             <div className="previewTabs">{platforms.map(platform=><button key={platform} className={previewPlatform===platform?'active':''} onClick={()=>setPreviewPlatform(platform)}>{platform}</button>)}</div>
             <div className={`socialPreview ${previewPlatform.toLowerCase()}Preview`}>
-              <div className="previewProfile"><div className="avatar">N</div><div><b>{previewPlatform==='X'?'@nelapost':'NelaPost'}</b><span>{previewPlatform} preview</span></div></div>
-              {media?<img src={media} className="previewImage" alt="Preview" />:<div className="previewPlaceholder"><span>Media preview</span></div>}
-              <p>{caption||'Your caption will appear here.'}</p>
+              {previewPlatform==='Instagram'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>nelapost</b><span>Instagram preview</span></div></div>{media?<img src={media} className="previewImage instagramImage" alt="Instagram preview" />:<div className="previewPlaceholder instagramImage"><span>Media preview</span></div>}<p><b>nelapost</b> {caption||'Your caption will appear here.'}</p></>}
+              {previewPlatform==='Facebook'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Facebook Page preview</span></div></div>{media?<img src={media} className="previewImage facebookImage" alt="Facebook preview" />:<div className="previewPlaceholder facebookImage"><span>Media preview</span></div>}<p>{caption||'Your post text will appear here.'}</p></>}
+              {previewPlatform==='X'&&<div className="xPost"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>@nelapost · X preview</span></div></div><p>{caption||'Your post text will appear here.'}</p>{media?<img src={media} className="previewImage xImage" alt="X preview" />:<div className="previewPlaceholder xImage"><span>Media preview</span></div>}</div>}
             </div>
           </section>
         </aside>
