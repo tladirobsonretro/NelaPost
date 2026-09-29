@@ -47,7 +47,11 @@ button{cursor:pointer}
 .platformGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .platformCard{border:1px solid #e1e2e8;background:#fff;border-radius:11px;padding:12px;display:flex;align-items:center;gap:10px;text-align:left}
 .platformCard:hover{border-color:#bfb6d7}.platformCard.selected{border-color:#8c6ed2;background:#faf8ff}
-.platformCard small{display:block;color:#9699a3;font-size:10px;margin-top:3px}.platformCard i{font-style:normal;margin-left:auto;width:21px;height:21px;border-radius:50%;border:1px solid #dddfe6;display:grid;place-items:center;font-size:11px;color:#8a8d97}.platformCard.selected i{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.platformMain{min-width:0}.platformMain b{display:block;font-size:12px}.platformCard small{display:block;color:#9699a3;font-size:10px;margin-top:3px}
+.platformCard i{font-style:normal;margin-left:auto;width:21px;height:21px;border-radius:50%;border:1px solid #dddfe6;display:grid;place-items:center;font-size:11px;color:#8a8d97}.platformCard.selected i{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.platformConnect{flex:none;border:1px solid #dedfe6;background:#fff;color:#5f626d;border-radius:8px;padding:6px 9px;font-size:9px;font-weight:700;line-height:1;box-shadow:0 1px 3px #17192308;transition:all .15s ease}
+.platformConnect:hover{border-color:#bdb4d5;background:#faf9ff;color:#171923;box-shadow:0 2px 6px #17192310}
+.platformConnect:active{transform:translateY(1px)}
 .instagramIcon,.facebookIcon,.calendarIcon{display:grid;place-items:center;flex:none}
 .instagramIcon{width:30px;height:30px;border-radius:9px;background:#f0eaff;color:#7c3aed;font-weight:800;font-size:19px}.facebookIcon{width:30px;height:30px;border-radius:9px;background:#edf3ff;color:#1877f2;font-weight:800;font-size:20px}
 .rightColumn{display:grid;gap:18px}
@@ -71,5 +75,4 @@ button{cursor:pointer}
 
 .xIcon{width:30px;height:30px;border-radius:9px;background:#171923;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .previewTabs{display:flex;gap:6px;margin:0 0 10px;overflow:auto}.previewTabs button{border:1px solid #343640;background:#20222b;color:#9da0aa;border-radius:7px;padding:6px 9px;font-size:9px;font-weight:700}.previewTabs button.active{background:#fff;color:#171923;border-color:#fff}.xPreview .socialPreview,.xPreview{border-radius:10px}.facebookPreview .avatar{background:#171923}.instagramPreview .avatar{background:#171923}
-
 .instagramImage{aspect-ratio:1/1;height:auto!important}.facebookImage{height:180px}.xImage{height:160px}.xPost>p{padding:0 12px 12px;margin:0;font-size:10px;line-height:1.45}.xPost .previewProfile{padding-bottom:5px}
