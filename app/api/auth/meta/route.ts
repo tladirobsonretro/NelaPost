@@ -1,5 +1,6 @@
 import {NextResponse} from 'next/server'
 import {createHmac,randomUUID} from 'crypto'
+import {installationId} from '../../../../lib/server'
 
 function signState(platform:string,nonce:string,secret:string){
  return createHmac('sha256',secret).update(platform+'.'+nonce).digest('hex')
