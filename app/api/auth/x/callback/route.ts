@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
-import {installationId,saveConnection,canConnect} from '@/lib/server'
+import {installationId,saveConnection,canConnect} from '../../../../lib/server'
 export async function GET(request:Request){
  const url=new URL(request.url);const code=url.searchParams.get('code');const state=url.searchParams.get('state');const c=await cookies();const expectedState=c.get('x_oauth_state')?.value;const verifier=c.get('x_oauth_verifier')?.value;const clientId=process.env.X_CLIENT_ID;const redirectUri=process.env.X_REDIRECT_URI||new URL('/api/auth/x/callback',url.origin).toString()
  if(!code||!state||state!==expectedState||!verifier||!clientId)return NextResponse.json({error:'Invalid X OAuth callback'},{status:400})
