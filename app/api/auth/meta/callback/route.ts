@@ -15,6 +15,7 @@ function verifyState(state:string,secret:string){
 
 export async function GET(request:Request){
  const u=new URL(request.url)
+ console.log('[meta-oauth] callback received',{hasCode:!!u.searchParams.get('code'),hasState:!!u.searchParams.get('state'),statePlatform:u.searchParams.get('state')?.split('.')[0]||null,stateParts:u.searchParams.get('state')?.split('.').length||0})
  const code=u.searchParams.get('code')
  const state=u.searchParams.get('state')
  if(!code||!state)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
@@ -79,7 +80,9 @@ export async function GET(request:Request){
     metadata:{username:me.username||'',instagram_user_id:me.user_id||null}
    })
 
-   return NextResponse.redirect(new URL('/?connected=instagram',appOrigin))
+   const response=NextResponse.redirect(new URL('/?connected=instagram',appOrigin))
+   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
+   return response
   }
 
   const appId=process.env.META_APP_ID
@@ -109,7 +112,9 @@ export async function GET(request:Request){
    metadata:{page_id:page.id,page_name:page.name||''}
   })
 
-  return NextResponse.redirect(new URL('/?connected=facebook',appOrigin))
+  const response=NextResponse.redirect(new URL('/?connected=facebook',appOrigin))
+  response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
+  return response
  }catch(error:any){
   return NextResponse.json({error:error?.message||'Meta connection failed.'},{status:500})
  }
