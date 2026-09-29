@@ -1,14 +1,127 @@
-
 'use client'
+
 import {useState} from 'react'
+
 type Post={id:number;caption:string;platforms:string[];when:string;status:string;media?:string}
-const NELA_LOGO='https://media.canva.com/v2/document-image/hash:438808723/height=447/id:DAHWl0QCodc/type:B/width=447?brand=BAD5Clcd_zQ&csig=AAAAAAAAAAAAAAAAAAAAADafIGfhBxq6HHxsVhlgezs4LkJ7LsrQEJOphcUqD6Pr&disableexport=T&exp=1790699570&fallback=https%3A%2F%2Fs3.amazonaws.com%2Fdocument-export.canva.com%2FQCodc%2FDAHWl0QCodc%2F3%2Fthumbnail%2F0001.png%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQYCGKMUHTDF2ZFFQ%252F20260929%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Date%3D20260929T152143Z%26X-Amz-Expires%3D6967%26X-Amz-Signature%3D8be1a67deaa12bba4455e6a189a2b87e5b70fcb17782c3a1e9243ee427ff7508%26X-Amz-SignedHeaders%3Dhost%26response-expires%3DTue%252C%252029%2520Sep%25202026%252017%253A17%253A50%2520GMT&osig=AAAAAAAAAAAAAAAAAAAAAMLPwwOH7jqwKnGjR02ubDJsQc5HxLMqRpOVRkBgHaP9&page=1&signed=brand%2Cdisableexport%2Cfallback%2Cpage%2Cversion&signer=document-rpc&version=4'
+
+const NELA_LOGO='https://media.canva.com/v2/document-image/hash:438808723/height=447/id:DAHWl0QCodc/type:B/width=447?brand=BAD5Clcd_zQ&csig=AAAAAAAAAAAAAAAAAAAAADafIGfhBxq6HHxsVhlgezs4LkJ7LsrQEJOphcUqD6Pr&disableexport=T&exp=1790699570&fallback=https%3A%2F%2Fs3.amazonaws.com%2Fdocument-export.canva.com%2FQCodc%2FDAHWl0QCodc%2F3%2Fthumbnail%2F0001.png%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQYCGKMUHTDF2ZFFQ%252F20260929%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Date%3D20260929T152143Z%26X-Amz-Expires%3D6967%26X-Amz-Signature%3D8be1a67deaa12bba4455e6a189a2b87e5b70fcb17782c3a1e9243ee427ff7508%26X-Amz-SignedHeaders%3Dhost%26response-expires%3DTue%252C%252029%2520Sep%25202026%252017%253A17%253A50%2520GMT&osig=AAAAAAAAAAAAAAAAAAAAAMLPwwOH7jqwKnGjR02ubDJsQc5HxLMqRpOVRkBgHa9&page=1&signed=brand%2Cdisableexport%2Cfallback%2Cpage%2Cversion&signer=document-rpc&version=4'
+
+const platforms=['Instagram','Facebook']
+
 export default function Home(){
- const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create'); const [caption,setCaption]=useState(''); const [platforms,setPlatforms]=useState<string[]>(['Instagram','Facebook']); const [when,setWhen]=useState('now'); const [date,setDate]=useState(''); const [time,setTime]=useState(''); const [media,setMedia]=useState<string>(); const [posts,setPosts]=useState<Post[]>([]); const [calendar,setCalendar]=useState(false)
- const toggle=(p:string)=>setPlatforms(x=>x.includes(p)?x.filter(v=>v!==p):[...x,p])
- const connect=(path:string)=>{window.location.href=path}
- const submit=()=>{if(!caption.trim()&&!media)return;const whenText=when==='now'?'Publishing now':`${date} • ${time}`;setPosts(x=>[{id:Date.now(),caption:caption||'Media post',platforms,when:whenText,status:when==='now'?'Publishing':'Scheduled',media},...x]);setCaption('');setMedia(undefined);setView('upcoming')}
- return <div className="shell"><aside className="side"><div className="brandLogo"><img src={NELA_LOGO} alt="NelaPost logo" /><span>NelaPost</span></div><nav className="nav"><button className={view==='create'?'active':''} onClick={()=>setView('create')}>+ Create post</button><button className={view==='upcoming'?'active':''} onClick={()=>setView('upcoming')}>Upcoming</button><button className={view==='accounts'?'active':''} onClick={()=>setView('accounts')}>Accounts</button></nav></aside><main className="main"><div className="top"><div><h1>{view==='create'?'Create post':view==='accounts'?'Accounts':'Upcoming'}</h1><div className="muted">Create. Schedule. Publish.</div></div></div>
- {view==='accounts'?<section className="card"><label className="label">CONNECTED SERVICES</label><div className="account"><div><strong>Google Calendar</strong><div className="muted">Link your calendar to plan scheduled posts.</div></div><button className="secondary" onClick={()=>connect('/api/auth/google')}>{calendar?'Connected':'Connect Google Calendar'}</button></div><div className="account"><div><strong>Instagram + Facebook</strong><div className="muted">NelaPost will ask Meta for permission to publish on your behalf.</div></div><button className="secondary" onClick={()=>connect('/api/auth/meta')}>Connect & grant publishing permission</button></div><div className="notice"><strong>Permission control</strong><br/>The social network's own consent screen appears before access is granted. NelaPost requests publishing permission rather than silently taking access.</div></section>
- :view==='create'?<div className="grid"><section className="card"><label className="label">MEDIA</label><div className="drop">{media?<><div>Media selected</div><img className="preview" src={media}/></>:<><div className="muted">Upload an image or video</div><br/><label className="upload">Choose media<input type="file" accept="image/*,video/*" onChange={e=>{const f=e.target.files?.[0];if(f)setMedia(URL.createObjectURL(f))}}/></label></>}</div><label className="label">CAPTION</label><textarea className="textarea" value={caption} onChange={e=>setCaption(e.target.value)} placeholder="Write your caption..."/><label className="label">POST TO</label><div className="platforms">{['Instagram','Facebook'].map(p=><button key={p} className={'platform '+(platforms.includes(p)?'sel':'')} onClick={()=>toggle(p)}>{platforms.includes(p)?'✓ ':''}{p}</button>)}</div></section><section className="card"><label className="label">WHEN</label><div className="platforms"><button className={'platform '+(when==='now'?'sel':'')} onClick={()=>setWhen('now')}>Post now</button><button className={'platform '+(when==='schedule'?'sel':'')} onClick={()=>setWhen('schedule')}>Schedule</button></div>{when==='schedule'&&<><label className="label">DATE</label><input className="input" type="date" value={date} onChange={e=>setDate(e.target.value)}/><label className="label">TIME</label><input className="input" type="time" value={time} onChange={e=>setTime(e.target.value)}/><button className="calendarLink" onClick={()=>connect('/api/auth/google')}>{calendar?'Google Calendar connected':'Link Google Calendar'}</button></>}<div style={{marginTop:28}}><button className="primary" onClick={submit}>{when==='now'?'Publish now':'Schedule post'}</button></div></section></div>
- :<section className="card">{posts.length?posts.map(p=><div className="post" key={p.id}><div><strong>{p.caption}</strong><div className="muted">{p.when} · {p.platforms.join(' + ')}</div></div><div><span className="pill">{p.status}</span> <button className="secondary" onClick={()=>setPosts(x=>x.filter(q=>q.id!==p.id))}>Delete</button></div></div>):<div className="empty">No upcoming posts yet.</div>}</section>}</main></div>}
+  const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create')
+  const [caption,setCaption]=useState('')
+  const [selected,setSelected]=useState<string[]>(['Instagram','Facebook'])
+  const [when,setWhen]=useState<'now'|'schedule'>('now')
+  const [date,setDate]=useState('')
+  const [time,setTime]=useState('')
+  const [media,setMedia]=useState<string>()
+  const [posts,setPosts]=useState<Post[]>([])
+  const [calendar,setCalendar]=useState(false)
+
+  const toggle=(platform:string)=>setSelected(current=>current.includes(platform)?current.filter(x=>x!==platform):[...current,platform])
+  const connect=(path:string)=>{window.location.href=path}
+  const submit=()=>{
+    if(!caption.trim()&&!media)return
+    const whenText=when==='now'?'Publishing now':`${date||'Choose date'} · ${time||'Choose time'}`
+    setPosts(current=>[{id:Date.now(),caption:caption||'Media post',platforms:selected,when:whenText,status:when==='now'?'Publishing':'Scheduled',media},...current])
+    setCaption('')
+    setMedia(undefined)
+    setView('upcoming')
+  }
+
+  return <div className="appShell">
+    <aside className="sidebar">
+      <div className="brand">
+        <div className="brandMark"><img src={NELA_LOGO} alt="" /></div>
+        <div><strong>NelaPost</strong><span>Create. Schedule. Publish.</span></div>
+      </div>
+
+      <div className="navLabel">WORKSPACE</div>
+      <nav className="nav">
+        <button className={view==='create'?'active':''} onClick={()=>setView('create')}><span>＋</span>Create post</button>
+        <button className={view==='upcoming'?'active':''} onClick={()=>setView('upcoming')}><span>◷</span>Calendar</button>
+        <button className={view==='accounts'?'active':''} onClick={()=>setView('accounts')}><span>◎</span>Accounts</button>
+      </nav>
+
+      <div className="sidebarBottom">
+        <div className="freeBadge"><b>Free & open source</b><span>Simple social publishing.</span></div>
+      </div>
+    </aside>
+
+    <main className="content">
+      <header className="header">
+        <div>
+          <div className="eyebrow">NELAPOST</div>
+          <h1>{view==='create'?'Create post':view==='accounts'?'Connected accounts':'Content calendar'}</h1>
+          <p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Manage the accounts NelaPost can publish to.':'Keep every scheduled post in one place.'}</p>
+        </div>
+        {view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}
+      </header>
+
+      {view==='create'&&<div className="composerLayout">
+        <section className="composer card">
+          <div className="sectionTitle"><div><span className="step">01</span><div><b>Content</b><small>What do you want to publish?</small></div></div></div>
+
+          <label className="mediaDrop">
+            {media?<><img src={media} alt="Selected media" /><button type="button" className="changeMedia" onClick={e=>{e.preventDefault();setMedia(undefined)}}>Remove media</button></>:<><div className="uploadIcon">↑</div><b>Upload image or video</b><span>PNG, JPG, WEBP or MP4</span><em>Choose media</em></>}
+            {!media&&<input type="file" accept="image/*,video/*" onChange={e=>{const f=e.target.files?.[0];if(f)setMedia(URL.createObjectURL(f))}}/>}
+          </label>
+
+          <div className="field">
+            <div className="fieldTop"><label>Caption</label><span>{caption.length}/2,200</span></div>
+            <textarea value={caption} onChange={e=>setCaption(e.target.value)} placeholder="Write something worth publishing..." />
+          </div>
+
+          <div className="divider"/>
+
+          <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select where this post should go</small></div></div></div>
+          <div className="platformGrid">
+            {platforms.map(platform=><button key={platform} className={selected.includes(platform)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform)}>
+              <span className={platform==='Instagram'?'instagramIcon':'facebookIcon'}>{platform==='Instagram'?'◎':'f'}</span>
+              <span><b>{platform}</b><small>{selected.includes(platform)?'Selected':'Not selected'}</small></span>
+              <i>{selected.includes(platform)?'✓':'+'}</i>
+            </button>)}
+          </div>
+        </section>
+
+        <aside className="rightColumn">
+          <section className="card scheduleCard">
+            <div className="sectionTitle compact"><div><span className="step">03</span><div><b>Publish</b><small>Choose when it goes live</small></div></div></div>
+            <div className="whenToggle">
+              <button className={when==='now'?'active':''} onClick={()=>setWhen('now')}>Post now</button>
+              <button className={when==='schedule'?'active':''} onClick={()=>setWhen('schedule')}>Schedule</button>
+            </div>
+            {when==='schedule'&&<div className="dateFields">
+              <label>Date<input type="date" value={date} onChange={e=>setDate(e.target.value)} /></label>
+              <label>Time<input type="time" value={time} onChange={e=>setTime(e.target.value)} /></label>
+              <button className="calendarConnect" onClick={()=>connect('/api/auth/google')}>◷ {calendar?'Google Calendar connected':'Link Google Calendar'}</button>
+            </div>}
+            <button className="publishButton" disabled={!caption.trim()&&!media} onClick={submit}>{when==='now'?'Publish now':'Schedule post'} <span>→</span></button>
+            <div className="publishNote">Your post will be sent to the platforms you selected.</div>
+          </section>
+
+          <section className="previewCard">
+            <div className="previewHeader"><span>LIVE PREVIEW</span><b>{selected.length?selected.join(' + '):'No platform selected'}</b></div>
+            <div className="socialPreview">
+              <div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Preview post</span></div></div>
+              {media?<img src={media} className="previewImage" alt="Preview" />:<div className="previewPlaceholder"><span>Media preview</span></div>}
+              <p>{caption||'Your caption will appear here.'}</p>
+            </div>
+          </section>
+        </aside>
+      </div>}
+
+      {view==='upcoming'&&<section className="card calendarPanel">
+        <div className="calendarToolbar"><div><b>Upcoming posts</b><span>{posts.length} post{posts.length===1?'':'s'}</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div>
+        {posts.length?posts.map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption}</b><span>{post.when} · {post.platforms.join(' + ')}</span></div><span className="status">{post.status}</span><button className="deleteButton" onClick={()=>setPosts(x=>x.filter(p=>p.id!==post.id))}>Delete</button></div>):<div className="emptyState"><div>◷</div><b>No scheduled posts</b><span>Create a post and it will appear here.</span><button className="headerButton" onClick={()=>setView('create')}>Create your first post</button></div>}
+      </section>}
+
+      {view==='accounts'&&<section className="card accountsPanel">
+        <div className="accountHero"><div><b>Connected accounts</b><span>Give NelaPost permission to publish on your behalf.</span></div></div>
+        <div className="accountRow"><div className="accountIcon instagramIcon">◎</div><div className="accountCopy"><b>Instagram + Facebook</b><span>Connect through Meta and grant publishing permission.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/meta')}>Connect Meta</button></div>
+        <div className="accountRow"><div className="accountIcon calendarIcon">◷</div><div className="accountCopy"><b>Google Calendar</b><span>Link your calendar for scheduled content planning.</span></div><button className="headerButton" onClick={()=>connect('/api/auth/google')}>{calendar?'Connected':'Connect'}</button></div>
+      </section>}
+    </main>
+  </div>
+}
