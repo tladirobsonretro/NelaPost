@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server'
-import {admin,installationId} from '@/lib/server'
+import {admin,installationId} from '../../../lib/server'
 
 export async function POST(request:Request){
   try{
