@@ -79,11 +79,12 @@ export default function Home(){
 
           <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select where this post should go</small></div></div></div>
           <div className="platformGrid">
-            {platforms.map(platform=><button key={platform} className={selected.includes(platform)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform)}>
+            {platforms.map(platform=><div key={platform} className={selected.includes(platform)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform)}>
               <span className={platform==='Instagram'?'instagramIcon':platform==='Facebook'?'facebookIcon':'xIcon'}>{platform==='Instagram'?'◎':platform==='Facebook'?'f':'𝕏'}</span>
-              <span><b>{platform}</b><small>{selected.includes(platform)?'Selected':'Not selected'}</small></span>
+              <span className="platformMain"><b>{platform}</b><small>{selected.includes(platform)?'Selected':'Not selected'}</small></span>
+              <button type="button" className="platformConnect" onClick={e=>{e.stopPropagation();connect(platform==='X'?'/api/auth/x':`/api/auth/meta?platform=${platform.toLowerCase()}`)}}>Link</button>
               <i>{selected.includes(platform)?'✓':'+'}</i>
-            </button>)}
+            </div>)}
           </div>
         </section>
 
