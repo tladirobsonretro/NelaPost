@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
-import {admin,installationId} from '../../../lib/server'
-import {publishTarget} from '@/lib/publisher'
+import {admin,installationId} from '../../../lib/publisher'
+import {publishTarget} from '../../../lib/publisher'
 
 export async function GET(){
  try{
