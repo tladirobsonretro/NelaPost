@@ -13,6 +13,7 @@ export async function GET(request:Request){
  const redirect=process.env.META_REDIRECT_URI||new URL('/api/auth/meta/callback',request.url).toString()
  const version=process.env.META_GRAPH_VERSION||'v24.0'
  const nonce=randomUUID()
+ const installation_id=await installationId()
 
  if(platform==='instagram'){
   const appId=process.env.META_INSTAGRAM_APP_ID
@@ -26,7 +27,9 @@ export async function GET(request:Request){
   url.searchParams.set('force_reauth','true')
   url.searchParams.set('scope','instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights')
   url.searchParams.set('state',state)
-  return NextResponse.redirect(url)
+  const response=NextResponse.redirect(url)
+  response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
+  return response
  }
 
  const appId=process.env.META_APP_ID
@@ -39,5 +42,7 @@ export async function GET(request:Request){
  url.searchParams.set('response_type','code')
  url.searchParams.set('state',state)
  url.searchParams.set('scope','pages_show_list,pages_manage_posts,pages_read_engagement,instagram_basic,instagram_content_publish')
- return NextResponse.redirect(url)
+ const response=NextResponse.redirect(url)
+ response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
+ return response
 }
