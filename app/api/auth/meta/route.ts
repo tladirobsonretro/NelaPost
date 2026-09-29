@@ -6,9 +6,9 @@ export async function GET(request:Request){
  if(!appId)return NextResponse.json({error:'Meta publishing is not configured on NelaPost yet. Add META_APP_ID and META_APP_SECRET in Render.'},{status:503})
  const state=crypto.randomUUID()
  const url=new URL('https://www.facebook.com/'+version+'/dialog/oauth')
- url.searchParams.set('client_id',appId);url.searchParams.set('redirect_uri',redirect);url.searchParams.set('response_type','code')
+ url.searchParams.set('client_id',appId);url.searchParams.set('redirect_uri',redirect);url.searchParams.set('response_type','code');url.searchParams.set('state',state)
  url.searchParams.set('scope','pages_show_list,pages_manage_posts,pages_read_engagement,instagram_basic,instagram_content_publish')
- const res=NextResponse.redirect(url);res.cookies.set('meta_oauth_state',state,{httpOnly:true,secure:true,sameSite:'lax',maxAge:600,path:'/'})
- url.searchParams.set('state',state)
- return NextResponse.redirect(url)
+ const res=NextResponse.redirect(url)
+ res.cookies.set('meta_oauth_state',state,{httpOnly:true,secure:true,sameSite:'lax',maxAge:600,path:'/'})
+ return res
 }
