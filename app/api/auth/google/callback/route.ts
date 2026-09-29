@@ -10,7 +10,7 @@ export async function GET(request:Request){
  const data=await token.json()
  c.set('google_calendar_access_token',data.access_token,{httpOnly:true,secure:true,sameSite:'lax',maxAge:3600,path:'/'})
  if(data.refresh_token)c.set('google_calendar_refresh_token',data.refresh_token,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*30,path:'/'})
- c.set('google_calendar_connected','1',{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*30,path:'/')
+ c.set('google_calendar_connected','1',{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*30,path:'/'})
  c.delete('google_oauth_state')
  return NextResponse.redirect(new URL('/?calendar=connected',request.url))
 }
