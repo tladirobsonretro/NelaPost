@@ -83,6 +83,7 @@ export default function Home(){
               <span className={platform==='Instagram'?'instagramIcon':platform==='Facebook'?'facebookIcon':'xIcon'}>{platform==='Instagram'?'◎':platform==='Facebook'?'f':'𝕏'}</span>
               <span><b>{platform}</b><small>{selected.includes(platform)?'Selected':'Not selected'}</small></span>
               <i>{selected.includes(platform)?'✓':'+'}</i>
+              <strong className="platformLink" onClick={e=>{e.stopPropagation();connect(platform==='X'?'/api/auth/x':`/api/auth/meta?platform=${platform.toLowerCase()}`)}}>Link</strong>
             </button>)}
           </div>
         </section>
