@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="128" fill="#6D3DF5"/>
-<path d="M128 384V128h68l148 168V128h40v256h-68L168 216v168z" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NelaPost">
+  <rect width="512" height="512" fill="#000"/>
+  <g fill="#fff">
+    <path d="M92 392V120h76l176 191V120h76v272h-76L168 201v191z"/>
+    <path d="M292 120h82c77 0 126 39 126 101s-49 101-126 101h-45v-61h39c34 0 55-15 55-40s-21-40-55-40h-76z"/>
+  </g>
 </svg>
