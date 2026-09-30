@@ -29,7 +29,7 @@ export default function TermsPage() {
         <section><h2>12. Limitation of liability</h2><p>To the extent permitted by applicable law, NelaPost will not be liable for indirect, incidental, special or consequential loss arising from your use of the service, including losses resulting from third-party platform outages, account restrictions or unsuccessful publication.</p></section>
         <section><h2>13. Changes to these Terms</h2><p>We may update these Terms as NelaPost develops or as legal or platform requirements change. The updated version will be posted on this page with a revised effective date. Continued use of NelaPost after an update means you accept the updated Terms.</p></section>
         <section><h2>14. Governing law</h2><p>These Terms are governed by the laws of the Republic of South Africa, unless applicable law requires otherwise.</p></section>
-        <section><h2>15. Contact</h2><p>For questions about these Terms or NelaPost, use the support or contact method made available within the NelaPost service.</p></section>
+        <section><h2>15. Contact</h2><p>For questions about these Terms or NelaPost, contact us at tladirobson@gmail.com.</p></section>
 
         <footer className="legalFooter"><Link href="/">NelaPost</Link><span>·</span><Link href="/terms">Terms of Service</Link></footer>
       </div>
