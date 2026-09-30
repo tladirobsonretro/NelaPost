@@ -2,7 +2,7 @@ import {NextResponse} from 'next/server'
 import {installationId} from '../../../../lib/server'
 
 export async function GET(request:Request){
- const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^(['"])(.*)\\1$/,'$2')
+ const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^["']|["']$/g,'')
  if(!clientKey)return NextResponse.json({error:'TikTok is not configured on NelaPost yet. Add TIKTOK_CLIENT_KEY and TIKTOK_CLIENT_SECRET in Render.'},{status:503})
  const redirectUri=process.env.TIKTOK_REDIRECT_URI?.trim().replace(/^(['"])(.*)\\1$/,'$2')||new URL('/api/auth/tiktok/callback',request.url).toString()
  const id=await installationId()
