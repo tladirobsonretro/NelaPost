@@ -8,7 +8,7 @@ export async function GET(request:Request){
  const id=await installationId()
  const state=crypto.randomUUID()
  const response=NextResponse.redirect(new URL('https://www.tiktok.com/v2/auth/authorize/?'+new URLSearchParams({
-  client_key:clientKey,response_type:'code',scope:'user.info.basic,video.publish',redirect_uri:redirectUri,state
+  client_key:clientKey,response_type:'code',scope:(process.env.TIKTOK_SCOPES?.trim()||'user.info.basic'),redirect_uri:redirectUri,state
  }).toString()))
  response.cookies.set('tiktok_oauth_state',state,{httpOnly:true,secure:true,sameSite:'lax',maxAge:600,path:'/'})
  response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
