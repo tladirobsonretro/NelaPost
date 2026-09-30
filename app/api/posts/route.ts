@@ -22,7 +22,8 @@ export async function POST(request:Request){
   const mode=body.mode==='schedule'?'schedule':'now'
   const scheduled_for=mode==='schedule'?String(body.scheduled_for||''):null
   if(!caption&&!media_url)return NextResponse.json({error:'Add a caption or media before publishing.'},{status:400})
-  if(!platforms.length)return NextResponse.json({error:'Select at least one connected platform.'},{status:400})
+  if(!platforms.length)return NextResponse.json({error:'Select your connected platform.'},{status:400})
+  if(platforms.some((platform:string)=>platform!=='x'))return NextResponse.json({error:'NelaPost currently supports X publishing only.'},{status:400})
   if(mode==='schedule'&&!scheduled_for)return NextResponse.json({error:'Choose a date and time.'},{status:400})
   const db=admin()
   const {data:connections,error:connectionError}=await db.from('social_connections').select('platform').eq('installation_id',id).in('platform',platforms)
