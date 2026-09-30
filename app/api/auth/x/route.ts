@@ -14,7 +14,7 @@ export async function GET(request:Request){
  auth.searchParams.set('response_type','code')
  auth.searchParams.set('client_id',clientId)
  auth.searchParams.set('redirect_uri',redirectUri)
- auth.searchParams.set('scope','tweet.read users.read tweet.write media.write offline.access')
+ auth.searchParams.set('scope','tweet.read users.read tweet.write offline.access')
  auth.searchParams.set('state',state)
  auth.searchParams.set('code_challenge',codeChallenge)
  auth.searchParams.set('code_challenge_method','S256')
