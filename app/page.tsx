@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import {useEffect,useState} from 'react'
 
 type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string}
