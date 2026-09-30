@@ -58,7 +58,10 @@ async function xUpload(token:string,mediaUrl:string,mediaType:string){
 }
 async function publishTikTok(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
  if(!mediaUrl)throw new Error('TikTok publishing requires an image or video')
- const creatorRes=await fetch('https://open.tiktokapis.com/v2/post/publish/creator_info/query/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'}})
+ const creatorRes=await fetch('https://open.tiktokapis.com/v2/post/publish/creator_info/query/',{
+  method:'POST',
+  headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'}
+ })
  const creatorData=await creatorRes.json()
  if(!creatorRes.ok||creatorData.error?.code&&creatorData.error.code!=='ok')throw new Error(creatorData.error?.message||'TikTok creator information could not be retrieved')
  const options=creatorData.data?.privacy_level_options||[]
@@ -66,10 +69,46 @@ async function publishTikTok(connection:Connection,caption:string,mediaUrl?:stri
  if(!privacy)throw new Error('TikTok did not return a valid privacy option')
  let init:any
  if(mediaType==='image'){
-  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/content/init/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({post_info:{title:caption.slice(0,90),description:caption.slice(0,4000),privacy_level:privacy,brand_organic_toggle:false},source_info:{source:'PULL_FROM_URL',photo_cover_index:0,photo_images:[mediaUrl]},post_mode:'DIRECT_POST',media_type:'PHOTO'})})
+  const payload={
+   post_info:{
+    title:caption.slice(0,90),
+    description:caption.slice(0,4000),
+    privacy_level:privacy,
+    brand_organic_toggle:false
+   },
+   source_info:{
+    source:'PULL_FROM_URL',
+    photo_cover_index:0,
+    photo_images:[mediaUrl]
+   },
+   post_mode:'DIRECT_POST',
+   media_type:'PHOTO'
+  }
+  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/content/init/',{
+   method:'POST',
+   headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},
+   body:JSON.stringify(payload)
+  })
   init=await res.json()
  }else{
-  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({post_info:{title:caption.slice(0,2200),privacy_level:privacy,disable_duet:!!creatorData.data?.duet_disabled,disable_comment:!!creatorData.data?.comment_disabled,disable_stitch:!!creatorData.data?.stitch_disabled},source_info:{source:'PULL_FROM_URL',video_url:mediaUrl})})
+  const payload={
+   post_info:{
+    title:caption.slice(0,2200),
+    privacy_level:privacy,
+    disable_duet:!!creatorData.data?.duet_disabled,
+    disable_comment:!!creatorData.data?.comment_disabled,
+    disable_stitch:!!creatorData.data?.stitch_disabled
+   },
+   source_info:{
+    source:'PULL_FROM_URL',
+    video_url:mediaUrl
+   }
+  }
+  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/',{
+   method:'POST',
+   headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},
+   body:JSON.stringify(payload)
+  })
   init=await res.json()
  }
  if(init.error?.code&&init.error.code!=='ok')throw new Error(init.error.message||'TikTok publish failed')
@@ -77,7 +116,11 @@ async function publishTikTok(connection:Connection,caption:string,mediaUrl?:stri
  const publishId=init.data.publish_id
  for(let i=0;i<12;i++){
   await new Promise(r=>setTimeout(r,3000))
-  const statusRes=await fetch('https://open.tiktokapis.com/v2/post/publish/status/fetch/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({publish_id:publishId})})
+  const statusRes=await fetch('https://open.tiktokapis.com/v2/post/publish/status/fetch/',{
+   method:'POST',
+   headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},
+   body:JSON.stringify({publish_id:publishId})
+  })
   const statusData=await statusRes.json()
   const status=statusData.data?.status
   if(status==='PUBLISH_COMPLETE')return {id:statusData.data?.publicaly_available_post_id?.[0]||publishId,publish_id:publishId}
