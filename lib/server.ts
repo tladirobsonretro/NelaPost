@@ -1,5 +1,5 @@
+import {createClient as createSupabaseServerClient} from './supabase-server'
 import {createClient, type SupabaseClient} from '@supabase/supabase-js'
-import {cookies} from 'next/headers'
 
 export const SUPABASE_URL=process.env.NEXT_PUBLIC_SUPABASE_URL||'https://fouoyzmgfalyphqecpdq.supabase.co'
 export function admin():SupabaseClient{
@@ -7,7 +7,13 @@ export function admin():SupabaseClient{
  if(!key)throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured')
  return createClient(SUPABASE_URL,key,{auth:{persistSession:false,autoRefreshToken:false}})
 }
-export async function installationId(){const c=await cookies();return c.get('nelapost_installation_id')?.value||crypto.randomUUID()}
+export async function requireUser(){
+ const supabase=await createSupabaseServerClient()
+ const {data,error}=await supabase.auth.getUser()
+ if(error||!data.user)throw new Error('Authentication required')
+ return data.user
+}
+export async function installationId(){return (await requireUser()).id}
 export async function canConnect(id:string,platform:string){
  const db=admin();const {data,error}=await db.from('social_connections').select('platform').eq('installation_id',id)
  if(error)throw error
