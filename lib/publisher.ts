@@ -7,11 +7,14 @@ async function getConnection(installation_id:string,platform:string):Promise<Con
  if(error)throw error
  if(!data)throw new Error(`${platform} is not connected`)
  let access_token=await decryptSecret(data.access_token)
- if(platform==='x'&&data.refresh_token&&data.token_expires_at&&new Date(data.token_expires_at).getTime()<Date.now()+60_000){
-  const refresh_token=await decryptSecret(data.refresh_token);const clientId=process.env.X_CLIENT_ID;const clientSecret=process.env.X_CLIENT_SECRET
+ if((platform==='x'||platform==='tiktok')&&data.refresh_token&&data.token_expires_at&&new Date(data.token_expires_at).getTime()<Date.now()+60_000){
+  const refresh_token=await decryptSecret(data.refresh_token)
+  const clientId=platform==='x'?process.env.X_CLIENT_ID:process.env.TIKTOK_CLIENT_KEY
+  const clientSecret=platform==='x'?process.env.X_CLIENT_SECRET:process.env.TIKTOK_CLIENT_SECRET
   if(clientId&&clientSecret){
-   const basic=Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
-   const res=await fetch('https://api.x.com/2/oauth2/token',{method:'POST',headers:{Authorization:`Basic ${basic}`,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({refresh_token,grant_type:'refresh_token',client_id:clientId})})
+   const headers=platform==='x'?{Authorization:`Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,'Content-Type':'application/x-www-form-urlencoded'}:{'Content-Type':'application/x-www-form-urlencoded','Cache-Control':'no-cache'}
+   const body=platform==='x'?new URLSearchParams({refresh_token,grant_type:'refresh_token',client_id:clientId}):new URLSearchParams({client_key:clientId,client_secret:clientSecret,refresh_token,grant_type:'refresh_token'})
+   const res=await fetch(platform==='x'?'https://api.x.com/2/oauth2/token':'https://open.tiktokapis.com/v2/oauth/token/',{method:'POST',headers,body})
    if(res.ok){
     const next=await res.json();access_token=next.access_token
     await db.from('social_connections').update({access_token:await encryptSecret(access_token),refresh_token:next.refresh_token?await encryptSecret(next.refresh_token):data.refresh_token,token_expires_at:next.expires_in?new Date(Date.now()+Number(next.expires_in)*1000).toISOString():data.token_expires_at,updated_at:new Date().toISOString()}).eq('id',data.id)
@@ -53,6 +56,35 @@ async function xUpload(token:string,mediaUrl:string,mediaType:string){
  while(info&&info.state!=='succeeded'){if(info.state==='failed')throw new Error(info.error?.message||'X media processing failed');await new Promise(r=>setTimeout(r,Math.max(1000,(info.check_after_secs||2)*1000)));const status=await fetch(`https://api.x.com/2/media/upload?command=STATUS&media_id=${encodeURIComponent(id)}`,{headers:{Authorization:`Bearer ${token}`}});const statusData=await status.json();info=statusData.data?.processing_info}
  return id
 }
+async function publishTikTok(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
+ if(!mediaUrl)throw new Error('TikTok publishing requires an image or video')
+ const creatorRes=await fetch('https://open.tiktokapis.com/v2/post/publish/creator_info/query/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'}})
+ const creatorData=await creatorRes.json()
+ if(!creatorRes.ok||creatorData.error?.code&&creatorData.error.code!=='ok')throw new Error(creatorData.error?.message||'TikTok creator information could not be retrieved')
+ const options=creatorData.data?.privacy_level_options||[]
+ const privacy=options.includes('PUBLIC_TO_EVERYONE')?'PUBLIC_TO_EVERYONE':options[0]
+ if(!privacy)throw new Error('TikTok did not return a valid privacy option')
+ let init:any
+ if(mediaType==='image'){
+  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/content/init/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({post_info:{title:caption.slice(0,90),description:caption.slice(0,4000),privacy_level:privacy,brand_organic_toggle:false},source_info:{source:'PULL_FROM_URL',photo_cover_index:0,photo_images:[mediaUrl]},post_mode:'DIRECT_POST',media_type:'PHOTO'})})
+  init=await res.json()
+ }else{
+  const res=await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({post_info:{title:caption.slice(0,2200),privacy_level:privacy,disable_duet:!!creatorData.data?.duet_disabled,disable_comment:!!creatorData.data?.comment_disabled,disable_stitch:!!creatorData.data?.stitch_disabled},source_info:{source:'PULL_FROM_URL',video_url:mediaUrl})})
+  init=await res.json()
+ }
+ if(init.error?.code&&init.error.code!=='ok')throw new Error(init.error.message||'TikTok publish failed')
+ if(!init.data?.publish_id)throw new Error('TikTok did not return a publish ID')
+ const publishId=init.data.publish_id
+ for(let i=0;i<12;i++){
+  await new Promise(r=>setTimeout(r,3000))
+  const statusRes=await fetch('https://open.tiktokapis.com/v2/post/publish/status/fetch/',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token,'Content-Type':'application/json'},body:JSON.stringify({publish_id:publishId})})
+  const statusData=await statusRes.json()
+  const status=statusData.data?.status
+  if(status==='PUBLISH_COMPLETE')return {id:statusData.data?.publicaly_available_post_id?.[0]||publishId,publish_id:publishId}
+  if(status==='FAILED')throw new Error(statusData.data?.fail_reason||'TikTok publishing failed')
+ }
+ return {id:publishId,publish_id:publishId,status:'PROCESSING'}
+}
 async function publishX(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
  const body:any={text:caption||''};if(mediaUrl)body.media={media_ids:[await xUpload(connection.access_token,mediaUrl,mediaType||'application/octet-stream')]}
  const res=await fetch('https://api.x.com/2/tweets',{method:'POST',headers:{Authorization:`Bearer ${connection.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.errors?.[0]?.detail||data.detail||'X post failed');return data
@@ -61,5 +93,6 @@ export async function publishTarget(input:{installation_id:string;platform:strin
  const connection=await getConnection(input.installation_id,input.platform)
  if(input.platform==='facebook'||input.platform==='instagram')return publishMeta(connection,input.caption,input.media_url,input.media_type)
  if(input.platform==='x')return publishX(connection,input.caption,input.media_url,input.media_type)
+ if(input.platform==='tiktok')return publishTikTok(connection,input.caption,input.media_url,input.media_type)
  throw new Error(`${input.platform} publishing is not enabled yet`)
 }
