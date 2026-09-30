@@ -1,7 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NelaPost">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NelaPost Pigpen NP">
   <rect width="512" height="512" fill="#000"/>
-  <g fill="#fff">
-    <path d="M92 392V120h76l176 191V120h76v272h-76L168 201v191z"/>
-    <path d="M292 120h82c77 0 126 39 126 101s-49 101-126 101h-45v-61h39c34 0 55-15 55-40s-21-40-55-40h-76z"/>
+  <g fill="none" stroke="#fff" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M76 76H436V436H76Z"/>
+    <path d="M76 76V436H436"/>
   </g>
+  <circle cx="256" cy="256" r="22" fill="#fff"/>
+  <circle cx="150" cy="362" r="22" fill="#fff"/>
 </svg>
