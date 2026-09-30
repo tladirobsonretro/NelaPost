@@ -6,7 +6,7 @@ import {useEffect,useState} from 'react'
 type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string}
 type Platform={name:string;icon:string;className:string;description:string;auth?:string}
 
-const NELA_LOGO='https://media.canva.com/v2/document-image/hash:438808723/height=447/id:DAHWl0QCodc/type:B/width=447?brand=BAD5Clcd_zQ&csig=AAAAAAAAAAAAAAAAAAAAADafIGfhBxq6HHxsVhlgezs4LkJ7LsrQEJOphcUqD6Pr&disableexport=T&exp=1790699570&fallback=https%3A%2F%2Fs3.amazonaws.com%2Fdocument-export.canva.com%2FQCodc%2FDAHWl0QCodc%2F3%2Fthumbnail%2F0001.png%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAQYCGKMUHTDF2ZFFQ%252F20260929%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Date%3D20260929T152143Z%26X-Amz-Expires%3D6967%26X-Amz-Signature%3D8be1a67deaa12bba4455e6a189a2b87e5b70fcb17782c3a1e9243ee427ff7508%26X-Amz-SignedHeaders%3Dhost%26response-expires%3DTue%252C%252029%2520Sep%25202026%252017%253A17%3A50%20GMT&osig=AAAAAAAAAAAAAAAAAAAAAMLPwwOH7jqwKnGjR02ubDJsQc5HxLMqRpOVRkBgHa9&page=1&signed=brand%2Cdisableexport%2Cfallback%2Cpage%2Cversion&signer=document-rpc&version=4'
+const NELA_LOGO='/logo-mark.svg'
 
 const platforms:Platform[]=[
  {name:'Instagram',icon:'◎',className:'instagramIcon',auth:'/api/auth/meta?platform=instagram',description:'Instagram creator and business accounts.'},
