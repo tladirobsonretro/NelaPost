@@ -23,7 +23,8 @@ export async function GET(request:Request){
   const me=await fetch('https://api.x.com/2/users/me',{headers:{Authorization:'Bearer '+data.access_token}})
   const meData=me.ok?await me.json():{}
   await saveConnection({installation_id,platform:'x',access_token:data.access_token,refresh_token:data.refresh_token||null,token_expires_at:data.expires_in?new Date(Date.now()+Number(data.expires_in)*1000).toISOString():null,external_account_id:meData.data?.id||null,external_account_name:meData.data?.username?String(meData.data.username):meData.data?.name||'',metadata:{username:meData.data?.username||'',name:meData.data?.name||''}})
-  const response=NextResponse.redirect(new URL('/?connected=x',url.origin))
+  const publicOrigin=new URL(redirectUri).origin
+  const response=NextResponse.redirect(new URL('/?connected=x',publicOrigin))
   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
   response.cookies.delete('x_oauth_state')
   response.cookies.delete('x_oauth_verifier')
