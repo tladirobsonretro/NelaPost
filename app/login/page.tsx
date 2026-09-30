@@ -39,6 +39,7 @@ export default function Login(){
    <div className="loginBrand">NELAPOST</div>
    <h1>{mode==='login'?'Welcome back':'Create your account'}</h1>
    <p>NelaPost requires authentication. Sign in to manage your social publishing.</p>
+   <p className="loginAuthNote">Authentication is securely handled by Supabase. NelaPost never asks you to enter your social-media passwords here.</p>
    <form onSubmit={submit}>
     <label>Email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
     <label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Your password" autoComplete={mode==='login'?'current-password':'new-password'} minLength={6} required /></label>
@@ -46,6 +47,7 @@ export default function Login(){
     {message&&<div className="loginMessage">{message}</div>}
     <button className="loginButton" disabled={busy}>{busy?(mode==='login'?'Signing in…':'Creating account…'):(mode==='login'?'Sign in':'Create account')}</button>
    </form>
+   <div className="loginLegal"><a href="/privacy">Privacy Policy</a><span>·</span><a href="/terms">Terms of Service</a></div>
    <button className="loginSwitch" onClick={()=>{setMode(mode==='login'?'signup':'login');setError('');setMessage('')}}>{mode==='login'?"Don't have an account? Create one":"Already have an account? Sign in"}</button>
   </section>
  </main>
