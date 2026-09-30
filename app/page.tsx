@@ -11,16 +11,7 @@ type Platform={name:string;icon:string;className:string;description:string;auth?
 const NELA_LOGO='/logo-mark.svg'
 
 const platforms:Platform[]=[
- {name:'Instagram',icon:'◎',className:'instagramIcon',auth:'/api/auth/meta?platform=instagram',description:'Instagram creator and business accounts.'},
- {name:'Facebook',icon:'f',className:'facebookIcon',auth:'/api/auth/meta?platform=facebook',description:'Facebook Pages.'},
- {name:'X',icon:'𝕏',className:'xIcon',auth:'/api/auth/x',description:'Post and manage your X presence.'},
- {name:'TikTok',icon:'♪',className:'tiktokIcon',description:'TikTok creator and business accounts.'},
- {name:'Snapchat',icon:'◉',className:'snapchatIcon',description:'Snapchat creator and business accounts.'},
- {name:'LinkedIn',icon:'in',className:'linkedinIcon',description:'Professional profiles and company Pages.'},
- {name:'YouTube',icon:'▶',className:'youtubeIcon',description:'YouTube channels and brand accounts.'},
- {name:'Pinterest',icon:'P',className:'pinterestIcon',description:'Pinterest creator and business accounts.'},
- {name:'Threads',icon:'@',className:'threadsIcon',description:'Threads profiles for publishing and discovery.'},
- {name:'Google Business',icon:'G',className:'googleBusinessIcon',description:'Google Business Profile presence.'}
+ {name:'X',icon:'𝕏',className:'xIcon',auth:'/api/auth/x',description:'Post and manage your X presence.'}
 ]
 
 export default function Home(){
@@ -30,7 +21,7 @@ export default function Home(){
  const [authReady,setAuthReady]=useState(false)
  const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create')
  const [caption,setCaption]=useState('')
- const [selected,setSelected]=useState<string[]>(['Instagram','Facebook'])
+ const [selected,setSelected]=useState<string[]>(['X'])
  const [when,setWhen]=useState<'now'|'schedule'>('now')
  const [date,setDate]=useState('')
  const [time,setTime]=useState('')
@@ -39,7 +30,7 @@ export default function Home(){
  const [mediaType,setMediaType]=useState<'image'|'video'>()
  const [posts,setPosts]=useState<Post[]>([])
  const [calendar,setCalendar]=useState(false)
- const [previewPlatform,setPreviewPlatform]=useState('Instagram')
+ const [previewPlatform,setPreviewPlatform]=useState('X')
  const [connected,setConnected]=useState<Record<string,{name:string}>>({})
  const [busy,setBusy]=useState(false)
 
@@ -69,7 +60,7 @@ export default function Home(){
  const toggle=(platform:string)=>{
   setSelected(current=>{
    if(current.includes(platform))return current.filter(x=>x!==platform)
-   if(current.length>=3)return current
+   if(current.length>=1)return current
    return [...current,platform]
   })
  }
@@ -77,7 +68,7 @@ export default function Home(){
  const connect=(platform:string)=>{
   const route=platforms.find(p=>p.name===platform)?.auth
   if(!route){window.alert(`${platform} authorization is not connected to NelaPost yet.`);return}
-  if(!connected[platform]&&Object.keys(connected).length>=3){window.alert('NelaPost allows a maximum of 3 connected platforms.');return}
+  if(!connected[platform]&&Object.keys(connected).length>=1){window.alert('NelaPost currently supports one connected platform: X.');return}
   window.location.href=route
  }
 
@@ -129,7 +120,7 @@ export default function Home(){
 
   <main className="content">
    <header className="header">
-    <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect up to 3 platforms for publishing.':'Keep every scheduled post in one place.'}</p></div>
+    <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect your X account for publishing.':'Keep every scheduled post in one place.'}</p></div>
     <div className="headerActions">{view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}<span className="userEmail">{userEmail}</span><button className="logoutButton" onClick={logout}>Log out</button></div>
    </header>
 
@@ -142,7 +133,7 @@ export default function Home(){
      </label>
      <div className="field"><div className="fieldTop"><label>Caption</label><span>{caption.length}/2,200</span></div><textarea value={caption} onChange={e=>setCaption(e.target.value)} placeholder="Write something worth publishing..." /></div>
      <div className="divider"/>
-     <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select up to 3 platforms</small></div></div><span className="platformLimit">{selected.length}/3</span></div>
+     <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select a connected platform</small></div></div><span className="platformLimit">{selected.length}/1</span></div>
      <div className="platformGrid">
       {platforms.map(platform=><div key={platform.name} className={selected.includes(platform.name)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform.name)}>
        <span className={platform.className}>{platform.icon}</span><span className="platformMain"><b>{platform.name}</b><small>{connected[platform.name]?'Connected':platform.auth?'Not connected':'OAuth coming soon'}</small></span>
@@ -180,7 +171,7 @@ export default function Home(){
    </section>}
 
    {view==='accounts'&&<section className="card accountsPanel">
-    <div className="accountHero"><div><b>Link your platforms</b><span>Connect up to 3 accounts. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} / 3 connected</strong></div>
+    <div className="accountHero"><div><b>Link your platforms</b><span>Connect your X account. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} / 1 connected</strong></div>
     {platforms.map(platform=><div className="accountRow" key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><b>{platform.name}</b><span>{connected[platform.name]?.name||platform.description}</span></div><button className="headerButton" disabled={!platform.auth&&!connected[platform.name]} onClick={()=>connect(platform.name)}>{connected[platform.name]?'Reconnect':platform.auth?'Link':'Coming soon'}</button></div>)}
    </section>}
 
