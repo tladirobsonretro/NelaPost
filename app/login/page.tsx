@@ -47,3 +47,4 @@ export default function Login(){
    <button className="loginSwitch" onClick={()=>{setMode(mode==='login'?'signup':'login');setError('');setMessage('')}}>{mode==='login'?"Don't have an account? Create one":"Already have an account? Sign in"}</button>
   </section>
  </main>
+}
