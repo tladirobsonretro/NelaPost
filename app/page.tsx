@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import {useEffect,useState} from 'react'
+import {useRouter} from 'next/navigation'
+import {createClient} from '../lib/supabase-browser'
 
 type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string}
 type Platform={name:string;icon:string;className:string;description:string;auth?:string}
@@ -22,6 +24,10 @@ const platforms:Platform[]=[
 ]
 
 export default function Home(){
+ const router=useRouter()
+ const supabase=createClient()
+ const [userEmail,setUserEmail]=useState('')
+ const [authReady,setAuthReady]=useState(false)
  const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create')
  const [caption,setCaption]=useState('')
  const [selected,setSelected]=useState<string[]>(['Instagram','Facebook'])
@@ -46,7 +52,18 @@ export default function Home(){
    if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':'Published',status:p.status,media:p.media_url||undefined})))
   }catch{}
  }
- useEffect(()=>{loadConnections();if(new URLSearchParams(window.location.search).get('connected')){setView('accounts');history.replaceState({},'',window.location.pathname)}},[])
+ useEffect(()=>{
+  let active=true
+  supabase.auth.getUser().then(({data})=>{
+   if(!active)return
+   if(!data.user){router.replace('/login');return}
+   setUserEmail(data.user.email||'')
+   setAuthReady(true)
+   loadConnections()
+   if(new URLSearchParams(window.location.search).get('connected')){setView('accounts');history.replaceState({},'',window.location.pathname)}
+  })
+  return()=>{active=false}
+ },[])
  useEffect(()=>{if(view==='upcoming')loadPosts()},[view])
 
  const toggle=(platform:string)=>{
@@ -94,6 +111,10 @@ export default function Home(){
   }catch(error:any){window.alert(error?.message||'Something went wrong while publishing.')}finally{setBusy(false)}
  }
 
+ const logout=async()=>{await supabase.auth.signOut();router.replace('/login');router.refresh()}
+
+ if(!authReady)return <main className="authLoading"><div>Loading NelaPost…</div></main>
+
  return <div className="appShell">
   <aside className="sidebar">
    <div className="brand"><div className="brandMark"><img src={NELA_LOGO} alt="" /></div><div><strong>NelaPost</strong><span>Create. Schedule. Publish.</span></div></div>
@@ -109,7 +130,7 @@ export default function Home(){
   <main className="content">
    <header className="header">
     <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect up to 3 platforms for publishing.':'Keep every scheduled post in one place.'}</p></div>
-    {view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}
+    <div className="headerActions">{view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}<span className="userEmail">{userEmail}</span><button className="logoutButton" onClick={logout}>Log out</button></div>
    </header>
 
    {view==='create'&&<div className="composerLayout">
