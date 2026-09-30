@@ -12,7 +12,7 @@ async function getConnection(installation_id:string,platform:string):Promise<Con
   const clientId=platform==='x'?process.env.X_CLIENT_ID:process.env.TIKTOK_CLIENT_KEY
   const clientSecret=platform==='x'?process.env.X_CLIENT_SECRET:process.env.TIKTOK_CLIENT_SECRET
   if(clientId&&clientSecret){
-   const headers=platform==='x'?{Authorization:`Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,'Content-Type':'application/x-www-form-urlencoded'}:{'Content-Type':'application/x-www-form-urlencoded','Cache-Control':'no-cache'}
+   const headers:Record<string,string>=platform==='x'?{Authorization:`Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,'Content-Type':'application/x-www-form-urlencoded'}:{'Content-Type':'application/x-www-form-urlencoded','Cache-Control':'no-cache'}
    const body=platform==='x'?new URLSearchParams({refresh_token,grant_type:'refresh_token',client_id:clientId}):new URLSearchParams({client_key:clientId,client_secret:clientSecret,refresh_token,grant_type:'refresh_token'})
    const res=await fetch(platform==='x'?'https://api.x.com/2/oauth2/token':'https://open.tiktokapis.com/v2/oauth/token/',{method:'POST',headers,body})
    if(res.ok){
