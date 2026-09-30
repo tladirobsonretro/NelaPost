@@ -15,11 +15,8 @@ export async function GET(request:Request){
  try{
   const installation_id=await installationId()
   if(!(await canConnect(installation_id,'x')))return NextResponse.json({error:'NelaPost allows a maximum of 3 connected platforms.'},{status:400})
-  const body=new URLSearchParams({code,grant_type:'authorization_code',redirect_uri:redirectUri,code_verifier:verifier})
-  const encodedClientId=encodeURIComponent(clientId)
-  const encodedClientSecret=encodeURIComponent(clientSecret)
-  const basic=Buffer.from(encodedClientId+':'+encodedClientSecret).toString('base64')
-  const token=await fetch('https://api.x.com/2/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Authorization:'Basic '+basic},body})
+  const body=new URLSearchParams({code,grant_type:'authorization_code',redirect_uri:redirectUri,code_verifier:verifier,client_id:clientId,client_secret:clientSecret})
+  const token=await fetch('https://api.x.com/2/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body})
   if(!token.ok)return NextResponse.json({error:'X token exchange failed',details:await token.text()},{status:502})
   const data=await token.json()
   const me=await fetch('https://api.x.com/2/users/me',{headers:{Authorization:'Bearer '+data.access_token}})
