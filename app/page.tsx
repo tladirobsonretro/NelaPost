@@ -161,6 +161,8 @@ export default function Home(){
     <div className="accountHero"><div><b>Link your platforms</b><span>Connect up to 3 accounts. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} / 3 connected</strong></div>
     {platforms.map(platform=><div className="accountRow" key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><b>{platform.name}</b><span>{connected[platform.name]?.name||platform.description}</span></div><button className="headerButton" disabled={!platform.auth&&!connected[platform.name]} onClick={()=>connect(platform.name)}>{connected[platform.name]?'Reconnect':platform.auth?'Link':'Coming soon'}</button></div>)}
    </section>}
+
+   <footer className="siteFooter"><span>© 2026 NelaPost</span><span>NelaPost helps you create, schedule and publish content through connected platforms.</span><Link href="/terms">Terms of Service</Link></footer>
   </main>
  </div>
 }
