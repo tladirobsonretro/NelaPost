@@ -1,15 +1,15 @@
 import {NextResponse} from 'next/server'
 
-export async function GET(request:Request){
+const YOUTUBE_REDIRECT_URI='https://nelapost.onrender.com/api/auth/youtube/callback'
+
+export async function GET(){
  const clientId=process.env.GOOGLE_CLIENT_ID
  const secret=process.env.GOOGLE_CLIENT_SECRET
  if(!clientId||!secret)return NextResponse.json({error:'Google OAuth is not configured on NelaPost. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Render.'},{status:503})
- const origin=new URL(request.url).origin
- const redirect=process.env.GOOGLE_YOUTUBE_REDIRECT_URI||new URL('/api/auth/youtube/callback',origin).toString()
  const state=crypto.randomUUID()
  const url=new URL('https://accounts.google.com/o/oauth2/v2/auth')
  url.searchParams.set('client_id',clientId)
- url.searchParams.set('redirect_uri',redirect)
+ url.searchParams.set('redirect_uri',YOUTUBE_REDIRECT_URI)
  url.searchParams.set('response_type','code')
  url.searchParams.set('scope','https://www.googleapis.com/auth/youtube.upload')
  url.searchParams.set('access_type','offline')
