@@ -134,7 +134,7 @@ async function publishX(connection:Connection,caption:string,mediaUrl?:string,me
 }
 
 async function publishThreads(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
- const userId=String(connection.metadata.threads_user_id||connection.external_account_id||'')
+ const userId=String(connection.metadata.threads_user_id||'')
  if(!userId)throw new Error('No Threads profile is connected')
  const params=new URLSearchParams({access_token:connection.access_token,text:caption||''})
  if(mediaUrl){
