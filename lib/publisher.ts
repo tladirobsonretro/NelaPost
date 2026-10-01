@@ -132,10 +132,39 @@ async function publishX(connection:Connection,caption:string,mediaUrl?:string,me
  const body:any={text:caption||''};if(mediaUrl)body.media={media_ids:[await xUpload(connection.access_token,mediaUrl,mediaType||'application/octet-stream')]}
  const res=await fetch('https://api.x.com/2/tweets',{method:'POST',headers:{Authorization:`Bearer ${connection.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.errors?.[0]?.detail||data.detail||'X post failed');return data
 }
+
+async function publishThreads(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
+ const userId=String(connection.metadata.threads_user_id||connection.external_account_id||'')
+ if(!userId)throw new Error('No Threads profile is connected')
+ const params=new URLSearchParams({access_token:connection.access_token,text:caption||''})
+ if(mediaUrl){
+  if(mediaType==='video'){params.set('media_type','VIDEO');params.set('video_url',mediaUrl)}
+  else {params.set('media_type','IMAGE');params.set('image_url',mediaUrl)}
+ }else params.set('media_type','TEXT')
+ const containerRes=await fetch(`https://graph.threads.net/v1.0/${userId}/threads`,{method:'POST',body:params})
+ const container=await containerRes.json()
+ if(!containerRes.ok||!container.id)throw new Error(container.error?.message||'Threads post creation failed')
+ for(let i=0;i<30;i++){
+  if(mediaUrl){
+   const statusRes=await fetch(`https://graph.threads.net/v1.0/${container.id}?fields=status,error_message&access_token=${encodeURIComponent(connection.access_token)}`)
+   const status=await statusRes.json()
+   if(status.status==='FINISHED')break
+   if(status.status==='ERROR')throw new Error(status.error_message||'Threads media processing failed')
+  }else break
+  await new Promise(r=>setTimeout(r,3000))
+  if(i===29)throw new Error('Threads media is still processing. Try publishing again shortly.')
+ }
+ const publishRes=await fetch(`https://graph.threads.net/v1.0/${userId}/threads_publish`,{method:'POST',body:new URLSearchParams({creation_id:container.id,access_token:connection.access_token})})
+ const published=await publishRes.json()
+ if(!publishRes.ok||!published.id)throw new Error(published.error?.message||'Threads publishing failed')
+ return published
+}
+
 export async function publishTarget(input:{installation_id:string;platform:string;caption:string;media_url?:string;media_type?:string}){
  const connection=await getConnection(input.installation_id,input.platform)
  if(input.platform==='facebook'||input.platform==='instagram')return publishMeta(connection,input.caption,input.media_url,input.media_type)
  if(input.platform==='x')return publishX(connection,input.caption,input.media_url,input.media_type)
  if(input.platform==='tiktok')return publishTikTok(connection,input.caption,input.media_url,input.media_type)
+ if(input.platform==='threads')return publishThreads(connection,input.caption,input.media_url,input.media_type)
  throw new Error(`${input.platform} publishing is not enabled yet`)
 }
