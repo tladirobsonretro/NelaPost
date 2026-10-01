@@ -15,7 +15,8 @@ const platforms:Platform[]=[
  {name:'Facebook',icon:'f',className:'facebookIcon',auth:'/api/auth/meta?platform=facebook',description:'Publish to your Facebook Page.'},
  {name:'X',icon:'𝕏',className:'xIcon',auth:'/api/auth/x',description:'Post and manage your X presence.'},
  {name:'Threads',icon:'@',className:'threadsIcon',auth:'/api/auth/threads',description:'Publish to your Threads profile.'},
- {name:'TikTok',icon:'♪',className:'tiktokIcon',auth:'/api/auth/tiktok',description:'Publish videos and photos to TikTok.'}
+ {name:'TikTok',icon:'♪',className:'tiktokIcon',auth:'/api/auth/tiktok',description:'Publish videos and photos to TikTok.'},
+ {name:'YouTube',icon:'▶',className:'youtubeIcon',auth:'/api/auth/youtube',description:'Publish videos to your YouTube channel.'}
 ]
 
 export default function Home(){
@@ -98,7 +99,7 @@ export default function Home(){
    }
    const scheduled_for=when==='schedule'?new Date(`${date}T${time}`).toISOString():null
    if(when==='schedule'&&(!date||!time))throw new Error('Choose a date and time.')
-   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms,mode:when,scheduled_for})})
+   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected,mode:when,scheduled_for})})
    const data=await response.json()
    if(!response.ok)throw new Error(data.error||'Could not publish the post')
    setCaption('');setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
