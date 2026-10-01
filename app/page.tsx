@@ -40,7 +40,7 @@ export default function Home(){
  const [busy,setBusy]=useState(false)
 
  const loadConnections=async()=>{
-  try{const r=await fetch('/api/connections');const data=await r.json();if(r.ok)setConnected(data.connected||{})}catch{}
+  try{const r=await fetch('/api/connections',{cache:'no-store'});const data=await r.json();if(r.ok)setConnected(data.connected||{})}catch{}
  }
  const loadPosts=async()=>{
   try{
@@ -60,7 +60,7 @@ export default function Home(){
   })
   return()=>{active=false}
  },[])
- useEffect(()=>{if(view==='upcoming')loadPosts()},[view])
+ useEffect(()=>{if(view==='upcoming')loadPosts();if(view==='accounts')loadConnections()},[view])
 
  const toggle=(platform:string)=>{
   setSelected(current=>{
