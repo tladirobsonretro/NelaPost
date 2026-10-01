@@ -11,7 +11,7 @@ export async function GET(){
  url.searchParams.set('client_id',clientId)
  url.searchParams.set('redirect_uri',YOUTUBE_REDIRECT_URI)
  url.searchParams.set('response_type','code')
- url.searchParams.set('scope','https://www.googleapis.com/auth/youtube.upload')
+ url.searchParams.set('scope','https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly')
  url.searchParams.set('access_type','offline')
  url.searchParams.set('prompt','consent')
  url.searchParams.set('state',state)
