@@ -7,7 +7,7 @@ export async function GET(){
   const {data,error}=await admin().from('social_connections').select('platform,external_account_id,external_account_name,metadata,updated_at').eq('installation_id',id)
   if(error)throw error
   const connected=Object.fromEntries((data||[]).map(x=>[x.platform,{name:x.external_account_name||'',id:x.external_account_id||'',metadata:x.metadata||{},updated_at:x.updated_at}]))
-  const response=NextResponse.json({connected})
+  const response=NextResponse.json({connected},{headers:{'Cache-Control':'no-store'}})
   response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
   return response
  }catch(error:any){return NextResponse.json({error:error?.message||'Could not load connections'},{status:500})}
