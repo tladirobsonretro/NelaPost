@@ -141,8 +141,8 @@ export default function Home(){
      <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select your platforms</small></div></div><span className="platformLimit">{selected.length}/5</span></div>
      <div className="platformGrid">
       {platforms.map(platform=><div key={platform.name} className={selected.includes(platform.name)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform.name)}>
-       <span className={platform.className}>{platform.icon}</span><span className="platformMain"><b>{platform.name}</b><small>{connected[platform.name]?'Connected':platform.auth?'Not connected':'OAuth coming soon'}</small></span>
-       {platform.auth?<button type="button" className="platformConnect" onClick={e=>{e.stopPropagation();connect(platform.name)}}>{connected[platform.name]?'Reconnect':'Link'}</button>:<button type="button" className="platformConnect" disabled>Soon</button>}
+       <span className={platform.className}>{platform.icon}</span><span className="platformMain"><b>{platform.name}</b><small>{connected[platform.name.toLowerCase()]?'Connected':platform.auth?'Not connected':'OAuth coming soon'}</small></span>
+       {platform.auth?<button type="button" className="platformConnect" onClick={e=>{e.stopPropagation();connect(platform.name)}}>{connected[platform.name.toLowerCase()]?'Reconnect':'Link'}</button>:<button type="button" className="platformConnect" disabled>Soon</button>}
        <i>{selected.includes(platform.name)?'✓':'+'}</i>
       </div>)}
      </div>
@@ -177,7 +177,7 @@ export default function Home(){
 
    {view==='accounts'&&<section className="card accountsPanel">
     <div className="accountHero"><div><b>Link your platforms</b><span>Connect your social accounts. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} / 5 connected</strong></div>
-    {platforms.map(platform=>{const isConnected=Boolean(connected[platform.name]);return <div className={`accountRow ${isConnected?'accountConnected':''}`} key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><div className="accountNameLine"><b>{platform.name}</b><span className={isConnected?'connectionStatus connected':'connectionStatus'}>{isConnected?'CONNECTED':'NOT CONNECTED'}</span></div><span>{isConnected?(connected[platform.name]?.name||'Account connected'):platform.description}</span></div><button className="headerButton" disabled={!platform.auth&&!isConnected} onClick={()=>connect(platform.name)}>{isConnected?'Reconnect':platform.auth?'Link':'Coming soon'}</button></div>})}
+    {platforms.map(platform=>{const isConnected=Boolean(connected[platform.name.toLowerCase()]);return <div className={`accountRow ${isConnected?'accountConnected':''}`} key={platform.name}><div className={`accountIcon ${platform.className}`}>{platform.icon}</div><div className="accountCopy"><div className="accountNameLine"><b>{platform.name}</b><span className={isConnected?'connectionStatus connected':'connectionStatus'}>{isConnected?'CONNECTED':'NOT CONNECTED'}</span></div><span>{isConnected?(connected[platform.name.toLowerCase()]?.name||'Account connected'):platform.description}</span></div><button className="headerButton" disabled={!platform.auth&&!isConnected} onClick={()=>connect(platform.name)}>{isConnected?'Reconnect':platform.auth?'Link':'Coming soon'}</button></div>})}
    </section>}
 
    <footer className="siteFooter"><span>© 2026 NelaPost</span><span>NelaPost helps you create, schedule and publish content through connected platforms.</span><Link href="/terms-of-service">Terms of Service</Link></footer>
