@@ -14,7 +14,7 @@ const platforms:Platform[]=[
  {name:'Instagram',icon:'◎',className:'instagramIcon',auth:'/api/auth/meta?platform=instagram',description:'Publish to your Instagram professional account.'},
  {name:'Facebook',icon:'f',className:'facebookIcon',auth:'/api/auth/meta?platform=facebook',description:'Publish to your Facebook Page.'},
  {name:'X',icon:'𝕏',className:'xIcon',auth:'/api/auth/x',description:'Post and manage your X presence.'},
- {name:'Threads',icon:'@',className:'threadsIcon',description:'Threads publishing integration.'},
+ {name:'Threads',icon:'@',className:'threadsIcon',auth:'/api/auth/threads',description:'Publish to your Threads profile.'},
  {name:'TikTok',icon:'♪',className:'tiktokIcon',auth:'/api/auth/tiktok',description:'Publish videos and photos to TikTok.'}
 ]
 
