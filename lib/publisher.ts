@@ -7,14 +7,14 @@ async function getConnection(installation_id:string,platform:string):Promise<Con
  if(error)throw error
  if(!data)throw new Error(`${platform} is not connected`)
  let access_token=await decryptSecret(data.access_token)
- if((platform==='x'||platform==='tiktok')&&data.refresh_token&&data.token_expires_at&&new Date(data.token_expires_at).getTime()<Date.now()+60_000){
+ if((platform==='x'||platform==='tiktok'||platform==='youtube')&&data.refresh_token&&data.token_expires_at&&new Date(data.token_expires_at).getTime()<Date.now()+60_000){
   const refresh_token=await decryptSecret(data.refresh_token)
-  const clientId=platform==='x'?process.env.X_CLIENT_ID:process.env.TIKTOK_CLIENT_KEY
-  const clientSecret=platform==='x'?process.env.X_CLIENT_SECRET:process.env.TIKTOK_CLIENT_SECRET
+  const clientId=platform==='x'?process.env.X_CLIENT_ID:platform==='tiktok'?process.env.TIKTOK_CLIENT_KEY:process.env.GOOGLE_CLIENT_ID
+  const clientSecret=platform==='x'?process.env.X_CLIENT_SECRET:platform==='tiktok'?process.env.TIKTOK_CLIENT_SECRET:process.env.GOOGLE_CLIENT_SECRET
   if(clientId&&clientSecret){
    const headers:Record<string,string>={'Content-Type':'application/x-www-form-urlencoded'};if(platform==='x')headers.Authorization=`Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`;else headers['Cache-Control']='no-cache'
-   const body=platform==='x'?new URLSearchParams({refresh_token,grant_type:'refresh_token',client_id:clientId}):new URLSearchParams({client_key:clientId,client_secret:clientSecret,refresh_token,grant_type:'refresh_token'})
-   const res=await fetch(platform==='x'?'https://api.x.com/2/oauth2/token':'https://open.tiktokapis.com/v2/oauth/token/',{method:'POST',headers,body})
+   const body=platform==='x'?new URLSearchParams({refresh_token,grant_type:'refresh_token',client_id:clientId}):platform==='tiktok'?new URLSearchParams({client_key:clientId,client_secret:clientSecret,refresh_token,grant_type:'refresh_token'}):new URLSearchParams({refresh_token,client_id:clientId,client_secret:clientSecret,grant_type:'refresh_token'})
+   const res=await fetch(platform==='x'?'https://api.x.com/2/oauth2/token':platform==='tiktok'?'https://open.tiktokapis.com/v2/oauth/token/':'https://oauth2.googleapis.com/token',{method:'POST',headers,body})
    if(res.ok){
     const next=await res.json();access_token=next.access_token
     await db.from('social_connections').update({access_token:await encryptSecret(access_token),refresh_token:next.refresh_token?await encryptSecret(next.refresh_token):data.refresh_token,token_expires_at:next.expires_in?new Date(Date.now()+Number(next.expires_in)*1000).toISOString():data.token_expires_at,updated_at:new Date().toISOString()}).eq('id',data.id)
@@ -133,6 +133,25 @@ async function publishX(connection:Connection,caption:string,mediaUrl?:string,me
  const res=await fetch('https://api.x.com/2/tweets',{method:'POST',headers:{Authorization:`Bearer ${connection.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.errors?.[0]?.detail||data.detail||'X post failed');return data
 }
 
+async function publishYouTube(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
+ if(!mediaUrl||mediaType!=='video')throw new Error('YouTube publishing requires a video')
+ const source=await fetch(mediaUrl)
+ if(!source.ok)throw new Error('NelaPost could not retrieve the uploaded video')
+ const buffer=Buffer.from(await source.arrayBuffer())
+ const mime=source.headers.get('content-type')||'video/mp4'
+ if(!mime.startsWith('video/'))throw new Error('The selected YouTube media must be a video')
+ const title=(caption.split(/\r?\n/)[0]||'NelaPost video').trim().slice(0,100)
+ const description=caption.slice(0,5000)
+ const metadata={snippet:{title,description},status:{privacyStatus:'public',selfDeclaredMadeForKids:false}}
+ const form=new FormData()
+ form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}))
+ form.append('media',new Blob([buffer],{type:mime}),'video.mp4')
+ const res=await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart&part=snippet,status',{method:'POST',headers:{Authorization:'Bearer '+connection.access_token},body:form})
+ const data=await res.json()
+ if(!res.ok||!data.id)throw new Error(data.error?.message||'YouTube upload failed')
+ return {id:data.id}
+}
+
 async function publishThreads(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
  const userId=String(connection.metadata.threads_user_id||'')
  if(!userId)throw new Error('No Threads profile is connected')
@@ -166,5 +185,6 @@ export async function publishTarget(input:{installation_id:string;platform:strin
  if(input.platform==='x')return publishX(connection,input.caption,input.media_url,input.media_type)
  if(input.platform==='tiktok')return publishTikTok(connection,input.caption,input.media_url,input.media_type)
  if(input.platform==='threads')return publishThreads(connection,input.caption,input.media_url,input.media_type)
+ if(input.platform==='youtube')return publishYouTube(connection,input.caption,input.media_url,input.media_type)
  throw new Error(`${input.platform} publishing is not enabled yet`)
 }
