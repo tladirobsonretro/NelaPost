@@ -3,6 +3,7 @@ import {cookies} from 'next/headers'
 import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
 
 const YOUTUBE_REDIRECT_URI='https://nelapost.onrender.com/api/auth/youtube/callback'
+const NELAPOST_URL='https://nelapost.onrender.com'
 
 export async function GET(request:Request){
  const u=new URL(request.url)
@@ -34,7 +35,7 @@ export async function GET(request:Request){
    external_account_name:String(channel.snippet?.title||''),
    metadata:{channel_id:channel.id||'',channel_name:channel.snippet?.title||''}
   })
-  const response=NextResponse.redirect(new URL('/?connected=youtube',u.origin))
+  const response=NextResponse.redirect(NELAPOST_URL+'/?connected=youtube')
   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
   response.cookies.delete('youtube_oauth_state')
   return response
