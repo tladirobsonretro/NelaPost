@@ -2,6 +2,8 @@ import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
 import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
 
+const YOUTUBE_REDIRECT_URI='https://nelapost.onrender.com/api/auth/youtube/callback'
+
 export async function GET(request:Request){
  const u=new URL(request.url)
  const code=u.searchParams.get('code')
@@ -10,12 +12,11 @@ export async function GET(request:Request){
  if(!code||!state||state!==c.get('youtube_oauth_state')?.value)return NextResponse.json({error:'Invalid YouTube authorization request.'},{status:400})
  const clientId=process.env.GOOGLE_CLIENT_ID
  const secret=process.env.GOOGLE_CLIENT_SECRET
- const redirect=process.env.GOOGLE_YOUTUBE_REDIRECT_URI||new URL('/api/auth/youtube/callback',u.origin).toString()
  if(!clientId||!secret)return NextResponse.json({error:'Google YouTube OAuth is not configured.'},{status:503})
  try{
   const installation_id=await installationId()
   if(!(await canConnect(installation_id,'youtube')))return NextResponse.json({error:'NelaPost allows a maximum of 5 connected platforms.'},{status:400})
-  const token=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,client_id:clientId,client_secret:secret,redirect_uri:redirect,grant_type:'authorization_code'})})
+  const token=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,client_id:clientId,client_secret:secret,redirect_uri:YOUTUBE_REDIRECT_URI,grant_type:'authorization_code'})})
   if(!token.ok)return NextResponse.json({error:'YouTube token exchange failed.'},{status:400})
   const data=await token.json()
   const channelRes=await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true',{headers:{Authorization:'Bearer '+data.access_token}})
