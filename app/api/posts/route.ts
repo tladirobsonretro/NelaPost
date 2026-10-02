@@ -18,7 +18,7 @@ export async function POST(request:Request){
   const caption=String(body.caption||'').trim()
   const media_url=body.media_url?String(body.media_url):null
   const media_type=body.media_type==='video'?'video':body.media_type==='image'?'image':null
-  const platforms=Array.isArray(body.platforms)?body.platforms.filter((p:string)=>typeof p==='string').slice(0,5):[]
+  const platforms=Array.isArray(body.platforms)?body.platforms.filter((p:string)=>typeof p==='string'):[]
   const mode=body.mode==='schedule'?'schedule':'now'
   const scheduled_for=mode==='schedule'?String(body.scheduled_for||''):null
   if(!caption&&!media_url)return NextResponse.json({error:'Add a caption or media before publishing.'},{status:400})
