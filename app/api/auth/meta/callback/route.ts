@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server'
-import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {installationId,saveConnection} from '../../../../../lib/server'
 import {createHmac,timingSafeEqual} from 'crypto'
 
 function verifyState(state:string,secret:string){
@@ -33,7 +33,6 @@ export async function GET(request:Request){
 
  try{
   const installation_id=await installationId()
-  if(!(await canConnect(installation_id,platform)))return NextResponse.json({error:'NelaPost allows a maximum of 3 connected platforms.'},{status:400})
 
   if(platform==='instagram'){
    const appId=process.env.META_INSTAGRAM_APP_ID
