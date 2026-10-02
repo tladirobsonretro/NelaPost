@@ -5,8 +5,8 @@ import {installationId,saveConnection,canConnect} from '../../../../../lib/serve
 export async function GET(request:Request){
  const url=new URL(request.url),code=url.searchParams.get('code'),state=url.searchParams.get('state')
  const c=await cookies(),expectedState=c.get('tiktok_oauth_state')?.value
- const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^["']|["']$/g,''),clientSecret=process.env.TIKTOK_CLIENT_SECRET?.trim().replace(/^(['"])(.*)\1$/,'$2')
- const redirectUri=process.env.TIKTOK_REDIRECT_URI?.trim().replace(/^(['"])(.*)\1$/,'$2')||new URL('/api/auth/tiktok/callback',url.origin).toString()
+ const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^[\"']|[\"']$/g,''),clientSecret=process.env.TIKTOK_CLIENT_SECRET?.trim().replace(/^([\"'])(.*)\1$/,'$2')
+ const redirectUri=process.env.TIKTOK_REDIRECT_URI?.trim().replace(/^([\"'])(.*)\1$/,'$2')||new URL('/api/auth/tiktok/callback',url.origin).toString()
  if(!code||!state||state!==expectedState||!clientKey||!clientSecret)return NextResponse.json({error:'Invalid TikTok OAuth callback.'},{status:400})
  try{
   const id=await installationId()
@@ -19,7 +19,8 @@ export async function GET(request:Request){
   if(!meRes.ok||!meData.data?.user)return NextResponse.json({error:'TikTok authorization succeeded but account details could not be retrieved.'},{status:400})
   const user=meData.data.user
   await saveConnection({installation_id:id,platform:'tiktok',access_token:tokenData.access_token,refresh_token:tokenData.refresh_token||null,token_expires_at:tokenData.expires_in?new Date(Date.now()+Number(tokenData.expires_in)*1000).toISOString():null,external_account_id:String(user.open_id||tokenData.open_id||''),external_account_name:String(user.display_name||''),metadata:{open_id:user.open_id||tokenData.open_id||null,display_name:user.display_name||'',avatar_url:user.avatar_url||'',scope:tokenData.scope||''}})
-  const response=NextResponse.redirect(new URL('/?connected=tiktok',url.origin))
+  const appOrigin=new URL(redirectUri).origin
+  const response=NextResponse.redirect(new URL('/?connected=tiktok',appOrigin))
   response.cookies.delete('tiktok_oauth_state')
   response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
   return response
