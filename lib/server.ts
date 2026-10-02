@@ -14,11 +14,6 @@ export async function requireUser(){
  return data.user
 }
 export async function installationId(){return (await requireUser()).id}
-export async function canConnect(id:string,platform:string){
- const db=admin();const {data,error}=await db.from('social_connections').select('platform').eq('installation_id',id)
- if(error)throw error
- return (data||[]).some(x=>x.platform===platform)||(data||[]).length<5
-}
 function secretKeyBytes(){const secret=process.env.TOKEN_ENCRYPTION_KEY;if(!secret)throw new Error('TOKEN_ENCRYPTION_KEY is not configured');return crypto.subtle.digest('SHA-256',new TextEncoder().encode(secret))}
 function b64(bytes:ArrayBuffer|Uint8Array){return Buffer.from(bytes instanceof Uint8Array?bytes:new Uint8Array(bytes)).toString('base64url')}
 function unb64(value:string){return new Uint8Array(Buffer.from(value,'base64url'))}
