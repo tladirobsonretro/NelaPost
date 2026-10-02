@@ -16,7 +16,7 @@ const platforms:Platform[]=[
  {name:'X',icon:'𝕏',className:'xIcon',auth:'/api/auth/x',description:'Post and manage your X presence.'},
  {name:'Threads',icon:'@',className:'threadsIcon',auth:'/api/auth/threads',description:'Publish to your Threads profile.'},
  {name:'TikTok',icon:'♪',className:'tiktokIcon',auth:'/api/auth/tiktok',description:'Publish videos and photos to TikTok.'},
- {name:'YouTube',icon:'▶',className:'youtubeIcon',auth:'/api/auth/youtube',description:'Publish videos to your YouTube channel.'}
+ {name:'YouTube',icon:'▶',className:'youtubeIcon',auth:'/api/auth/youtube',description:'Publish videos or image Community posts.'}
 ]
 
 export default function Home(){
@@ -78,7 +78,7 @@ export default function Home(){
  const handleMedia=(file?:File)=>{
   if(!file)return
   if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')){window.alert('Please choose an image or video.');return}
-  if(media)setMedia(undefined)
+  if(media)URL.revokeObjectURL(media)
   setMedia(URL.createObjectURL(file));setMediaFile(file);setMediaType(file.type.startsWith('video/')?'video':'image')
  }
 
@@ -100,7 +100,7 @@ export default function Home(){
    const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected,mode:when,scheduled_for})})
    const data=await response.json()
    if(!response.ok)throw new Error(data.error||'Could not publish the post')
-   setCaption('');setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
+   setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
    if(data.status==='failed')window.alert(data.results?.map((x:any)=>`${x.platform}: ${x.error||'failed'}`).join('\n')||'The post failed on all selected platforms.')
   }catch(error:any){window.alert(error?.message||'Something went wrong while publishing.')}finally{setBusy(false)}
  }
@@ -131,11 +131,11 @@ export default function Home(){
     <section className="composer card">
      <div className="sectionTitle"><div><span className="step">01</span><div><b>Content</b><small>What do you want to publish?</small></div></div></div>
      <label className="mediaDrop">
-      {media?<><img src={media} alt="Selected media" /><button type="button" className="changeMedia" onClick={e=>{e.preventDefault();setMedia(undefined);setMediaFile(undefined);setMediaType(undefined)}}>Remove media</button></>:<><div className="uploadIcon">↑</div><b>Upload image or video</b><span>PNG, JPG, WEBP or MP4</span><em>Choose media</em></>}
+      {media?<>{mediaType==='video'?<video src={media} controls playsInline className="selectedVideo"/>:<img src={media} alt="Selected media" />}<button type="button" className="changeMedia" onClick={e=>{e.preventDefault();if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined)}}>Remove media</button></>:<><div className="uploadIcon">↑</div><b>Upload image or video</b><span>PNG, JPG, WEBP, MP4, MOV or WebM</span><em>Choose media</em></>}
       {!media&&<input type="file" accept="image/*,video/*" onChange={e=>handleMedia(e.target.files?.[0])}/>}
      </label>
      <div className="field"><div className="fieldTop"><label>Caption</label><span>{caption.length}/2,200</span></div><textarea value={caption} onChange={e=>setCaption(e.target.value)} placeholder="Write something worth publishing..." /></div>
-     <div className="divider"/>
+     {mediaType&&<div className="mediaRules"><b>{mediaType==='image'?'IMAGE':'VIDEO'} DESTINATIONS</b><div>{selected.map(p=><span key={p}><strong>{p}</strong><small>{p==='YouTube'?(mediaType==='image'?'Community Post':'Video'):p==='TikTok'?(mediaType==='image'?'Photo Post':'Video Post'):p==='Instagram'?(mediaType==='image'?'Post':'Reel'):p==='Facebook'?(mediaType==='image'?'Photo Post':'Video Post'):p==='Threads'?(mediaType==='image'?'Image Post':'Video Post'):(mediaType==='image'?'Image Post':'Video Post')}</small></span>)}</div></div>}<div className="divider"/>
      <div className="sectionTitle compact"><div><span className="step">02</span><div><b>Platforms</b><small>Select your platforms</small></div></div><span className="platformLimit">{selected.length} selected</span></div>
      <div className="platformGrid">
       {platforms.map(platform=><div key={platform.name} className={selected.includes(platform.name)?'platformCard selected':'platformCard'} onClick={()=>toggle(platform.name)}>
@@ -159,10 +159,12 @@ export default function Home(){
       <div className="previewHeader"><span>LIVE PREVIEW</span><b>{previewPlatform}</b></div>
       <div className="previewTabs">{platforms.filter(p=>selected.includes(p.name)).map(platform=><button key={platform.name} className={previewPlatform===platform.name?'active':''} onClick={()=>setPreviewPlatform(platform.name)}>{platform.name}</button>)}</div>
       <div className={`socialPreview ${previewPlatform.toLowerCase()}Preview`}>
-       {previewPlatform==='Instagram'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>nelapost</b><span>Instagram preview</span></div></div>{media?<img src={media} className="previewImage instagramImage" alt="Instagram preview" />:<div className="previewPlaceholder instagramImage"><span>Media preview</span></div>}<p><b>nelapost</b> {caption||'Your caption will appear here.'}</p></>}
-       {previewPlatform==='Facebook'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Facebook Page preview</span></div></div>{media?<img src={media} className="previewImage facebookImage" alt="Facebook preview" />:<div className="previewPlaceholder facebookImage"><span>Media preview</span></div>}<p>{caption||'Your post text will appear here.'}</p></>}
-       {previewPlatform==='X'&&<div className="xPost"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>@nelapost · X preview</span></div></div><p>{caption||'Your post text will appear here.'}</p>{media?<img src={media} className="previewImage xImage" alt="X preview" />:<div className="previewPlaceholder xImage"><span>Media preview</span></div>}</div>}
-       {!['Instagram','Facebook','X'].includes(previewPlatform)&&<div className="genericPreview"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>{previewPlatform} preview</span></div></div>{media?<img src={media} className="previewImage" alt={`${previewPlatform} preview`} />:<div className="previewPlaceholder"><span>Media preview</span></div>}<p>{caption||'Your post text will appear here.'}</p></div>}
+       {previewPlatform==='Instagram'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>nelapost</b><span>Instagram · {mediaType==='video'?'Reel':'Post'}</span></div></div>{media?(mediaType==='video'?<video src={media} className="previewImage previewVideo instagramImage" controls muted playsInline/>:<img src={media} className="previewImage instagramImage" alt="Instagram preview" />):<div className="previewPlaceholder instagramImage"><span>Media preview</span></div>}<p><b>nelapost</b> {caption||'Your caption will appear here.'}</p></>}
+       {previewPlatform==='Facebook'&&<><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Facebook Page · {mediaType==='video'?'Video':'Photo'}</span></div></div>{media?(mediaType==='video'?<video src={media} className="previewImage previewVideo facebookImage" controls muted playsInline/>:<img src={media} className="previewImage facebookImage" alt="Facebook preview" />):<div className="previewPlaceholder facebookImage"><span>Media preview</span></div>}<p>{caption||'Your post text will appear here.'}</p></>}
+       {previewPlatform==='X'&&<div className="xPost"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>@nelapost · X · {mediaType==='video'?'Video':'Image'}</span></div></div><p>{caption||'Your post text will appear here.'}</p>{media?(mediaType==='video'?<video src={media} className="previewImage previewVideo xImage" controls muted playsInline/>:<img src={media} className="previewImage xImage" alt="X preview" />):<div className="previewPlaceholder xImage"><span>Media preview</span></div>}</div>}
+       {previewPlatform==='TikTok'&&<div className="verticalPreview">{media?(mediaType==='video'?<video src={media} className="verticalMedia" controls muted playsInline/>:<img src={media} className="verticalMedia" alt="TikTok preview"/>):<div className="verticalMedia previewPlaceholder"><span>TikTok preview</span></div>}<div className="verticalOverlay"><b>@nelapost</b><span>{caption||'Posting made easy.'}</span></div></div>}
+       {previewPlatform==='YouTube'&&<div className="youtubePreviewInner"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>YouTube · {mediaType==='image'?'Community Post':mediaType==='video'?'Video':'Post'}</span></div></div>{media?(mediaType==='video'?<video src={media} className="previewImage previewVideo" controls muted playsInline/>:<img src={media} className="previewImage" alt="YouTube Community Post preview"/>):<div className="previewPlaceholder"><span>YouTube preview</span></div>}<p>{caption||'Posting made easy.'}</p></div>}
+       {previewPlatform==='Threads'&&<div className="threadsPreviewInner"><div className="previewProfile"><div className="avatar">N</div><div><b>NelaPost</b><span>Threads · {mediaType==='video'?'Video':'Post'}</span></div></div>{media?(mediaType==='video'?<video src={media} className="previewImage previewVideo" controls muted playsInline/>:<img src={media} className="previewImage" alt="Threads preview"/>):null}<p>{caption||'Posting made easy.'}</p></div>}
       </div>
      </section>
     </aside>
