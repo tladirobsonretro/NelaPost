@@ -11,7 +11,7 @@ export async function GET(request:Request){
  const platform=incoming.searchParams.get('platform')
  if(platform!=='instagram'&&platform!=='facebook')return NextResponse.json({error:'Choose Instagram or Facebook.'},{status:400})
 
- const redirect=process.env.META_REDIRECT_URI||new URL('/api/auth/meta/callback',request.url).toString()
+ const redirect='https://nelapost.onrender.com/api/auth/meta/callback'
  const version=process.env.META_GRAPH_VERSION||'v24.0'
  const nonce=randomUUID()
  const installation_id=await installationId()
