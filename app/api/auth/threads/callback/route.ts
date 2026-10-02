@@ -19,7 +19,7 @@ export async function GET(request:Request){
  const secret=process.env.THREADS_APP_SECRET
  const appId=process.env.THREADS_APP_ID
  if(!code||!state||!secret||!appId||!verifyState(state,secret))return NextResponse.json({error:'Invalid Threads authorization request.'},{status:400})
- const redirect=process.env.THREADS_REDIRECT_URI||new URL('/api/auth/threads/callback',request.url).toString()
+ const redirect='https://nelapost.onrender.com/api/auth/threads/callback'
  const origin=new URL(redirect).origin
  try{
   const installation_id=await installationId()
