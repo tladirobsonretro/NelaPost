@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
-import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {installationId,saveConnection} from '../../../../../lib/server'
 
 const YOUTUBE_REDIRECT_URI='https://nelapost.onrender.com/api/auth/youtube/callback'
 const NELAPOST_URL='https://nelapost.onrender.com'
@@ -16,7 +16,6 @@ export async function GET(request:Request){
  if(!clientId||!secret)return NextResponse.json({error:'Google YouTube OAuth is not configured.'},{status:503})
  try{
   const installation_id=await installationId()
-  if(!(await canConnect(installation_id,'youtube')))return NextResponse.json({error:'NelaPost allows a maximum of 5 connected platforms.'},{status:400})
   const token=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,client_id:clientId,client_secret:secret,redirect_uri:YOUTUBE_REDIRECT_URI,grant_type:'authorization_code'})})
   if(!token.ok)return NextResponse.json({error:'YouTube token exchange failed.'},{status:400})
   const data=await token.json()
