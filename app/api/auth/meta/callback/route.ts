@@ -27,7 +27,7 @@ export async function GET(request:Request){
  const platform=verifyState(state,stateSecret)
  if(!platform)return NextResponse.json({error:'Invalid Meta authorization request.'},{status:400})
 
- const redirect=process.env.META_REDIRECT_URI||new URL('/api/auth/meta/callback',request.url).toString()
+ const redirect='https://nelapost.onrender.com/api/auth/meta/callback'
  const appOrigin=new URL(redirect).origin
  const version=process.env.META_GRAPH_VERSION||'v24.0'
 
