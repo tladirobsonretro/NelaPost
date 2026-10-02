@@ -5,8 +5,8 @@ import {installationId,saveConnection,canConnect} from '../../../../../lib/serve
 export async function GET(request:Request){
  const url=new URL(request.url),code=url.searchParams.get('code'),state=url.searchParams.get('state')
  const c=await cookies(),expectedState=c.get('tiktok_oauth_state')?.value
- const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^["']|["']$/g,''),clientSecret=process.env.TIKTOK_CLIENT_SECRET?.trim().replace(/^(['"])(.*)\\1$/,'$2')
- const redirectUri=process.env.TIKTOK_REDIRECT_URI?.trim().replace(/^(['"])(.*)\\1$/,'$2')||new URL('/api/auth/tiktok/callback',url.origin).toString()
+ const clientKey=process.env.TIKTOK_CLIENT_KEY?.trim().replace(/^["']|["']$/g,''),clientSecret=process.env.TIKTOK_CLIENT_SECRET?.trim().replace(/^(['"])(.*)\1$/,'$2')
+ const redirectUri=process.env.TIKTOK_REDIRECT_URI?.trim().replace(/^(['"])(.*)\1$/,'$2')||new URL('/api/auth/tiktok/callback',url.origin).toString()
  if(!code||!state||state!==expectedState||!clientKey||!clientSecret)return NextResponse.json({error:'Invalid TikTok OAuth callback.'},{status:400})
  try{
   const id=await installationId()
