@@ -52,7 +52,7 @@ export async function POST(request:Request){
     results.push({platform,status:'failed',error:error?.message||'Publishing failed'})
    }
   }
-  const overall=results.every(x=>x.status==='published')?'published':results.some(x=>x.status==='published')?'published':'failed'
+  const published=results.filter(x=>x.status==='published').length;const failed=results.filter(x=>x.status==='failed').length;const overall=failed===0?'published':published>0?'partial':'failed'
   await db.from('posts').update({status:overall,updated_at:new Date().toISOString()}).eq('id',post.id)
   const response=NextResponse.json({ok:overall!=='failed',post_id:post.id,status:overall,results})
   response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
