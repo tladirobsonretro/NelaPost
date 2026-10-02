@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
-import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {installationId,saveConnection} from '../../../../../lib/server'
 
 export async function GET(request:Request){
  const url=new URL(request.url),code=url.searchParams.get('code'),state=url.searchParams.get('state')
@@ -10,7 +10,6 @@ export async function GET(request:Request){
  if(!code||!state||state!==expectedState||!clientKey||!clientSecret)return NextResponse.json({error:'Invalid TikTok OAuth callback.'},{status:400})
  try{
   const id=await installationId()
-  if(!(await canConnect(id,'tiktok')))return NextResponse.json({error:'NelaPost allows a maximum of 5 connected platforms.'},{status:400})
   const tokenRes=await fetch('https://open.tiktokapis.com/v2/oauth/token/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','Cache-Control':'no-cache'},body:new URLSearchParams({client_key:clientKey,client_secret:clientSecret,code,grant_type:'authorization_code',redirect_uri:redirectUri})})
   const tokenData=await tokenRes.json()
   if(!tokenRes.ok||!tokenData.access_token)return NextResponse.json({error:'TikTok token exchange failed.',details:tokenData.error_description||tokenData.error||'Unknown TikTok error'},{status:502})
