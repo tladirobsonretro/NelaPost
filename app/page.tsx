@@ -84,8 +84,9 @@ export default function Home(){
 
  const submit=async()=>{
   if((!caption.trim()&&!mediaFile)||busy)return
-  const missing=selected.filter(p=>!connected[p])
+  const missing=selected.filter(p=>!connected[p.toLowerCase()])
   if(missing.length){window.alert(`Link these platforms first: ${missing.join(', ')}`);return}
+  const selectedPlatforms=selected.map(p=>p.toLowerCase())
   setBusy(true)
   try{
    let mediaUrl=''
@@ -97,7 +98,7 @@ export default function Home(){
    }
    const scheduled_for=when==='schedule'?new Date(`${date}T${time}`).toISOString():null
    if(when==='schedule'&&(!date||!time))throw new Error('Choose a date and time.')
-   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected,mode:when,scheduled_for})})
+   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selectedPlatforms,mode:when,scheduled_for})})
    const data=await response.json()
    if(!response.ok)throw new Error(data.error||'Could not publish the post')
    setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
