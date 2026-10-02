@@ -5,7 +5,7 @@ import {useEffect,useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {createClient} from '../lib/supabase-browser'
 
-type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string}
+type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string;targets?:{platform:string;status:string;error?:string|null}[]}
 type Platform={name:string;icon:string;className:string;description:string;auth?:string}
 
 const NELA_LOGO='/logo-mark.svg'
@@ -45,7 +45,7 @@ export default function Home(){
  const loadPosts=async()=>{
   try{
    const r=await fetch('/api/posts');const data=await r.json()
-   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':'Published',status:p.status,media:p.media_url||undefined})))
+   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':p.status==='partial'?'Partially published':p.status==='failed'?'Failed':'Published',status:p.status,media:p.media_url||undefined,targets:(p.post_targets||[]).map((x:any)=>({platform:x.platform,status:x.status,error:x.error_message}))})))
   }catch{}
  }
  useEffect(()=>{
@@ -173,7 +173,7 @@ export default function Home(){
 
    {view==='upcoming'&&<section className="card calendarPanel">
     <div className="calendarToolbar"><div><b>Upcoming posts</b><span>{posts.length} post{posts.length===1?'':'s'}</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div>
-    {posts.length?posts.map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption}</b><span>{post.when} · {post.platforms.join(' + ')}</span></div><span className="status">{post.status}</span></div>):<div className="emptyState"><div>◷</div><b>No scheduled posts</b><span>Create a post and it will appear here.</span><button className="headerButton" onClick={()=>setView('create')}>Create your first post</button></div>}
+    {posts.length?posts.map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption}</b><span>{post.when} · {post.platforms.join(' + ')}</span></div><div className="postTargetStatuses">{post.targets?.map(t=><span key={t.platform} title={t.error||undefined}>{t.platform}: {t.status}</span>)}</div></div>):<div className="emptyState"><div>◷</div><b>No scheduled posts</b><span>Create a post and it will appear here.</span><button className="headerButton" onClick={()=>setView('create')}>Create your first post</button></div>}
    </section>}
 
    {view==='accounts'&&<section className="card accountsPanel">
