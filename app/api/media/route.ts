@@ -7,8 +7,8 @@ export async function POST(request:Request){
     const form=await request.formData()
     const file=form.get('file')
     if(!(file instanceof File)) return NextResponse.json({error:'No media file provided'},{status:400})
-    if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')) return NextResponse.json({error:'Only image and video files are supported'},{status:400})
-    if(file.size>50*1024*1024) return NextResponse.json({error:'Media must be 50MB or smaller'},{status:400})
+    if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')) return NextResponse.json({error:'Only image and video files are supported. Maximum file size is 200MB'},{status:400})
+    if(file.size>200*1024*1024) return NextResponse.json({error:'Media must be 50MB or smaller'},{status:400})
     const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_')
     const path=`${id}/${crypto.randomUUID()}-${safeName}`
     const db=admin()
