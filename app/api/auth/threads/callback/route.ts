@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {createHmac,timingSafeEqual} from 'crypto'
-import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {installationId,saveConnection} from '../../../../../lib/server'
 
 function verifyState(state:string,secret:string){
  const [nonce,signature]=state.split('.')
@@ -23,7 +23,6 @@ export async function GET(request:Request){
  const origin=new URL(redirect).origin
  try{
   const installation_id=await installationId()
-  if(!(await canConnect(installation_id,'threads')))return NextResponse.json({error:'NelaPost allows a maximum of 5 connected platforms.'},{status:400})
   const tokenRes=await fetch('https://graph.threads.net/oauth/access_token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:appId,client_secret:secret,grant_type:'authorization_code',redirect_uri:redirect,code})})
   const tokenData=await tokenRes.json()
   if(!tokenRes.ok||!tokenData.access_token)throw new Error(tokenData.error_message||tokenData.error?.message||'Threads token exchange failed')
