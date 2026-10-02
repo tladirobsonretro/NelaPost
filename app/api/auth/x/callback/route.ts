@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 import {cookies} from 'next/headers'
-import {installationId,saveConnection,canConnect} from '../../../../../lib/server'
+import {installationId,saveConnection} from '../../../../../lib/server'
 export async function GET(request:Request){
  const url=new URL(request.url)
  const code=url.searchParams.get('code')
@@ -14,7 +14,6 @@ export async function GET(request:Request){
  if(!code||!state||state!==expectedState||!verifier||!clientId||!clientSecret)return NextResponse.json({error:'Invalid X OAuth callback'},{status:400})
  try{
   const installation_id=await installationId()
-  if(!(await canConnect(installation_id,'x')))return NextResponse.json({error:'NelaPost allows a maximum of 3 connected platforms.'},{status:400})
   const body=new URLSearchParams({code,grant_type:'authorization_code',redirect_uri:redirectUri,code_verifier:verifier})
   const basic=Buffer.from(clientId+':'+clientSecret,'utf8').toString('base64')
   const token=await fetch('https://api.x.com/2/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','Authorization':'Basic '+basic},body})
