@@ -1,6 +1,6 @@
 import {admin,decryptSecret,encryptSecret} from './server'
 
-type Connection={id:string;platform:string;access_token:string;refresh_token:string|null;token_expires_at?:string|null;metadata:Record<string,unknown>}
+type Connection={id:string;platform:string;access_token:string;refresh_token:string|null;token_expires_at?:string|null;external_account_id?:string|null;metadata:Record<string,unknown>}
 
 async function getConnection(installation_id:string,platform:string):Promise<Connection>{
  const db=admin();const {data,error}=await db.from('social_connections').select('*').eq('installation_id',installation_id).eq('platform',platform).order('updated_at',{ascending:false}).limit(1).maybeSingle()
