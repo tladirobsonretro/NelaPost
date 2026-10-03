@@ -26,7 +26,7 @@ export async function GET(request:Request){
   url.searchParams.set('redirect_uri',redirect)
   url.searchParams.set('response_type','code')
   url.searchParams.set('force_reauth','true')
-  url.searchParams.set('scope','instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights')
+  url.searchParams.set('scope','instagram_business_basic,instagram_business_content_publish')
   url.searchParams.set('state',state)
   const response=NextResponse.redirect(url)
   response.cookies.set('nelapost_installation_id',installation_id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
