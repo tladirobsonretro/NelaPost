@@ -24,7 +24,7 @@ export default function Home(){
  const supabase=createClient()
  const [userEmail,setUserEmail]=useState('')
  const [authReady,setAuthReady]=useState(false)
- const [view,setView]=useState<'create'|'upcoming'|'accounts'>('create')
+ const [view,setView]=useState<'create'|'upcoming'|'drafts'|'library'|'accounts'>('create')
  const [caption,setCaption]=useState('')
  const [selected,setSelected]=useState<string[]>(['X'])
  const [when,setWhen]=useState<'now'|'schedule'>('now')
@@ -60,7 +60,7 @@ export default function Home(){
   })
   return()=>{active=false}
  },[])
- useEffect(()=>{if(view==='upcoming')loadPosts();if(view==='accounts')loadConnections()},[view])
+ useEffect(()=>{if(view==='upcoming'||view==='drafts'||view==='library')loadPosts();if(view==='accounts')loadConnections()},[view])
 
  const toggle=(platform:string)=>{
   setSelected(current=>{
@@ -82,7 +82,7 @@ export default function Home(){
   setMedia(URL.createObjectURL(file));setMediaFile(file);setMediaType(file.type.startsWith('video/')?'video':'image')
  }
 
- const submit=async()=>{
+ const saveDraft=async()=>{\n  if((!caption.trim()&&!mediaFile)||busy)return\n  setBusy(true)\n  try{\n   let mediaUrl=''\n   if(mediaFile){const form=new FormData();form.append('file',mediaFile);const upload=await fetch('/api/media',{method:'POST',body:form});const uploadData=await upload.json();if(!upload.ok)throw new Error(uploadData.error||'Media upload failed');mediaUrl=uploadData.url}\n   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected.map(p=>p.toLowerCase()),mode:'draft'})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not save draft')\n   setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('drafts');await loadPosts()\n  }catch(error:any){window.alert(error?.message||'Could not save draft')}finally{setBusy(false)}\n }\n\n const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}\n const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}\n\n const submit=async()=>{
   if((!caption.trim()&&!mediaFile)||busy)return
   const missing=selected.filter(p=>!connected[p.toLowerCase()])
   if(missing.length){window.alert(`Link these platforms first: ${missing.join(', ')}`);return}
@@ -116,7 +116,7 @@ export default function Home(){
    <div className="navLabel">WORKSPACE</div>
    <nav className="nav">
     <button className={view==='create'?'active':''} onClick={()=>setView('create')}><span>＋</span>Create post</button>
-    <button className={view==='upcoming'?'active':''} onClick={()=>setView('upcoming')}><span>◷</span>Calendar</button>
+    <button className={view==='upcoming'?'active':''} onClick={()=>setView('upcoming')}><span>◷</span>Calendar</button><button className={view==='drafts'?'active':''} onClick={()=>setView('drafts')}><span>□</span>Drafts</button><button className={view==='library'?'active':''} onClick={()=>setView('library')}><span>▦</span>Library</button>
     <button className={view==='accounts'?'active':''} onClick={()=>setView('accounts')}><span>◎</span>Accounts</button>
    </nav>
    <div className="sidebarBottom"><div className="freeBadge"><b>Free & open source</b><span>Simple social publishing.</span></div></div>
@@ -124,7 +124,7 @@ export default function Home(){
 
   <main className="content">
    <header className="header">
-    <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect your social platforms for publishing.':'Keep every scheduled post in one place.'}</p></div>
+    <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':view==='drafts'?'Drafts':view==='library'?'Media library':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect your social platforms for publishing.':view==='drafts'?'Keep unfinished posts ready to go.':view==='library'?'Reuse media you have already uploaded.':'Plan and manage every scheduled post.'}</p></div>
     <div className="headerActions">{view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}<span className="userEmail">{userEmail}</span><button className="logoutButton" onClick={logout}>Log out</button></div>
    </header>
 
@@ -152,7 +152,7 @@ export default function Home(){
       <div className="sectionTitle compact"><div><span className="step">03</span><div><b>Publish</b><small>Choose when it goes live</small></div></div></div>
       <div className="whenToggle"><button className={when==='now'?'active':''} onClick={()=>setWhen('now')}>Post now</button><button className={when==='schedule'?'active':''} onClick={()=>setWhen('schedule')}>Schedule</button></div>
       {when==='schedule'&&<div className="dateFields"><label>Date<input type="date" value={date} onChange={e=>setDate(e.target.value)} /></label><label>Time<input type="time" value={time} onChange={e=>setTime(e.target.value)} /></label><button className="calendarConnect" onClick={()=>{setCalendar(true);window.location.href='/api/auth/google'}}>◷ {calendar?'Google Calendar connected':'Connect Google Calendar'}</button></div>}
-      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={submit}>{busy?'Publishing…':when==='now'?'Publish now':'Schedule post'} <span>→</span></button>
+      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={submit}>{busy?'Publishing…':when==='now'?'Publish now':'Schedule post'} <span>→</span></button><button className="draftButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={saveDraft}>Save as draft</button>
       <div className="publishNote">NelaPost will send the post through the platforms you authorized.</div>
      </section>
 
@@ -171,10 +171,12 @@ export default function Home(){
     </aside>
    </div>}
 
-   {view==='upcoming'&&<section className="card calendarPanel">
-    <div className="calendarToolbar"><div><b>Upcoming posts</b><span>{posts.length} post{posts.length===1?'':'s'}</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div>
-    {posts.length?posts.map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption}</b><span>{post.when} · {post.platforms.join(' + ')}</span></div><div className="postTargetStatuses">{post.targets?.map(t=><span key={t.platform} title={t.error||undefined}>{t.platform}: {t.status}</span>)}</div></div>):<div className="emptyState"><div>◷</div><b>No scheduled posts</b><span>Create a post and it will appear here.</span><button className="headerButton" onClick={()=>setView('create')}>Create your first post</button></div>}
+   {(view==='upcoming'||view==='drafts')&&<section className="card calendarPanel">
+    <div className="calendarToolbar"><div><b>{view==='drafts'?'Drafts':'Content calendar'}</b><span>{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length} post{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length===1?'':'s'}</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div>
+    <div className="postList">{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption||'Untitled post'}</b><span>{post.when} · {post.platforms.join(' + ')}</span><div className="postTargetStatuses">{post.targets?.map(t=><span key={t.platform} title={t.error||undefined}>{t.platform}: {t.status}</span>)}</div></div><div className="postActions"><button onClick={()=>duplicatePost(post.id)}>Duplicate</button><button onClick={()=>deletePost(post.id)}>Delete</button></div></div>)}</div>
+    {!posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length&&<div className="emptyState"><div>{view==='drafts'?'□':'◷'}</div><b>{view==='drafts'?'No drafts yet':'No posts yet'}</b><span>{view==='drafts'?'Save unfinished content here.':'Create a post and it will appear here.'}</span><button className="headerButton" onClick={()=>setView('create')}>Create a post</button></div>}
    </section>}
+   {view==='library'&&<section className="card calendarPanel"><div className="calendarToolbar"><div><b>Media library</b><span>Previously uploaded media</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div><div className="mediaLibrary">{Array.from(new Map(posts.filter(p=>p.media).map(p=>[p.media,p])).values()).map(post=><button key={post.media} className="libraryItem" onClick={()=>{setView('create');setMedia(post.media);setMediaType(post.media?.match(/\.(mp4|mov|webm)(\?|$)/i)?'video':'image')}}><img src={post.media} alt="" /><span>{post.caption||'Media asset'}</span></button>)}</div>{!posts.some(p=>p.media)&&<div className="emptyState"><div>▦</div><b>Your library is empty</b><span>Upload media when creating a post and it will be collected here.</span></div>}</section>}
 
    {view==='accounts'&&<section className="card accountsPanel">
     <div className="accountHero"><div><b>Link your platforms</b><span>Connect your social accounts. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} connected</strong></div>
