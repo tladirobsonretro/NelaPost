@@ -40,6 +40,10 @@ export default function Home(){
  const [connected,setConnected]=useState<Record<string,{name:string}>>({})
  const [busy,setBusy]=useState(false)
  const [editId,setEditId]=useState<string|number|null>(null)
+ const scheduleDateTime=when==='schedule'&&date&&time?new Date(`${date}T${time}`).getTime():null
+ const scheduleMinutes=scheduleDateTime===null?null:Math.floor((scheduleDateTime-Date.now())/60000)
+ const scheduleTooSoon=scheduleMinutes!==null&&scheduleMinutes<5
+ const scheduleInPast=scheduleDateTime!==null&&scheduleDateTime<=Date.now()
 
  const loadConnections=async()=>{
   try{const r=await fetch('/api/connections',{cache:'no-store'});const data=await r.json();if(r.ok)setConnected(data.connected||{})}catch{}
@@ -191,8 +195,8 @@ export default function Home(){
      <section className="card scheduleCard">
       <div className="sectionTitle compact"><div><span className="step">03</span><div><b>Publish</b><small>Choose when it goes live</small></div></div></div>
       <div className="whenToggle"><button className={when==='now'?'active':''} onClick={()=>setWhen('now')}>Post now</button><button className={when==='schedule'?'active':''} onClick={()=>setWhen('schedule')}>Schedule</button></div>
-      {when==='schedule'&&<div className="dateFields"><label>Date<input type="date" value={date} onChange={e=>setDate(e.target.value)} /></label><label>Time<input type="time" value={time} onChange={e=>setTime(e.target.value)} /></label><button className="calendarConnect" onClick={()=>{setCalendar(true);window.location.href='/api/auth/google'}}>◷ {calendar?'Google Calendar connected':'Connect Google Calendar'}</button></div>}
-      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile&&!media)} onClick={editId?saveEdit:submit}>{busy?(editId?'Saving…':'Publishing…'):editId?'Save changes':when==='now'?'Publish now':'Schedule post'} <span>→</span></button>{!editId&&<button className="draftButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={saveDraft}>Save as draft</button>}
+      {when==='schedule'&&<><div className="dateFields"><label>Date<input type="date" value={date} onChange={e=>setDate(e.target.value)} /></label><label>Time<input type="time" value={time} onChange={e=>setTime(e.target.value)} /></label><button className="calendarConnect" onClick={()=>{setCalendar(true);window.location.href='/api/auth/google'}}>◷ {calendar?'Google Calendar connected':'Connect Google Calendar'}</button></div><div className={scheduleInPast||scheduleTooSoon?'scheduleWarning':'scheduleTimingNote'}>{scheduleInPast?'⚠️ This time has already passed. Choose a future time.':scheduleTooSoon?'⚠️ This post is scheduled less than 5 minutes from now. It may not publish at the exact scheduled time.':'For reliable publishing, schedule at least 5 minutes ahead. Scheduled publishing may occasionally be delayed by a few minutes.'}</div></>}
+      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile&&!media)||(when==='schedule'&&(scheduleInPast||scheduleTooSoon))} onClick={editId?saveEdit:submit}>{busy?(editId?'Saving…':'Publishing…'):editId?'Save changes':when==='now'?'Publish now':'Schedule post'} <span>→</span></button>{!editId&&<button className="draftButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={saveDraft}>Save as draft</button>}
       <div className="publishNote">NelaPost will send the post through the platforms you authorized.</div>
      </section>
 
