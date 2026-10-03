@@ -19,7 +19,7 @@ export async function POST(request:Request){
   const media_url=body.media_url?String(body.media_url):null
   const media_type=body.media_type==='video'?'video':body.media_type==='image'?'image':null
   const platforms=Array.isArray(body.platforms)?body.platforms.filter((p:string)=>typeof p==='string'):[]
-  const mode=body.mode==='schedule'?'schedule':'now'
+  const mode=body.mode==='schedule'?'schedule':body.mode==='draft'?'draft':'now'
   const scheduled_for=mode==='schedule'?String(body.scheduled_for||''):null
   if(!caption&&!media_url)return NextResponse.json({error:'Add a caption or media before publishing.'},{status:400})
   if(!platforms.length)return NextResponse.json({error:'Select your connected platform.'},{status:400})
@@ -31,12 +31,12 @@ export async function POST(request:Request){
   const connected=new Set((connections||[]).map(x=>x.platform))
   const missing=platforms.filter((p:string)=>!connected.has(p))
   if(missing.length)return NextResponse.json({error:`Link these platforms first: ${missing.join(', ')}`},{status:400})
-  const {data:post,error:postError}=await db.from('posts').insert({installation_id:id,caption,media_url,media_type,scheduled_for,status:mode==='schedule'?'scheduled':'publishing'}).select().single()
+  const {data:post,error:postError}=await db.from('posts').insert({installation_id:id,caption,media_url,media_type,scheduled_for,status:mode==='schedule'?'scheduled':mode==='draft'?'draft':'publishing'}).select().single()
   if(postError)throw postError
-  const targets=platforms.map((platform:string)=>({post_id:post.id,installation_id:id,platform,status:mode==='schedule'?'pending':'publishing'}))
+  const targets=platforms.map((platform:string)=>({post_id:post.id,installation_id:id,platform,status:mode==='schedule'||mode==='draft'?'pending':'publishing'}))
   const {error:targetError}=await db.from('post_targets').insert(targets)
   if(targetError)throw targetError
-  if(mode==='schedule'){
+  if(mode==='draft'){const response=NextResponse.json({ok:true,post_id:post.id,status:'draft'});response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'});return response}\n  if(mode==='schedule'){
    const response=NextResponse.json({ok:true,post_id:post.id,status:'scheduled'})
    response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
    return response
