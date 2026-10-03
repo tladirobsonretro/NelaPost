@@ -82,7 +82,21 @@ export default function Home(){
   setMedia(URL.createObjectURL(file));setMediaFile(file);setMediaType(file.type.startsWith('video/')?'video':'image')
  }
 
- const saveDraft=async()=>{\n  if((!caption.trim()&&!mediaFile)||busy)return\n  setBusy(true)\n  try{\n   let mediaUrl=''\n   if(mediaFile){const form=new FormData();form.append('file',mediaFile);const upload=await fetch('/api/media',{method:'POST',body:form});const uploadData=await upload.json();if(!upload.ok)throw new Error(uploadData.error||'Media upload failed');mediaUrl=uploadData.url}\n   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected.map(p=>p.toLowerCase()),mode:'draft'})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not save draft')\n   setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('drafts');await loadPosts()\n  }catch(error:any){window.alert(error?.message||'Could not save draft')}finally{setBusy(false)}\n }\n\n const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}\n const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}\n\n const submit=async()=>{
+ const saveDraft=async()=>{
+  if((!caption.trim()&&!mediaFile)||busy)return
+  setBusy(true)
+  try{
+   let mediaUrl=''
+   if(mediaFile){const form=new FormData();form.append('file',mediaFile);const upload=await fetch('/api/media',{method:'POST',body:form});const uploadData=await upload.json();if(!upload.ok)throw new Error(uploadData.error||'Media upload failed');mediaUrl=uploadData.url}
+   const response=await fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl||null,media_type:mediaType||null,platforms:selected.map(p=>p.toLowerCase()),mode:'draft'})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not save draft')
+   setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('drafts');await loadPosts()
+  }catch(error:any){window.alert(error?.message||'Could not save draft')}finally{setBusy(false)}
+ }
+
+ const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}
+ const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}
+
+ const submit=async()=>{
   if((!caption.trim()&&!mediaFile)||busy)return
   const missing=selected.filter(p=>!connected[p.toLowerCase()])
   if(missing.length){window.alert(`Link these platforms first: ${missing.join(', ')}`);return}
@@ -102,7 +116,8 @@ export default function Home(){
    const data=await response.json()
    if(!response.ok)throw new Error(data.error||'Could not publish the post')
    setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
-   if(data.status==='failed')window.alert(data.results?.map((x:any)=>`${x.platform}: ${x.error||'failed'}`).join('\n')||'The post failed on all selected platforms.')
+   if(data.status==='failed')window.alert(data.results?.map((x:any)=>`${x.platform}: ${x.error||'failed'}`).join('
+')||'The post failed on all selected platforms.')
   }catch(error:any){window.alert(error?.message||'Something went wrong while publishing.')}finally{setBusy(false)}
  }
 
