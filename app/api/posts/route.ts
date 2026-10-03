@@ -36,7 +36,8 @@ export async function POST(request:Request){
   const targets=platforms.map((platform:string)=>({post_id:post.id,installation_id:id,platform,status:mode==='schedule'||mode==='draft'?'pending':'publishing'}))
   const {error:targetError}=await db.from('post_targets').insert(targets)
   if(targetError)throw targetError
-  if(mode==='draft'){const response=NextResponse.json({ok:true,post_id:post.id,status:'draft'});response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'});return response}\n  if(mode==='schedule'){
+  if(mode==='draft'){const response=NextResponse.json({ok:true,post_id:post.id,status:'draft'});response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'});return response}
+  if(mode==='schedule'){
    const response=NextResponse.json({ok:true,post_id:post.id,status:'scheduled'})
    response.cookies.set('nelapost_installation_id',id,{httpOnly:true,secure:true,sameSite:'lax',maxAge:60*60*24*365,path:'/'})
    return response
