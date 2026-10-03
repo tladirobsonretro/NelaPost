@@ -46,7 +46,7 @@ export default function Home(){
  const loadPosts=async()=>{
   try{
    const r=await fetch('/api/posts');const data=await r.json()
-   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':p.status==='partial'?'Partially published':p.status==='failed'?'Failed':'Published',status:p.status,media:p.media_url||undefined,mediaType:p.media_type||undefined,scheduledFor:p.scheduled_for||null,targets:(p.post_targets||[]).map((x:any)=>({platform:x.platform,status:x.status,error:x.error_message}))}))))
+   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':p.status==='partial'?'Partially published':p.status==='failed'?'Failed':'Published',status:p.status,media:p.media_url||undefined,mediaType:p.media_type||undefined,scheduledFor:p.scheduled_for||null,targets:(p.post_targets||[]).map((x:any)=>({platform:x.platform,status:x.status,error:x.error_message}))})))
   }catch{}
  }
  useEffect(()=>{
