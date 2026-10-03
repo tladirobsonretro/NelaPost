@@ -5,7 +5,7 @@ import {useEffect,useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {createClient} from '../lib/supabase-browser'
 
-type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string;targets?:{platform:string;status:string;error?:string|null}[]}
+type Post={id:string|number;caption:string;platforms:string[];when:string;status:string;media?:string;mediaType?:'image'|'video';scheduledFor?:string|null;targets?:{platform:string;status:string;error?:string|null}[]}
 type Platform={name:string;icon:string;className:string;description:string;auth?:string}
 
 const NELA_LOGO='/logo-mark.svg'
@@ -38,6 +38,7 @@ export default function Home(){
  const [previewPlatform,setPreviewPlatform]=useState('X')
  const [connected,setConnected]=useState<Record<string,{name:string}>>({})
  const [busy,setBusy]=useState(false)
+ const [editId,setEditId]=useState<string|number|null>(null)
 
  const loadConnections=async()=>{
   try{const r=await fetch('/api/connections',{cache:'no-store'});const data=await r.json();if(r.ok)setConnected(data.connected||{})}catch{}
@@ -45,7 +46,7 @@ export default function Home(){
  const loadPosts=async()=>{
   try{
    const r=await fetch('/api/posts');const data=await r.json()
-   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':p.status==='partial'?'Partially published':p.status==='failed'?'Failed':'Published',status:p.status,media:p.media_url||undefined,targets:(p.post_targets||[]).map((x:any)=>({platform:x.platform,status:x.status,error:x.error_message}))})))
+   if(r.ok)setPosts((data.posts||[]).map((p:any)=>({id:p.id,caption:p.caption||'Media post',platforms:(p.post_targets||[]).map((x:any)=>x.platform),when:p.scheduled_for?new Date(p.scheduled_for).toLocaleString():p.status==='publishing'?'Publishing now':p.status==='partial'?'Partially published':p.status==='failed'?'Failed':'Published',status:p.status,media:p.media_url||undefined,mediaType:p.media_type||undefined,scheduledFor:p.scheduled_for||null,targets:(p.post_targets||[]).map((x:any)=>({platform:x.platform,status:x.status,error:x.error_message}))}))))
   }catch{}
  }
  useEffect(()=>{
@@ -95,6 +96,26 @@ export default function Home(){
 
  const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}
  const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}
+ const editPost=(post:Post)=>{
+  setEditId(post.id);setCaption(post.caption==='Media post'?'':post.caption);setMedia(post.media);setMediaFile(undefined);setMediaType(post.mediaType||'image');setSelected(post.platforms.map(p=>p.charAt(0).toUpperCase()+p.slice(1)));setWhen(post.status==='scheduled'?'schedule':'now')
+  if(post.scheduledFor){const d=new Date(post.scheduledFor);const pad=(n:number)=>String(n).padStart(2,'0');setDate(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`);setTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`)}else{setDate('');setTime('')}
+  setView('create')
+ }
+ const saveEdit=async()=>{
+  if(!editId||busy||(!caption.trim()&&!mediaFile&&!media))return
+  setBusy(true)
+  try{
+   let mediaUrl=media||null
+   if(mediaFile){const form=new FormData();form.append('file',mediaFile);const upload=await fetch('/api/media',{method:'POST',body:form});const uploadData=await upload.json();if(!upload.ok)throw new Error(uploadData.error||'Media upload failed');mediaUrl=uploadData.url}
+   if(when==='schedule'&&(!date||!time))throw new Error('Choose a date and time.')
+   const scheduled_for=when==='schedule'?new Date(`${date}T${time}`).toISOString():null
+   const status=when==='schedule'?'scheduled':'draft'
+   const response=await fetch('/api/posts/'+editId,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl,media_type:mediaType||null,scheduled_for,status})})
+   const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not save changes')
+   if(media&&media.startsWith('blob:'))URL.revokeObjectURL(media)
+   setEditId(null);setCaption('');setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setDate('');setTime('');setView(status==='draft'?'drafts':'upcoming');await loadPosts()
+  }catch(error:any){window.alert(error?.message||'Could not save changes')}finally{setBusy(false)}
+ }
 
  const submit=async()=>{
   if((!caption.trim()&&!mediaFile)||busy)return
@@ -166,7 +187,7 @@ export default function Home(){
       <div className="sectionTitle compact"><div><span className="step">03</span><div><b>Publish</b><small>Choose when it goes live</small></div></div></div>
       <div className="whenToggle"><button className={when==='now'?'active':''} onClick={()=>setWhen('now')}>Post now</button><button className={when==='schedule'?'active':''} onClick={()=>setWhen('schedule')}>Schedule</button></div>
       {when==='schedule'&&<div className="dateFields"><label>Date<input type="date" value={date} onChange={e=>setDate(e.target.value)} /></label><label>Time<input type="time" value={time} onChange={e=>setTime(e.target.value)} /></label><button className="calendarConnect" onClick={()=>{setCalendar(true);window.location.href='/api/auth/google'}}>◷ {calendar?'Google Calendar connected':'Connect Google Calendar'}</button></div>}
-      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={submit}>{busy?'Publishing…':when==='now'?'Publish now':'Schedule post'} <span>→</span></button><button className="draftButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={saveDraft}>Save as draft</button>
+      <button className="publishButton" disabled={busy||(!caption.trim()&&!mediaFile&&!media)} onClick={editId?saveEdit:submit}>{busy?(editId?'Saving…':'Publishing…'):editId?'Save changes':when==='now'?'Publish now':'Schedule post'} <span>→</span></button>{!editId&&<button className="draftButton" disabled={busy||(!caption.trim()&&!mediaFile)} onClick={saveDraft}>Save as draft</button>}
       <div className="publishNote">NelaPost will send the post through the platforms you authorized.</div>
      </section>
 
@@ -187,7 +208,7 @@ export default function Home(){
 
    {(view==='upcoming'||view==='drafts')&&<section className="card calendarPanel">
     <div className="calendarToolbar"><div><b>{view==='drafts'?'Drafts':'Content calendar'}</b><span>{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length} post{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length===1?'':'s'}</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div>
-    <div className="postList">{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption||'Untitled post'}</b><span>{post.when} · {post.platforms.join(' + ')}</span><div className="postTargetStatuses">{post.targets?.map(t=><div className="postTargetCard" key={t.platform} title={t.error||undefined}><b>{t.platform}</b><span>{post.status==='scheduled'?'Scheduled':t.status==='pending'?'Pending':t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span><small>{post.status==='scheduled'?post.when:''}</small></div>)}</div></div><div className="postActions"><button onClick={()=>duplicatePost(post.id)}>Duplicate</button><button onClick={()=>deletePost(post.id)}>Delete</button></div></div>)}</div>
+    <div className="postList">{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption||'Untitled post'}</b><span>{post.when} · {post.platforms.join(' + ')}</span><div className="postTargetStatuses">{post.targets?.map(t=><div className="postTargetCard" key={t.platform} title={t.error||undefined}><b>{t.platform}</b><span>{post.status==='scheduled'?'Scheduled':t.status==='pending'?'Pending':t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span><small>{post.status==='scheduled'?post.when:''}</small></div>)}</div></div><div className="postActions">{(post.status==='scheduled'||post.status==='draft')&&<button onClick={()=>editPost(post)}>Edit</button>}<button onClick={()=>duplicatePost(post.id)}>Duplicate</button><button onClick={()=>deletePost(post.id)}>Delete</button></div></div>)}</div>
     {!posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length&&<div className="emptyState"><div>{view==='drafts'?'□':'◷'}</div><b>{view==='drafts'?'No drafts yet':'No posts yet'}</b><span>{view==='drafts'?'Save unfinished content here.':'Create a post and it will appear here.'}</span><button className="headerButton" onClick={()=>setView('create')}>Create a post</button></div>}
    </section>}
    {view==='library'&&<section className="card calendarPanel"><div className="calendarToolbar"><div><b>Media library</b><span>Previously uploaded media</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div><div className="mediaLibrary">{Array.from(new Map(posts.filter(p=>p.media).map(p=>[p.media,p])).values()).map(post=><button key={post.media} className="libraryItem" onClick={()=>{setView('create');setMedia(post.media);setMediaType(post.media?.match(/\.(mp4|mov|webm)(\?|$)/i)?'video':'image')}}><img src={post.media} alt="" /><span>{post.caption||'Media asset'}</span></button>)}</div>{!posts.some(p=>p.media)&&<div className="emptyState"><div>▦</div><b>Your library is empty</b><span>Upload media when creating a post and it will be collected here.</span></div>}</section>}
