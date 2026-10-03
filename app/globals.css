@@ -61,6 +61,7 @@ button{cursor:pointer}
 .calendarConnect{grid-column:1/-1;border:1px solid #e1e2e8;background:#fff;border-radius:8px;padding:9px;color:#666a76;font-size:10px}
 .publishButton{width:100%;margin-top:20px;border:0;border-radius:10px;background:#171923;color:#fff;padding:13px;font-size:12px;font-weight:800;display:flex;justify-content:center;gap:10px}.publishButton:disabled{opacity:.4;cursor:not-allowed}.publishButton span{font-size:16px;line-height:12px}
 .publishNote{text-align:center;color:#9a9da7;font-size:9px;margin-top:10px}
+.scheduleTimingNote,.scheduleWarning{margin-top:10px;border-radius:9px;padding:9px 10px;font-size:9px;line-height:1.45}.scheduleTimingNote{background:#f6f7f9;border:1px solid #e5e6eb;color:#777b86}.scheduleWarning{background:#fff8e8;border:1px solid #f1d99b;color:#765a12}
 .previewCard{background:#171923;border-radius:16px;padding:15px;color:#fff;overflow:hidden}
 .previewHeader{display:flex;justify-content:space-between;color:#7f8290;font-size:9px;letter-spacing:1px;font-weight:800;padding:2px 2px 13px}.previewHeader b{color:#aaaeba;letter-spacing:0;font-size:9px}
 .socialPreview{background:#fff;color:#171923;border-radius:12px;overflow:hidden}.previewProfile{padding:12px;display:flex;gap:9px;align-items:center}.avatar{width:28px;height:28px;border-radius:50%;background:#171923;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800}.previewProfile b,.previewProfile span{display:block;font-size:10px}.previewProfile span{color:#9a9ca5;font-size:8px;margin-top:2px}
