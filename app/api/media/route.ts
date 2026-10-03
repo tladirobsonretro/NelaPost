@@ -1,17 +1,36 @@
 import {NextResponse} from 'next/server'
 import {admin,installationId} from '../../../lib/server'
 
+const UUID_PREFIX=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-(.+)$/i
+
+function displayName(storageName:string){
+  const match=storageName.match(UUID_PREFIX)
+  return match?.[1]||storageName
+}
+
+function withDuplicateSuffix(name:string,count:number){
+  if(count===0)return name
+  const dot=name.lastIndexOf('.')
+  return dot>0?name.slice(0,dot)+` (${count+1})`+name.slice(dot):name+` (${count+1})`
+}
+
 export async function GET(){
   try{
     const id=await installationId()
     const db=admin()
     const {data,error}=await db.storage.from('nelapost-media').list(id,{limit:100,sortBy:{column:'created_at',order:'desc'}})
     if(error) throw error
+    const seen=new Map<string,number>()
     const media=(data||[]).filter(item=>item.name).map(item=>{
-      const path=`${id}/${item.name}`
+      const storageName=item.name
+      const baseName=displayName(storageName)
+      const duplicateCount=seen.get(baseName)||0
+      seen.set(baseName,duplicateCount+1)
+      const name=withDuplicateSuffix(baseName,duplicateCount)
+      const path=`${id}/${storageName}`
       const {data:publicData}=db.storage.from('nelapost-media').getPublicUrl(path)
       const metadata:any=item.metadata||{}
-      return {name:item.name,url:publicData.publicUrl,type:String(metadata.mimetype||'').startsWith('video/')?'video':'image',size:metadata.size?Number(metadata.size):undefined}
+      return {name,storageName,url:publicData.publicUrl,type:String(metadata.mimetype||'').startsWith('video/')?'video':'image',size:metadata.size?Number(metadata.size):undefined}
     })
     return NextResponse.json({media})
   }catch(error:any){
