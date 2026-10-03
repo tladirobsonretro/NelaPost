@@ -6,8 +6,11 @@ export const dynamic='force-dynamic'
 
 export async function GET(request:Request){
  const secret=process.env.CRON_SECRET
+ const supabaseSecret=process.env.NELAPOST_SUPABASE_CRON_SECRET
  const auth=request.headers.get('authorization')
- if(secret&&auth!==`Bearer ${secret}`)return NextResponse.json({error:'Unauthorized'},{status:401})
+ const headerSecret=request.headers.get('x-nelapost-cron-secret')
+ const authorized=(!!secret&&auth===`Bearer ${secret}`)||(!!supabaseSecret&&headerSecret===supabaseSecret)
+ if(!authorized)return NextResponse.json({error:'Unauthorized'},{status:401})
  const db=admin()
  const now=new Date().toISOString()
  const {data:posts,error}=await db.from('posts').select('id,installation_id,caption,media_url,media_type,scheduled_for').eq('status','scheduled').lte('scheduled_for',now).order('scheduled_for',{ascending:true}).limit(20)
