@@ -24,8 +24,8 @@ async function getConnection(installation_id:string,platform:string):Promise<Con
  return {...data,access_token,metadata:data.metadata||{}}
 }
 
-async function metaRequest(path:string,token:string,init?:RequestInit){
- const res=await fetch(`https://graph.facebook.com/v24.0${path}`,{...init,headers:{...(init?.headers||{}),Authorization:`Bearer ${token}`}})
+async function metaRequest(path:string,token:string,init?:RequestInit,host='graph.facebook.com'){
+ const res=await fetch(`https://${host}/v24.0${path}`,{...init,headers:{...(init?.headers||{}),Authorization:`Bearer ${token}`}})
  const text=await res.text();let data:any;try{data=JSON.parse(text)}catch{data={raw:text}}
  if(!res.ok||data.error)throw new Error(data.error?.message||`Meta request failed (${res.status})`)
  return data
@@ -43,7 +43,7 @@ async function publishMeta(connection:Connection,caption:string,mediaUrl?:string
  const params=new URLSearchParams(mediaType==='video'?{video_url:mediaUrl,caption,media_type:'REELS'}:{image_url:mediaUrl,caption,media_type:'IMAGE'})
  const container=await metaRequest(`/${igUserId}/media`,connection.access_token,{method:'POST',body:params});const creationId=container.id
  for(let i=0;i<18;i++){const status=await metaRequest(`/${creationId}?fields=status_code,status`,connection.access_token);if(status.status_code==='FINISHED')break;if(status.status_code==='ERROR')throw new Error(status.status||'Instagram media processing failed');await new Promise(r=>setTimeout(r,5000));if(i===17)throw new Error('Instagram media is still processing. Try publishing again shortly.')}
- return metaRequest(`/${igUserId}/media_publish`,connection.access_token,{method:'POST',body:new URLSearchParams({creation_id:creationId})})
+ return metaRequest(`/${igUserId}/media_publish`,connection.access_token,{method:'POST',body:new URLSearchParams({creation_id:creationId})},'graph.instagram.com')
 }
 async function xError(res:Response){const text=await res.text();let data:any;try{data=JSON.parse(text)}catch{data={}};return data.errors?.map((e:any)=>e.detail||e.message||e.title).filter(Boolean).join('; ')||data.detail||data.title||text||`X API request failed (${res.status})`}
 async function xUpload(token:string,mediaUrl:string,mediaType:string){
@@ -130,7 +130,7 @@ async function publishTikTok(connection:Connection,caption:string,mediaUrl?:stri
 }
 async function publishX(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
  const body:any={text:caption||''};if(mediaUrl)body.media={media_ids:[await xUpload(connection.access_token,mediaUrl,mediaType||'application/octet-stream')]}
- const res=await fetch('https://api.x.com/2/tweets',{method:'POST',headers:{Authorization:`Bearer ${connection.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(await xError(res));return res.json()
+ const res=await fetch('https://api.x.com/2/tweets',{method:'POST',headers:{Authorization:`Bearer ${connection.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(await xError(new Response(JSON.stringify(data),{status:res.status})));return data
 }
 
 async function publishYouTube(connection:Connection,caption:string,mediaUrl?:string,mediaType?:string){
