@@ -102,7 +102,7 @@ export default function Home(){
  const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}
  const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}
  const editPost=(post:Post)=>{
-  setEditId(post.id);setCaption(post.caption==='Media post'?'':post.caption);setMedia(post.media);setMediaFile(undefined);setMediaType(post.mediaType||'image');setSelected(post.platforms.map(p=>p.charAt(0).toUpperCase()+p.slice(1)));setWhen(post.status==='scheduled'?'schedule':'now')
+  setEditId(post.id);setCaption(post.caption==='Media post'?'':post.caption);setMedia(post.media);setMediaFile(undefined);setMediaType(post.mediaType||'image');setSelected(post.platforms.map(p=>platforms.find(x=>x.name.toLowerCase()===p.toLowerCase())?.name||p));setWhen(post.status==='scheduled'?'schedule':'now')
   if(post.scheduledFor){const d=new Date(post.scheduledFor);const pad=(n:number)=>String(n).padStart(2,'0');setDate(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`);setTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`)}else{setDate('');setTime('')}
   setView('create')
  }
@@ -115,7 +115,7 @@ export default function Home(){
    if(when==='schedule'&&(!date||!time))throw new Error('Choose a date and time.')
    const scheduled_for=when==='schedule'?new Date(`${date}T${time}`).toISOString():null
    const status=when==='schedule'?'scheduled':'draft'
-   const response=await fetch('/api/posts/'+editId,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl,media_type:mediaType||null,scheduled_for,status})})
+   const response=await fetch('/api/posts/'+editId,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption,media_url:mediaUrl,media_type:mediaType||null,platforms:selected.map(p=>p.toLowerCase()),scheduled_for,status})})
    const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not save changes')
    if(media&&media.startsWith('blob:'))URL.revokeObjectURL(media)
    setEditId(null);setCaption('');setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setDate('');setTime('');setView(status==='draft'?'drafts':'upcoming');await loadPosts()
