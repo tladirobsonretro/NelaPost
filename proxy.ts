@@ -10,7 +10,7 @@ export async function proxy(request:NextRequest){
  )
  const {data}=await supabase.auth.getClaims()
  const pathname=request.nextUrl.pathname
- const publicPath=pathname==='/login'||pathname==='/auth/callback'||pathname==='/privacy'||pathname==='/terms'
+ const publicPath=pathname==='/login'||pathname==='/auth/callback'||pathname==='/privacy'||pathname==='/terms'||pathname==='/api/cron/publish'
  if(!data?.claims&&!publicPath){
   const loginUrl=new URL('/login',request.url)
   return NextResponse.redirect(loginUrl)
