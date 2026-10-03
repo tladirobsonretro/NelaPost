@@ -42,7 +42,15 @@ async function publishMeta(connection:Connection,caption:string,mediaUrl?:string
  if(!mediaUrl)throw new Error('Instagram publishing requires an image or video')
  const params=new URLSearchParams(mediaType==='video'?{video_url:mediaUrl,caption,media_type:'REELS'}:{image_url:mediaUrl,caption,media_type:'IMAGE'})
  const container=await metaRequest(`/${igUserId}/media`,connection.access_token,{method:'POST',body:params},'graph.instagram.com');const creationId=container.id
- for(let i=0;i<18;i++){const status=await metaRequest(`/${creationId}?fields=status_code,status`,connection.access_token,undefined,'graph.instagram.com');if(status.status_code==='FINISHED')break;if(status.status_code==='ERROR')throw new Error(status.status||'Instagram media processing failed');await new Promise(r=>setTimeout(r,5000));if(i===17)throw new Error('Instagram media is still processing. Try publishing again shortly.')}
+ if(!creationId)throw new Error('Instagram did not return a media container ID')
+ for(let i=0;i<18;i++){
+  const status=await metaRequest(`/${creationId}?fields=status_code,status`,connection.access_token,undefined,'graph.instagram.com')
+  console.log('[instagram-publish] container status',{creationId,status})
+  if(status.status_code==='FINISHED')break
+  if(status.status_code==='ERROR')throw new Error(status.status||'Instagram media processing failed')
+  if(i===17)throw new Error(`Instagram media processing did not finish. Meta status: ${status.status_code||status.status||'unknown'}`)
+  await new Promise(r=>setTimeout(r,5000))
+ }
  return metaRequest(`/${igUserId}/media_publish`,connection.access_token,{method:'POST',body:new URLSearchParams({creation_id:creationId})},'graph.instagram.com')
 }
 async function xResponse(res:Response){const text=await res.text();let data:any;try{data=JSON.parse(text)}catch{data={raw:text}};if(!res.ok)return {ok:false,data,error:data.errors?.map((e:any)=>e.detail||e.message||e.title).filter(Boolean).join('; ')||data.detail||data.title||data.raw||`X API request failed (${res.status})`};return {ok:true,data}}
