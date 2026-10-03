@@ -1,0 +1,16 @@
+name: Publish scheduled NelaPost posts
+
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run publisher
+        env:
+          CRON_SECRET: ${{ secrets.NELAPOST_CRON_SECRET }}
+        run: |
+          curl --fail --silent --show-error -X GET "https://nelapost.onrender.com/api/cron/publish" -H "Authorization: Bearer $CRON_SECRET"
