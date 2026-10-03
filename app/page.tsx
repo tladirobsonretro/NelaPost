@@ -146,7 +146,7 @@ export default function Home(){
    const data=await response.json()
    if(!response.ok)throw new Error(data.error||'Could not publish the post')
    setCaption('');if(media)URL.revokeObjectURL(media);setMedia(undefined);setMediaFile(undefined);setMediaType(undefined);setView('upcoming');await loadPosts()
-   if(data.status==='failed')window.alert(data.results?.map((x:any)=>`${x.platform}: ${x.error||'failed'}`).join('\\n')||'The post failed on all selected platforms.')
+   if(data.results?.some((x:any)=>x.status==='failed'))window.alert(data.results.filter((x:any)=>x.status==='failed').map((x:any)=>`${x.platform}: ${x.error||'Publishing failed'}`).join('\\n'))
   }catch(error:any){window.alert(error?.message||'Something went wrong while publishing.')}finally{setBusy(false)}
  }
 
