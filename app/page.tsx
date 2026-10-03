@@ -34,6 +34,7 @@ export default function Home(){
  const [mediaFile,setMediaFile]=useState<File>()
  const [mediaType,setMediaType]=useState<'image'|'video'>()
  const [posts,setPosts]=useState<Post[]>([])
+ const [library,setLibrary]=useState<{name:string;url:string;type:'image'|'video';size?:number}[]>([])
  const [calendar,setCalendar]=useState(false)
  const [previewPlatform,setPreviewPlatform]=useState('X')
  const [connected,setConnected]=useState<Record<string,{name:string}>>({})
@@ -42,6 +43,9 @@ export default function Home(){
 
  const loadConnections=async()=>{
   try{const r=await fetch('/api/connections',{cache:'no-store'});const data=await r.json();if(r.ok)setConnected(data.connected||{})}catch{}
+ }
+ const loadLibrary=async()=>{
+  try{const r=await fetch('/api/media',{cache:'no-store'});const data=await r.json();if(r.ok)setLibrary(data.media||[])}catch{}
  }
  const loadPosts=async()=>{
   try{
@@ -61,7 +65,7 @@ export default function Home(){
   })
   return()=>{active=false}
  },[])
- useEffect(()=>{if(view==='upcoming'||view==='drafts'||view==='library')loadPosts();if(view==='accounts')loadConnections()},[view])
+ useEffect(()=>{if(view==='upcoming'||view==='drafts')loadPosts();if(view==='library')loadLibrary();if(view==='accounts')loadConnections()},[view])
 
  const toggle=(platform:string)=>{
   setSelected(current=>{
@@ -94,6 +98,7 @@ export default function Home(){
   }catch(error:any){window.alert(error?.message||'Could not save draft')}finally{setBusy(false)}
  }
 
+ const deleteMedia=async(name:string)=>{if(!window.confirm('Delete this media from your library?'))return;const r=await fetch('/api/media?name='+encodeURIComponent(name),{method:'DELETE'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not delete media');return}await loadLibrary()}
  const deletePost=async(id:string|number)=>{if(!window.confirm('Delete this post?'))return;const r=await fetch('/api/posts/'+id,{method:'DELETE'});if(!r.ok){const d=await r.json();window.alert(d.error||'Could not delete post');return}await loadPosts()}
  const duplicatePost=async(id:string|number)=>{const r=await fetch('/api/posts/'+id+'/duplicate',{method:'POST'});const d=await r.json();if(!r.ok){window.alert(d.error||'Could not duplicate post');return}await loadPosts();setView('drafts')}
  const editPost=(post:Post)=>{
@@ -211,7 +216,7 @@ export default function Home(){
     <div className="postList">{posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').map(post=><div className="postRow" key={post.id}>{post.media?<img src={post.media} alt="" />:<div className="postThumb">N</div>}<div className="postInfo"><b>{post.caption||'Untitled post'}</b><span>{post.when} · {post.platforms.join(' + ')}</span><div className="postTargetStatuses">{post.targets?.map(t=><div className="postTargetCard" key={t.platform} title={t.error||undefined}><b>{t.platform}</b><span>{post.status==='scheduled'?'Scheduled':t.status==='pending'?'Pending':t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span><small>{post.status==='scheduled'?post.when:''}</small></div>)}</div></div><div className="postActions">{(post.status==='scheduled'||post.status==='draft')&&<button onClick={()=>editPost(post)}>Edit</button>}<button onClick={()=>duplicatePost(post.id)}>Duplicate</button><button onClick={()=>deletePost(post.id)}>Delete</button></div></div>)}</div>
     {!posts.filter(p=>view==='drafts'?p.status==='draft':p.status!=='draft').length&&<div className="emptyState"><div>{view==='drafts'?'□':'◷'}</div><b>{view==='drafts'?'No drafts yet':'No posts yet'}</b><span>{view==='drafts'?'Save unfinished content here.':'Create a post and it will appear here.'}</span><button className="headerButton" onClick={()=>setView('create')}>Create a post</button></div>}
    </section>}
-   {view==='library'&&<section className="card calendarPanel"><div className="calendarToolbar"><div><b>Media library</b><span>Previously uploaded media</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div><div className="mediaLibrary">{Array.from(new Map(posts.filter(p=>p.media).map(p=>[p.media,p])).values()).map(post=><button key={post.media} className="libraryItem" onClick={()=>{setView('create');setMedia(post.media);setMediaType(post.media?.match(/\.(mp4|mov|webm)(\?|$)/i)?'video':'image')}}><img src={post.media} alt="" /><span>{post.caption||'Media asset'}</span></button>)}</div>{!posts.some(p=>p.media)&&<div className="emptyState"><div>▦</div><b>Your library is empty</b><span>Upload media when creating a post and it will be collected here.</span></div>}</section>}
+   {view==='library'&&<section className="card calendarPanel"><div className="calendarToolbar"><div><b>Media library</b><span>{library.length} saved asset{library.length===1?'':'s'} · Reuse your uploaded media</span></div><button className="headerButton" onClick={()=>setView('create')}>＋ Create post</button></div><div className="mediaLibrary">{library.map(item=><div key={item.name} className="libraryItem"><button className="librarySelect" onClick={()=>{setView('create');setMedia(item.url);setMediaFile(undefined);setMediaType(item.type)}}>{item.type==='video'?<video src={item.url} muted playsInline/>:<img src={item.url} alt="" />}<span>{item.name}</span></button><div className="libraryMeta"><span>{item.type==='video'?'Video':'Image'}{item.size?' · '+(item.size/1024/1024).toFixed(1)+' MB':''}</span><button type="button" onClick={()=>deleteMedia(item.name)}>Delete</button></div></div>)}</div>{!library.length&&<div className="emptyState"><div>▦</div><b>Your library is empty</b><span>Upload media when creating a post and it will be collected here.</span><button className="headerButton" onClick={()=>setView('create')}>Upload media</button></div>}</section>}
 
    {view==='accounts'&&<section className="card accountsPanel">
     <div className="accountHero"><div><b>Link your platforms</b><span>Connect your social accounts. NelaPost will use the authorization you grant.</span></div><strong>{Object.keys(connected).length} connected</strong></div>
