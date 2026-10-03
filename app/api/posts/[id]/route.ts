@@ -10,7 +10,7 @@ export async function PATCH(request:Request,{params}:{params:Promise<{id:string}
   for(const key of allowed)if(key in body)patch[key]=body[key]
   if(patch.status&&!['draft','scheduled'].includes(patch.status))return NextResponse.json({error:'Only drafts and scheduled posts can be edited here.'},{status:400})
   const hasPlatforms=Array.isArray(body.platforms)
-  const selectedPlatforms=hasPlatforms?[...new Set(body.platforms.map((p:any)=>String(p).toLowerCase()).filter(Boolean))]:null
+  const selectedPlatforms:string[] = hasPlatforms ? Array.from(new Set((body.platforms as unknown[]).map(p=>String(p).toLowerCase()).filter(Boolean))) : []
   if(hasPlatforms&&!selectedPlatforms.length)return NextResponse.json({error:'Select at least one platform.'},{status:400})
   patch.updated_at=new Date().toISOString()
   const {data,error}=await db.from('posts').update(patch).eq('id',postId).eq('installation_id',id).select('*,post_targets(*)').single()
