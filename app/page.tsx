@@ -161,7 +161,7 @@ export default function Home(){
    <nav className="nav">
     <button className={view==='create'?'active':''} onClick={()=>setView('create')}><span>＋</span>Create post</button>
     <button className={view==='upcoming'?'active':''} onClick={()=>setView('upcoming')}><span>◷</span>Calendar</button><button className={view==='drafts'?'active':''} onClick={()=>setView('drafts')}><span>□</span>Drafts</button><button className={view==='library'?'active':''} onClick={()=>setView('library')}><span>▦</span>Library</button>
-    <button className={view==='accounts'?'active':''} onClick={()=>setView('accounts')}><span>◎</span>Accounts</button>
+    <button className={view==='accounts'?'active':''} onClick={()=>setView('accounts')}><span>◎</span>Accounts</button><button onClick={()=>{window.location.href='/business'}}><span>▣</span>Business tools</button>
    </nav>
    <div className="sidebarBottom"><div className="freeBadge"><b>Free & open source</b><span>Simple social publishing.</span></div></div>
   </aside>
