@@ -167,6 +167,7 @@ export default function Home(){
   </aside>
 
   <main className="content">
+   <Link href="/business" className="mobileBusinessLink">▣ Open CornerCo Business</Link>
    <header className="header">
     <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':view==='drafts'?'Drafts':view==='library'?'Media library':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect your social platforms for publishing.':view==='drafts'?'Keep unfinished posts ready to go.':view==='library'?'Reuse media you have already uploaded.':'Plan and manage every scheduled post.'}</p></div>
     <div className="headerActions">{view!=='create'&&<button className="headerButton" onClick={()=>setView('create')}>＋ New post</button>}<span className="userEmail">{userEmail}</span><button className="logoutButton" onClick={logout}>Log out</button></div>
