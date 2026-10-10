@@ -22,12 +22,12 @@ export default function Login(){
    if(mode==='login'){
     const {error}=await supabase.auth.signInWithPassword({email,password})
     if(error)throw error
-    router.replace('/')
+    router.replace('/workspace')
     router.refresh()
    }else{
     const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:SITE_URL+'/auth/callback'}})
     if(error)throw error
-    if(data.session){router.replace('/');router.refresh()}
+    if(data.session){router.replace('/workspace');router.refresh()}
     else setMessage('NelaPost has created your account. Check your email to confirm your account, then return to NelaPost to sign in.')
    }
   }catch(err:any){setError(err?.message||'Authentication failed.')}finally{setBusy(false)}
@@ -47,6 +47,7 @@ export default function Login(){
     {message&&<div className="loginMessage">{message}</div>}
     <button className="loginButton" disabled={busy}>{busy?(mode==='login'?'Signing in…':'Creating account…'):(mode==='login'?'Sign in':'Create account')}</button>
    </form>
+   {mode==='login'&&<a className="forgotPasswordLink" href="/forgot-password">Forgot Password?</a>}
    <div className="loginLegal"><a href="/privacy">Privacy Policy</a><span>·</span><a href="/terms">Terms of Service</a></div>
    <button className="loginSwitch" onClick={()=>{setMode(mode==='login'?'signup':'login');setError('');setMessage('')}}>{mode==='login'?"Don't have an account? Create one":"Already have an account? Sign in"}</button>
   </section>
