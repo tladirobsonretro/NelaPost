@@ -125,3 +125,23 @@ button{cursor:pointer}
 .passwordInputWrap{position:relative;display:block;width:100%}.passwordInputWrap input{padding-right:44px!important}.passwordToggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;background:transparent;color:#777b86;display:grid;place-items:center;border-radius:7px;padding:7px}.passwordToggle:hover{background:#f0f1f5;color:#171923}.passwordToggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .loginButton{display:flex;align-items:center;justify-content:center;gap:9px;min-height:40px}.loginSpinner{width:15px;height:15px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;display:inline-block;animation:loginSpin .7s linear infinite}@keyframes loginSpin{to{transform:rotate(360deg)}}
 .loginError{display:flex;align-items:flex-start;gap:8px}.loginSadIcon{display:inline-grid;place-items:center;flex:0 0 20px;width:20px;height:20px;border-radius:50%;background:#ffe1e1;color:#b42318;font-size:15px;font-weight:900;line-height:1}.loginVerified{display:flex;align-items:center;gap:8px}.loginSuccessIcon{display:inline-grid;place-items:center;width:20px;height:20px;flex:0 0 20px;border-radius:50%;background:#d9fbe5;color:#177245;font-size:13px;font-weight:900}
+
+/* Premium, minimal NelaPost styling for Business Tools */
+.businessWorkspace{font-family:Inter,Arial,sans-serif!important;background:#f8f8fb!important;color:#171923!important;letter-spacing:-.01em}
+.businessWorkspace>aside{flex:0 0 238px!important;width:238px!important;padding:24px 18px!important;background:#fff!important;border-right:1px solid #e9e6ef!important}
+.businessWorkspace>aside>a:first-child{color:#4f2da7!important;letter-spacing:-.045em}
+.businessWorkspace>aside button{font-size:12px!important;transition:background .15s ease,color .15s ease}
+.businessWorkspace>aside button:hover{background:#f6f3fb!important;color:#4f2da7!important}
+.businessWorkspace>aside button[style*="rgb(241, 237, 250)"]{color:#4f2da7!important}
+.businessWorkspace>section{padding:32px!important;max-width:1500px!important}
+.businessWorkspace header h1{font-size:29px;letter-spacing:-.045em;font-weight:700;color:#171923}
+.businessWorkspace header small{letter-spacing:.12em;font-size:10px}
+.businessWorkspace article,.businessWorkspace section[style*="border-radius: 12px"]{box-shadow:0 2px 8px rgba(26,18,43,.025);border-color:#e9e6ef!important;border-radius:14px!important}
+.businessWorkspace input,.businessWorkspace select,.businessWorkspace textarea{font-family:Inter,Arial,sans-serif!important;border-color:#e2ddeb!important;border-radius:9px!important;background:#fff;color:#171923}
+.businessWorkspace input:focus,.businessWorkspace select:focus,.businessWorkspace textarea:focus{outline:2px solid #e5dcf7;outline-offset:1px;border-color:#8b70c5!important}
+.businessWorkspace button{transition:filter .15s ease,transform .15s ease}
+.businessWorkspace button:not(:disabled):hover{filter:brightness(.97)}
+.businessWorkspace button:disabled{cursor:not-allowed;opacity:.55}
+.businessWorkspace table th{font-weight:700;color:#6e687a;background:#faf9fc}
+.businessWorkspace footer{color:#898494!important}
+@media(max-width:760px){.businessWorkspace>aside{flex:1 1 100%!important;width:100%!important;border-right:0!important;border-bottom:1px solid #e9e6ef!important;padding:16px!important}.businessWorkspace>aside p{margin:10px 0!important}.businessWorkspace>aside button{width:auto!important;display:inline-block!important;padding:9px 11px!important;margin:3px!important}.businessWorkspace>section{min-width:0!important;width:100%!important;padding:18px 14px!important}.businessWorkspace header{align-items:flex-start!important;flex-direction:column!important}.businessWorkspace header h1{font-size:25px}.businessWorkspace article{min-width:0}}
