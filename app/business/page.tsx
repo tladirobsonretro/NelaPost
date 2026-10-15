@@ -8,7 +8,6 @@ type Member={id:string;email:string;display_name:string;role:string;active:boole
 type Sale={id:string;staff_name:string;payment_method:string;items:any[];revenue:number;cogs:number;created_at:string;status?:string;void_reason?:string|null;voided_at?:string|null}
 type Expense={id:string;category:string;description:string;amount:number;expense_type:string;created_at:string}
 type AuditRecord={id:number;actor_email:string;action:string;table_name:string;record_id:string|null;old_data:Record<string,unknown>|null;new_data:Record<string,unknown>|null;created_at:string}
-type CashUp={business_date:string;counted_cash:number;notes:string;closed_by:string;updated_at:string}
 type Profile={business_id:string;business_name:string;slogan:string;description:string;logo_url:string;phone:string;email:string;address:string;website:string;registration_number:string;vat_number:string;facebook_url:string;instagram_url:string;updated_at?:string}
 const emptyProfile:Profile={business_id:'cornerco',business_name:'CornerCo Water & Ice',slogan:'',description:'',logo_url:'',phone:'',email:'',address:'',website:'',registration_number:'',vat_number:'',facebook_url:'',instagram_url:''}
 const B='cornerco',money=(n:number)=>new Intl.NumberFormat('en-ZA',{style:'currency',currency:'ZAR'}).format(Number(n||0)),unitPrice=(p:Product,qty:number)=>p.bulk_min_qty&&p.bulk_price!==null&&p.bulk_price!==undefined&&qty>=Number(p.bulk_min_qty)?Number(p.bulk_price):Number(p.price)
