@@ -156,3 +156,14 @@ button{cursor:pointer}
 .mobileMenuDropdown button:hover,.mobileMenuDropdown a:hover,.mobileMenuDropdown button.selected{background:#f2eefb;color:#4f2da7}
 @media(max-width:650px){.mobileMenuWrap{display:block}.sidebar{display:none!important}.content{padding:16px 14px!important}.header{gap:10px}.headerActions{display:none}.mobileBusinessLink{margin-bottom:12px}}
 @media(max-width:760px){.businessWorkspace>aside{display:none!important}.businessWorkspace>section{padding:16px 14px!important}.businessMobileMenuWrap{display:block}.businessMobileDropdown{max-width:100%}.businessWorkspace header{margin-bottom:16px!important}.businessWorkspace header>div:last-child{width:100%;justify-content:flex-start}.businessWorkspace header h1{font-size:24px!important}}
+
+
+/* NelaPost Business visual system */
+.businessWorkspace{--business-emerald:#087F5B;--business-emerald-dark:#075B43;--business-emerald-soft:#E8F5EF;--business-error:#C62828;--business-error-soft:#FDECEC;--business-warning:#F5C542;--business-warning-soft:#FFF6D8}
+.businessWorkspace button:focus-visible,.businessWorkspace a:focus-visible,.businessWorkspace input:focus-visible,.businessWorkspace select:focus-visible,.businessWorkspace textarea:focus-visible{outline:3px solid #087F5B55;outline-offset:2px}
+.businessWorkspace .businessMobileMenuWrap{position:relative}
+.businessWorkspace .mobileMenuButton{border:1px solid #CFE2D8;background:#fff;color:#075B43;border-radius:10px;padding:10px 13px;font-weight:750}
+.businessWorkspace .mobileMenuDropdown{border:1px solid #CFE2D8;box-shadow:0 12px 32px #123b2b1a}
+.businessWorkspace .mobileMenuDropdown button.selected{background:#E8F5EF;color:#075B43}
+.businessWorkspace button:disabled{cursor:not-allowed;opacity:.55}
+@media(max-width:700px){.businessWorkspace>aside{display:none!important}.businessWorkspace>section{padding:16px!important;min-width:0!important;width:100%}.businessWorkspace header{align-items:flex-start!important;flex-direction:column!important}.businessWorkspace h1{font-size:25px}.businessWorkspace .businessMobileMenuWrap{margin-bottom:14px}.businessWorkspace .businessMobileDropdown{z-index:30;max-width:calc(100vw - 32px)}}
