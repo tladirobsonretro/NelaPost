@@ -145,3 +145,14 @@ button{cursor:pointer}
 .businessWorkspace table th{font-weight:700;color:#6e687a;background:#faf9fc}
 .businessWorkspace footer{color:#898494!important}
 @media(max-width:760px){.businessWorkspace>aside{flex:1 1 100%!important;width:100%!important;border-right:0!important;border-bottom:1px solid #e9e6ef!important;padding:16px!important}.businessWorkspace>aside p{margin:10px 0!important}.businessWorkspace>aside button{width:auto!important;display:inline-block!important;padding:9px 11px!important;margin:3px!important}.businessWorkspace>section{min-width:0!important;width:100%!important;padding:18px 14px!important}.businessWorkspace header{align-items:flex-start!important;flex-direction:column!important}.businessWorkspace header h1{font-size:25px}.businessWorkspace article{min-width:0}}
+
+
+/* Mobile-first hamburger navigation */
+.mobileMenuWrap,.businessMobileMenuWrap{display:none;position:relative;z-index:30;margin:0 0 14px}
+.mobileMenuButton{display:flex;align-items:center;gap:10px;border:1px solid #e2e3e9;background:#fff;color:#171923;border-radius:11px;padding:11px 14px;font-size:12px;font-weight:800;box-shadow:0 2px 8px #17192308}
+.hamburgerGlyph{font-size:21px;line-height:1;width:22px;text-align:center}
+.mobileMenuDropdown{position:absolute;top:calc(100% + 7px);left:0;right:0;max-width:360px;background:#fff;border:1px solid #e6e7ed;border-radius:13px;padding:7px;box-shadow:0 14px 38px #17192320;display:grid;gap:3px;z-index:50}
+.mobileMenuDropdown button,.mobileMenuDropdown a{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:8px;background:transparent;color:#343541;text-decoration:none;text-align:left;padding:12px;font-size:12px;font-weight:650}
+.mobileMenuDropdown button:hover,.mobileMenuDropdown a:hover,.mobileMenuDropdown button.selected{background:#f2eefb;color:#4f2da7}
+@media(max-width:650px){.mobileMenuWrap{display:block}.sidebar{display:none!important}.content{padding:16px 14px!important}.header{gap:10px}.headerActions{display:none}.mobileBusinessLink{margin-bottom:12px}}
+@media(max-width:760px){.businessWorkspace>aside{display:none!important}.businessWorkspace>section{padding:16px 14px!important}.businessMobileMenuWrap{display:block}.businessMobileDropdown{max-width:100%}.businessWorkspace header{margin-bottom:16px!important}.businessWorkspace header>div:last-child{width:100%;justify-content:flex-start}.businessWorkspace header h1{font-size:24px!important}}
