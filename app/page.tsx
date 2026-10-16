@@ -25,6 +25,7 @@ export default function Home(){
  const [userEmail,setUserEmail]=useState('')
  const [authReady,setAuthReady]=useState(false)
  const [view,setView]=useState<'create'|'upcoming'|'drafts'|'library'|'accounts'>('create')
+ const [mobileMenuOpen,setMobileMenuOpen]=useState(false)
  const [caption,setCaption]=useState('')
  const [selected,setSelected]=useState<string[]>(['X'])
  const [when,setWhen]=useState<'now'|'schedule'>('now')
@@ -167,6 +168,18 @@ export default function Home(){
   </aside>
 
   <main className="content">
+   <div className="mobileMenuWrap">
+    <button type="button" className="mobileMenuButton" aria-label={mobileMenuOpen?'Close navigation menu':'Open navigation menu'} aria-expanded={mobileMenuOpen} onClick={()=>setMobileMenuOpen(v=>!v)}><span className="hamburgerGlyph">{mobileMenuOpen?'×':'☰'}</span><span>Menu</span></button>
+    {mobileMenuOpen&&<nav className="mobileMenuDropdown" aria-label="Main navigation">
+     <button onClick={()=>{setView('create');setMobileMenuOpen(false)}}>＋ Create post</button>
+     <button onClick={()=>{setView('upcoming');setMobileMenuOpen(false)}}>◷ Calendar</button>
+     <button onClick={()=>{setView('drafts');setMobileMenuOpen(false)}}>□ Drafts</button>
+     <button onClick={()=>{setView('library');setMobileMenuOpen(false)}}>▦ Library</button>
+     <button onClick={()=>{setView('accounts');setMobileMenuOpen(false)}}>◎ Accounts</button>
+     <Link href="/business" onClick={()=>setMobileMenuOpen(false)}>▣ Business tools</Link>
+     <button onClick={logout}>↪ Log out</button>
+    </nav>}
+   </div>
    <Link href="/business" className="mobileBusinessLink">▣ Open Business Tools</Link>
    <header className="header">
     <div><div className="brandHeader">NELAPOST</div><h1>{view==='create'?'Create post':view==='accounts'?'Link your platforms':view==='drafts'?'Drafts':view==='library'?'Media library':'Content calendar'}</h1><p>{view==='create'?'Create once. Publish everywhere.':view==='accounts'?'Connect your social platforms for publishing.':view==='drafts'?'Keep unfinished posts ready to go.':view==='library'?'Reuse media you have already uploaded.':'Plan and manage every scheduled post.'}</p></div>
