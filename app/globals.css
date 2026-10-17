@@ -167,3 +167,76 @@ button{cursor:pointer}
 .businessWorkspace .mobileMenuDropdown button.selected{background:#E8F5EF;color:#075B43}
 .businessWorkspace button:disabled{cursor:not-allowed;opacity:.55}
 @media(max-width:700px){.businessWorkspace>aside{display:none!important}.businessWorkspace>section{padding:16px!important;min-width:0!important;width:100%}.businessWorkspace header{align-items:flex-start!important;flex-direction:column!important}.businessWorkspace h1{font-size:25px}.businessWorkspace .businessMobileMenuWrap{margin-bottom:14px}.businessWorkspace .businessMobileDropdown{z-index:30;max-width:calc(100vw - 32px)}}
+
+
+/* Responsive alignment polish: Business workspace, reports and forms */
+.businessWorkspace,
+.businessWorkspace *{box-sizing:border-box}
+.businessWorkspace{min-width:0;overflow-wrap:anywhere}
+.businessWorkspace>section{min-width:0}
+.businessWorkspace button,
+.businessWorkspace input,
+.businessWorkspace select,
+.businessWorkspace textarea{max-width:100%;min-width:0}
+.businessWorkspace button{min-height:38px;line-height:1.25;white-space:normal}
+.businessWorkspace label{min-width:0;line-height:1.4}
+.businessWorkspace input,
+.businessWorkspace select,
+.businessWorkspace textarea{min-height:40px}
+.businessWorkspace table{border-spacing:0}
+.businessWorkspace th,.businessWorkspace td{vertical-align:middle}
+.businessWorkspace article h3{overflow-wrap:anywhere;word-break:normal}
+.businessWorkspace [style*="display: flex"]{min-width:0}
+.businessWorkspace .nelapost-report-print-root{overflow-x:visible!important}
+.businessWorkspace .nelapost-report-print-root>div:nth-of-type(2){align-items:flex-end!important}
+.businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.businessWorkspace .nelapost-report-print-root>div:nth-of-type(2) label{display:grid;gap:5px}
+.businessWorkspace .nelapost-report-print-root>div:nth-of-type(2) input{margin:0!important;min-height:40px}
+.businessWorkspace .nelapost-report-print-root>div:nth-of-type(2) button{min-height:40px;padding:10px 14px!important}
+.businessWorkspace .nelapost-report-print-root h3{line-height:1.3;margin-top:22px;margin-bottom:10px}
+.businessWorkspace .nelapost-report-print-root h4{line-height:1.35}
+.businessWorkspace .nelapost-report-print-root>div[style*="overflow-x: auto"]{max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.businessWorkspace .nelapost-report-print-root table{max-width:100%}
+.businessWorkspace .nelapost-report-print-root article{height:100%;min-width:0}
+.businessWorkspace .nelapost-report-print-root article small{line-height:1.45;overflow-wrap:anywhere}
+.businessWorkspace .nelapost-report-print-root article h3{margin-top:7px}
+.businessWorkspace .posSaleItemCard{max-width:100%;overflow:hidden}
+.businessWorkspace .posSaleItemCard input,
+.businessWorkspace .posSaleItemCard select{width:100%!important;max-width:100%!important}
+.businessWorkspace footer{line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:760px){
+ .businessWorkspace>section{padding:16px 14px!important}
+ .businessWorkspace header{gap:12px}
+ .businessWorkspace header>div{min-width:0;max-width:100%}
+ .businessWorkspace header>div:last-child{display:flex;align-items:stretch;flex-wrap:wrap;gap:8px;width:100%}
+ .businessWorkspace header>div:last-child>*{max-width:100%}
+ .businessWorkspace .nelapost-report-print-root{padding:14px!important}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2){display:flex!important;align-items:stretch!important;flex-direction:column!important;gap:10px!important}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div label{grid-column:1/-1;width:100%}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div button{width:100%;min-width:0;margin:0}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>h3{margin:0}
+ .businessWorkspace .nelapost-report-print-root>div[style*="overflow-x: auto"]{width:100%;max-width:100%;overflow-x:auto}
+ .businessWorkspace .nelapost-report-print-root table{min-width:560px}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(90px"]{grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(90px"]>div{grid-column:1/-1;grid-row:2}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(90px"]>b{grid-column:2;grid-row:1}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(85px"]{grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(85px"]>div{grid-column:1/-1;grid-row:2}
+ .businessWorkspace .nelapost-report-print-root>div[style*="grid-template-columns: minmax(85px"]>b{grid-column:2;grid-row:1}
+ .businessWorkspace .nelapost-report-print-root>div[style*="display: flex"]{flex-wrap:wrap}
+ .businessWorkspace .posSaleItemCard{padding:12px!important}
+ .businessWorkspace .posSaleItemCard input[type="date"]{font-size:16px!important;padding:10px!important}
+ .businessWorkspace .posSaleItemCard+label select,
+ .businessWorkspace input,.businessWorkspace select,.businessWorkspace textarea{font-size:16px}
+ .businessWorkspace button{touch-action:manipulation}
+ .businessWorkspace th,.businessWorkspace td{padding:9px 8px}
+}
+@media(max-width:380px){
+ .businessWorkspace>section{padding:12px!important}
+ .businessWorkspace .nelapost-report-print-root{padding:11px!important}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div{grid-template-columns:minmax(0,1fr)}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div label{grid-column:auto}
+ .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div button{grid-column:auto}
+ .businessWorkspace .mobileMenuButton{max-width:100%}
+}
