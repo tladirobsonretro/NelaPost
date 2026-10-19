@@ -53,12 +53,6 @@ export default function Login(){
    <h1>{mode==='login'?'Welcome back':'Create your account'}</h1>
    <p>{mode==='login'?'Sign in to continue to your NelaPost workspace.':'A few quick details and you’re on your way.'}</p>
    <p className="loginAuthNote">Your NelaPost sign-in is handled securely by Supabase. We never ask for your social-media passwords.</p>
-   {mode==='signup'&&<div style={{textAlign:'left',background:'#f7f8f7',border:'1px solid #e3e8e4',borderRadius:10,padding:'12px 13px',margin:'0 0 16px',fontSize:11,lineHeight:1.6,color:'#59645d'}}>
-    <strong style={{display:'block',fontSize:12,color:'#202720',marginBottom:4}}>Who operates NelaPost?</strong>
-    NelaPost is currently operated by <strong>Tladi Lisene</strong> as an individual and is not yet a separate registered company.
-    <div style={{marginTop:5}}>Contact: <a href="mailto:tladirobson@gmail.com" style={{color:'#176b48'}}>tladirobson@gmail.com</a> · <a href="tel:0677274424" style={{color:'#176b48'}}>067 727 4424</a></div>
-    <div>Website: <a href="https://nelapost.onrender.com" style={{color:'#176b48'}}>nelapost.onrender.com</a></div>
-   </div>}
    <form onSubmit={submit}>
     <label>Email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
     <label>Password<span className="passwordInputWrap"><input type={showPassword?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder={mode==='signup'?'Create a password':'Your password'} autoComplete={mode==='login'?'current-password':'new-password'} minLength={6} required /><button type="button" className="passwordToggle" aria-label={showPassword?'Hide password':'Show password'} title={showPassword?'Hide password':'Show password'} onClick={()=>setShowPassword(v=>!v)}>{showPassword?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.2A10.8 10.8 0 0112 5c5.3 0 9 5.2 9 7a8.8 8.8 0 01-2.1 3.2M6.2 6.2C4.1 7.5 3 10 3 12c0 1.8 3.7 7 9 7 1.3 0 2.5-.3 3.5-.8" /></svg>:<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.2-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.2 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.7"/></svg>}</button></span></label>
@@ -72,7 +66,7 @@ export default function Login(){
    </form>
    {signupComplete&&<button type="button" className="loginButton" style={{marginTop:14}} onClick={()=>switchMode('login')}>Back to sign in</button>}
    {mode==='login'&&<a className="forgotPasswordLink" href="/forgot-password">Forgot Password?</a>}
-   <div className="loginLegal"><a href="/privacy">Privacy Policy</a><span>·</span><a href="/terms">Terms of Service</a></div>
+   <div className="loginLegal"><a href="/about">About NelaPost</a><span>·</span><a href="/privacy">Privacy Policy</a><span>·</span><a href="/terms">Terms of Service</a></div>
    {!signupComplete&&<button className="loginSwitch" onClick={()=>switchMode(mode==='login'?'signup':'login')}>{mode==='login'?"Don't have an account? Create one":"Already have an account? Sign in"}</button>}
   </section>
  </main>
