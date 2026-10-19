@@ -4,8 +4,6 @@ import {FormEvent,useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {createClient} from '../../lib/supabase-browser'
 
-const SITE_URL=process.env.NEXT_PUBLIC_SITE_URL||'https://nelapost.onrender.com'
-
 export default function Login(){
  const router=useRouter()
  const supabase=createClient()
@@ -32,7 +30,7 @@ export default function Login(){
     router.refresh()
    }else{
     if(!termsAccepted)throw new Error('Please accept the Terms of Service and Privacy Policy to create your account.')
-    const {error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:SITE_URL+'/auth/callback?flow=email-confirmation'}})
+    const {error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+'/auth/callback?flow=email-confirmation'}})
     if(error)throw error
     setSignupComplete(true)
     setMessage('Please check your inbox and click the verification link in our email. Once your email is verified, come back here and sign in with your email address and password.')
