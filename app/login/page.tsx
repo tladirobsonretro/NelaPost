@@ -29,7 +29,7 @@ export default function Login(){
     router.replace('/workspace')
     router.refresh()
    }else{
-    const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:SITE_URL+'/auth/callback'}})
+    const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:SITE_URL+'/auth/callback?flow=email-confirmation'}})
     if(error)throw error
     if(data.session){setVerified(true);setMessage('Account created. Taking you to your workspace…');router.replace('/workspace');router.refresh()}
     else setMessage('NelaPost has created your account. Check your email to confirm your account, then return to NelaPost to sign in.')
