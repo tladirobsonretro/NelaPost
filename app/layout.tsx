@@ -5,8 +5,8 @@ export const metadata: Metadata={
  title:'NelaPost',
  description:'Create. Schedule. Publish.',
  icons:{
-  icon:[{url:'/icon.svg',type:'image/svg+xml'}],
-  shortcut:['/icon.svg'],
+  icon:[{url:'/logo-mark.svg',type:'image/svg+xml'}],
+  shortcut:['/logo-mark.svg'],
  }
 }
 
