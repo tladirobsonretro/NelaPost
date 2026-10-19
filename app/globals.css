@@ -244,3 +244,15 @@ button{cursor:pointer}
  .businessWorkspace .nelapost-report-print-root>div:nth-of-type(2)>div button{grid-column:auto}
  .businessWorkspace .mobileMenuButton{max-width:100%}
 }
+
+
+/* Email confirmation success page */
+.emailConfirmedCard{text-align:center}
+.emailConfirmedMark{width:54px;height:54px;margin:0 auto 20px;border-radius:50%;background:#eaf4ed;color:#26734c;display:grid;place-items:center}
+.emailConfirmedMark svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.emailConfirmedCard h1{margin:0 0 12px;font-size:27px;letter-spacing:-.8px;line-height:1.2}
+.emailConfirmedCard .emailConfirmedCopy{margin:0 auto 24px;max-width:340px;color:#69716c;font-size:13px;line-height:1.65}
+.emailConfirmedButton{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;padding:12px 18px;border-radius:10px;background:#171923;color:#fff;text-decoration:none;font-size:13px;font-weight:750;transition:background .15s ease}
+.emailConfirmedButton:hover{background:#2b2e39}
+.emailConfirmedBack{display:block;margin-top:17px;color:#5c675f;text-decoration:none;font-size:12px;font-weight:650}
+.emailConfirmedBack:hover{text-decoration:underline}
