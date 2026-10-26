@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {useEffect,useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {createClient} from '../../lib/supabase-browser'
+import DailyMotivation from '../../components/DailyMotivation'
 
 export default function Workspace(){
  const router=useRouter()
@@ -37,6 +38,7 @@ export default function Workspace(){
     <span>YOUR WORKSPACE</span>
     <h2>Where would you like to go?</h2>
    </div>
+   <DailyMotivation compact />
    <nav className="portalChoices" aria-label="Choose a workspace">
     <Link href="/" className="portalChoice portalChoiceSocial">
      <span className="portalChoiceName">Social</span>
