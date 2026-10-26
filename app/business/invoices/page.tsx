@@ -15,7 +15,7 @@ const field:React.CSSProperties={display:'block',width:'100%',boxSizing:'border-
 const btn:React.CSSProperties={background:'#087F5B',color:'#fff',border:0,borderRadius:8,padding:'10px 13px',fontWeight:700,cursor:'pointer'}
 const panel:React.CSSProperties={background:'#fff',border:'1px solid #e3eaf3',borderRadius:12,padding:18,marginBottom:15}
 export default function InvoicesPage(){
- const db=createClient()
+ const db=useMemo(()=>createClient(),[])
  const [invoices,setInvoices]=useState<Invoice[]>([])
  const [businessName,setBusinessName]=useState('Your Business')
  const [vatRegistered,setVatRegistered]=useState(false)
