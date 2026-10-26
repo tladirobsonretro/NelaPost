@@ -1,7 +1,8 @@
 -- NelaPost Business invoicing
 alter table public.business_profiles
   add column if not exists vat_registered boolean not null default false,
-  add column if not exists vat_rate numeric(5,2) not null default 15;
+  add column if not exists vat_rate numeric(5,2) not null default 15,
+  add column if not exists payment_details text not null default '';
 
 create table if not exists public.business_invoices (
   id uuid primary key default gen_random_uuid(),
