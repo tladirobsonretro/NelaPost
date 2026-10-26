@@ -10,7 +10,7 @@ export default function Home(){
   <div style={{maxWidth:1000,margin:'0 auto'}}>
    <header style={{display:'flex',alignItems:'center',gap:12,marginBottom:72}}>
     <img src="/logo-mark.svg" alt="" width="48" height="48" style={{borderRadius:13,display:'block'}}/>
-    <div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.8px'}}>NelaPost</div><div style={{fontSize:12,color:'#777383',marginTop:3}}>Free and open-source tools for getting things done</div></div>
+    <div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.8px',color:'#087F5B'}}>NelaPost</div><div style={{fontSize:12,color:'#777383',marginTop:3}}>Free and open-source tools for getting things done</div></div>
    </header>
    <section style={{maxWidth:720,marginBottom:38}}>
     <p style={{fontSize:12,letterSpacing:2,fontWeight:800,color:'#087F5B',margin:'0 0 12px'}}>YOUR WORKSPACE STARTS HERE</p>

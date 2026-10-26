@@ -1,9 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NelaPost Pigpen NP">
-  <rect width="512" height="512" fill="#000"/>
-  <g fill="none" stroke="#fff" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
-    <path d="M76 76H436V436H76Z"/>
-    <path d="M76 76V436H436"/>
-  </g>
-  <circle cx="256" cy="256" r="22" fill="#fff"/>
-  <circle cx="150" cy="362" r="22" fill="#fff"/>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="2380.000000pt" height="2380.000000pt" viewBox="0 0 2380.000000 2380.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,2380.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 11900 l0 -11900 11900 0 11900 0 0 11900 0 11900 -11900 0 -11900
+0 0 -11900z m11707 1874 l2518 -3075 3 3075 2 3076 1160 0 1160 0 0 -5075 0
+-5075 -962 0 -963 0 -2525 3076 -2525 3075 -3 -3075 -2 -3076 -1160 0 -1160 0
+0 5075 0 5075 969 0 969 0 2519 -3076z m6678 -5523 c253 -66 464 -247 554 -477
+52 -135 68 -362 36 -519 -63 -305 -307 -557 -611 -631 -88 -22 -303 -25 -394
+-5 -296 65 -537 292 -622 588 -20 67 -23 102 -23 243 0 141 3 176 23 243
+88 307 342 526 667 577 93 14 278 4 370 -19z"/>
+</g>
 </svg>
