@@ -20,14 +20,14 @@ export default function Home(){
    <section aria-label="Choose a workspace" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,300px),1fr))',gap:18}}>
     <article style={cardStyle}>
      <div style={{width:46,height:46,borderRadius:13,background:'#e8f5ef',color:'#087F5B',display:'grid',placeItems:'center',fontSize:24,marginBottom:20}}>▣</div>
-     <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:'0 0 10px'}}>Business tools</h2>
+     <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:'0 0 10px'}}>Business Tools</h2>
      <p style={{fontSize:14,lineHeight:1.7,color:'#686575',margin:'0 0 24px',flex:1}}>Manage sales, products and stock, expenses, reports and customer invoices in one workspace.</p>
-     <Link href="/business" style={{...buttonStyle,background:'#087F5B',color:'#fff'}}>Open Business tools <span aria-hidden="true" style={{marginLeft:8}}>→</span></Link>
+     <Link href="/business" style={{...buttonStyle,background:'#087F5B',color:'#fff'}}>Open Business Tools <span aria-hidden="true" style={{marginLeft:8}}>→</span></Link>
     </article>
     <article style={{...cardStyle,background:'#fbfbfc',borderStyle:'dashed'}}>
      <div style={{width:46,height:46,borderRadius:13,background:'#f0f1f4',color:'#777383',display:'grid',placeItems:'center',fontSize:24,marginBottom:20}}>◷</div>
      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap'}}>
-      <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:0}}>Social publishing</h2>
+      <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:0}}>Social Publishing</h2>
       <span style={{fontSize:10,fontWeight:800,letterSpacing:'.8px',borderRadius:99,padding:'6px 9px',background:'#f0f1f4',color:'#686575'}}>COMING SOON</span>
      </div>
      <p style={{fontSize:14,lineHeight:1.7,color:'#777383',margin:'14px 0 24px',flex:1}}>We’re working on this part of NelaPost. Social publishing isn’t available yet, but it’s on the roadmap.</p>
