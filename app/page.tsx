@@ -44,7 +44,7 @@ export default function Home(){
     </article>
    </section>
    <footer style={{marginTop:54,paddingTop:18,borderTop:'1px solid #e4e5eb',display:'flex',justifyContent:'space-between',gap:12,flexWrap:'wrap',fontSize:11,color:'#8b8e99'}}>
-    <span>© {new Date().getFullYear()} NelaPost</span><span>Useful tools, built one step at a time.</span>
+    <span>© {new Date().getFullYear()} NelaPost</span><span>Simple Growth. Real Progress.</span>
    </footer>
   </div>
  </main>
