@@ -15,9 +15,9 @@ export default function Home(){
    <section style={{maxWidth:720,marginBottom:38}}>
     <p style={{fontSize:12,letterSpacing:2,fontWeight:800,color:'#087F5B',margin:'0 0 12px'}}>YOUR WORKSPACE STARTS HERE</p>
     <h1 style={{fontSize:'clamp(36px,7vw,60px)',lineHeight:1.04,letterSpacing:'-2.2px',margin:'0 0 18px'}}>Meet NelaPost.</h1>
-    <p style={{fontSize:18,lineHeight:1.7,color:'#626672',margin:0}}>A growing set of practical tools for your business. Choose where you want to start, with more features on the way.</p>
+    <p style={{fontSize:18,lineHeight:1.7,color:'#626672',margin:0}}>A growing set of practical tools for business, creativity and your next opportunity. Choose where you want to start.</p>
    </section>
-   <section aria-label="Choose a workspace" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,300px),1fr))',gap:18}}>
+   <section aria-label="Choose a workspace" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))',gap:18}}>
     <article style={cardStyle}>
      <div style={{width:46,height:46,borderRadius:13,background:'#e8f5ef',color:'#087F5B',display:'grid',placeItems:'center',fontSize:24,marginBottom:20}}>▣</div>
      <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:'0 0 10px'}}>Business Tools</h2>
@@ -32,6 +32,15 @@ export default function Home(){
      </div>
      <p style={{fontSize:14,lineHeight:1.7,color:'#777383',margin:'14px 0 24px',flex:1}}>We’re working on this part of NelaPost. Social publishing isn’t available yet, but it’s on the roadmap.</p>
      <div style={{...buttonStyle,background:'#f0f1f4',color:'#8a8d97',cursor:'not-allowed'}} aria-disabled="true">Under development</div>
+    </article>
+    <article style={cardStyle}>
+     <div style={{width:46,height:46,borderRadius:13,background:'#edf4ff',color:'#1769e0',display:'grid',placeItems:'center',fontSize:24,marginBottom:20}}>▤</div>
+     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap'}}>
+      <h2 style={{fontSize:23,letterSpacing:'-.6px',margin:0}}>CV Studio</h2>
+      <span style={{fontSize:10,fontWeight:800,letterSpacing:'.8px',borderRadius:99,padding:'6px 9px',background:'#e8f5ef',color:'#087F5B'}}>FREE</span>
+     </div>
+     <p style={{fontSize:14,lineHeight:1.7,color:'#686575',margin:'14px 0 24px',flex:1}}>Build a professional, ATS-friendly CV with three styles, practical writing guidance and PDF or Word exports.</p>
+     <Link href="/cv-studio" style={{...buttonStyle,background:'#087F5B',color:'#fff'}}>Open CV Studio <span aria-hidden="true" style={{marginLeft:8}}>→</span></Link>
     </article>
    </section>
    <footer style={{marginTop:54,paddingTop:18,borderTop:'1px solid #e4e5eb',display:'flex',justifyContent:'space-between',gap:12,flexWrap:'wrap',fontSize:11,color:'#8b8e99'}}>
