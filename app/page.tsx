@@ -18,9 +18,15 @@ function ToolCard({ icon, title, description, href, tint, color }: { icon: strin
 export default function Home() {
   return <main style={{ minHeight: '100vh', background: 'linear-gradient(180deg,#f7fbf8 0%,#f7f7fa 48%,#f5f6fa 100%)', color: '#171923', fontFamily: 'Inter,Arial,sans-serif', padding: '28px 20px 36px', boxSizing: 'border-box' }}>
     <div style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 62 }}>
-        <img src="/logo-mark.svg" alt="" width="46" height="46" style={{ borderRadius: 13, display: 'block' }} />
-        <div><div style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.8px', color: '#087F5B' }}>NelaPost</div><div style={{ fontSize: 12, color: '#777383', marginTop: 3 }}>Essentials</div></div>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 62 }}>
+        <Link href="/" aria-label="NelaPost home" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', minWidth: 0 }}>
+          <img src="/logo-mark.svg" alt="" width="46" height="46" style={{ borderRadius: 13, display: 'block' }} />
+          <div><div style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.8px', color: '#087F5B' }}>NelaPost</div><div style={{ fontSize: 12, color: '#777383', marginTop: 3 }}>Essentials</div></div>
+        </Link>
+        <Link href="/profile" aria-label="Your profile and settings" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '8px 12px 8px 8px', border: '1px solid #dfe7e1', borderRadius: 999, background: '#fff', color: '#25372c', textDecoration: 'none', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(20,24,35,.04)' }}>
+          <span aria-hidden="true" style={{ width: 30, height: 30, borderRadius: 999, display: 'grid', placeItems: 'center', background: '#e8f5ef', color: '#087F5B', fontSize: 14 }}>♙</span>
+          <span>Profile & Settings</span>
+        </Link>
       </header>
       <section style={{ maxWidth: 720, marginBottom: 32 }}>
         <p style={{ fontSize: 11, letterSpacing: 2, fontWeight: 800, color: '#087F5B', margin: '0 0 12px' }}>PRACTICAL TOOLS, ALL IN ONE PLACE</p>
@@ -49,8 +55,9 @@ export default function Home() {
         <ToolCard icon="▧" title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
         <ToolCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
       </section>
-      <footer style={{ marginTop: 48, paddingTop: 18, borderTop: '1px solid #e4e5eb', display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', fontSize: 11, color: '#8b8e99' }}>
-        <span>© {new Date().getFullYear()} NelaPost</span><span>Simple Growth. Real Progress.</span>
+      <footer style={{ marginTop: 48, paddingTop: 18, borderTop: '1px solid #e4e5eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', fontSize: 11, color: '#8b8e99' }}>
+        <span>© {new Date().getFullYear()} NelaPost</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 16 }}><span>Simple Growth. Real Progress.</span><Link href="/about" style={{ color: '#087F5B', fontWeight: 700, textDecoration: 'none' }}>About NelaPost</Link><Link href="/privacy" style={{ color: '#087F5B', textDecoration: 'none' }}>Privacy</Link><Link href="/terms" style={{ color: '#087F5B', textDecoration: 'none' }}>Terms</Link></span>
       </footer>
     </div>
   </main>
