@@ -26,7 +26,7 @@ export default function CVStudio(){
  const [step,setStep]=useState(0)
  const [jobDescription,setJobDescription]=useState('')
  const [saved,setSaved]=useState(false)
- const [showPreview,setShowPreview]=useState(true)
+ const [showPreview,setShowPreview]=useState(false)
  useEffect(()=>{try{const raw=localStorage.getItem('nelapost-cv-studio-draft');if(raw){const parsed=JSON.parse(raw);setCv({...blank,...parsed});if(parsed.theme)setTheme(parsed.theme)}}catch{}},[])
  useEffect(()=>{const t=window.setTimeout(()=>{try{localStorage.setItem('nelapost-cv-studio-draft',JSON.stringify({...cv,theme}));setSaved(true)}catch{setSaved(false)}},450);return()=>window.clearTimeout(t)},[cv,theme])
  const update=(key:keyof CV,value:string)=>setCv(old=>({...old,[key]:value}))
@@ -107,7 +107,7 @@ export default function CVStudio(){
   <div style={{maxWidth:1240,margin:'0 auto'}}>
    <header style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap',marginBottom:24}}>
     <div style={{display:'flex',alignItems:'center',gap:12}}><Link href="/" aria-label="Back to NelaPost home" style={{display:'grid',placeItems:'center',width:42,height:42,borderRadius:12,background:'#11131a',color:'#fff',fontSize:21,fontWeight:800,textDecoration:'none'}}>N.</Link><div><div style={{fontSize:23,fontWeight:800,letterSpacing:'-.8px',color:'#087f5b'}}>CV Studio</div><div style={{fontSize:12,color:'#777b88',marginTop:3}}>Create a polished, ATS-friendly CV for free</div></div></div>
-    <div style={{display:'flex',alignItems:'center',gap:12}}><span style={{fontSize:11,color:'#777b88'}}>{saved?'Draft saved on this device':'Saving draft…'}</span><Link href="/" style={{fontSize:13,fontWeight:700,color:'#4c5360',textDecoration:'none'}}>← NelaPost Home</Link></div>
+    <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}><span style={{fontSize:11,color:'#777b88'}}>{saved?'Draft saved on this device':'Saving draft…'}</span><button onClick={()=>setShowPreview(v=>!v)} style={{...btn,padding:'8px 10px',background:'#fff',border:'1px solid #dfe2e7',color:'#343945'}}>{showPreview?'Hide CV Preview':'Show CV Preview'}</button><Link href="/" style={{fontSize:13,fontWeight:700,color:'#4c5360',textDecoration:'none'}}>← NelaPost Home</Link></div>
    </header>
    <section style={{background:'#fff',border:'1px solid #e6e8ee',borderRadius:16,padding:'18px 20px',marginBottom:18}}>
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,flexWrap:'wrap'}}><div><div style={{fontSize:11,fontWeight:800,letterSpacing:1.2,color:'#087f5b',marginBottom:5}}>YOUR CV, YOUR STORY</div><div style={{fontSize:20,fontWeight:800,letterSpacing:'-.5px'}}>Build it step by step.</div></div><div style={{fontSize:12,color:'#737885'}}>Autosaves locally · No AI fees · No invented achievements</div></div>
