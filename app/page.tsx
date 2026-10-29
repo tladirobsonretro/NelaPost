@@ -6,15 +6,12 @@ const cardStyle: React.CSSProperties = { border: '1px solid #e5e7eb', borderRadi
 const buttonStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, padding: '12px 16px', fontWeight: 700, fontSize: 13, textDecoration: 'none', width: '100%', boxSizing: 'border-box' }
 const iconStyle: React.CSSProperties = { width: 44, height: 44, borderRadius: 13, display: 'grid', placeItems: 'center', fontSize: 22, marginBottom: 18 }
 
-function ComingSoonCard({ icon, title, description, tint, color }: { icon: string; title: string; description: string; tint: string; color: string }) {
-  return <article style={{ ...cardStyle, background: '#fbfbfc' }}>
+function ToolCard({ icon, title, description, href, tint, color }: { icon: string; title: string; description: string; href: string; tint: string; color: string }) {
+  return <article style={cardStyle}>
     <div style={{ ...iconStyle, background: tint, color }}>{icon}</div>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
-      <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: 0 }}>{title}</h2>
-      <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '.7px', borderRadius: 99, padding: '6px 8px', background: '#f0f1f4', color: '#686575' }}>COMING SOON</span>
-    </div>
-    <p style={{ fontSize: 13, lineHeight: 1.7, color: '#777383', margin: '13px 0 0', flex: 1 }}>{description}</p>
-    <div style={{ ...buttonStyle, marginTop: 20, background: '#f0f1f4', color: '#8a8d97' }}>In the works</div>
+    <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: '0 0 9px' }}>{title}</h2>
+    <p style={{ fontSize: 13, lineHeight: 1.7, color: '#686575', margin: '0 0 22px', flex: 1 }}>{description}</p>
+    <Link href={href} style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open {title} <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
   </article>
 }
 
@@ -49,9 +46,8 @@ export default function Home() {
           <p style={{ fontSize: 13, lineHeight: 1.7, color: '#686575', margin: '0 0 22px', flex: 1 }}>Build a professional, ATS-friendly CV with practical writing guidance and PDF or Word exports.</p>
           <Link href="/cv-studio" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open CV Studio <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
         </article>
-        <ComingSoonCard icon="▧" title="PDF Tools" description="Merge, split, compress and convert documents directly on your device wherever practical." tint="#f0f1f4" color="#555b67" />
-        <ComingSoonCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images without needing a separate paid subscription." tint="#fff2e6" color="#a85a12" />
-        <ComingSoonCard icon="＋" title="More Essentials" description="We will add tools that solve real, everyday problems, not features that are here just to fill space." tint="#f0f1f4" color="#555b67" />
+        <ToolCard icon="▧" title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
+        <ToolCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
       </section>
       <footer style={{ marginTop: 48, paddingTop: 18, borderTop: '1px solid #e4e5eb', display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', fontSize: 11, color: '#8b8e99' }}>
         <span>© {new Date().getFullYear()} NelaPost</span><span>Simple Growth. Real Progress.</span>
