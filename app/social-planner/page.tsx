@@ -183,9 +183,9 @@ export default function SocialPlannerPage() {
           <div className="planner-calendar">
             {weekdays.map((day) => <div className="planner-weekday" key={day.short}>{day.short}</div>)}
             {calendarCells.map((cell, index) => {
-              const post = cell ? posts.find((item) => item.date === cell.date) : undefined
+              const dayPosts = cell ? posts.filter((item) => item.date === cell.date) : []
               return <div key={cell?.date || 'empty-' + index} className={'planner-cell ' + (cell ? '' : 'empty')}>
-                {cell && <><div className="planner-date">{cell.day}</div>{post ? <button type="button" className="planner-event" onClick={() => document.getElementById('post-' + post.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}><strong>{post.theme}</strong><span>{post.format}</span><span className={'planner-status ' + post.status.toLowerCase()}>{post.status}</span></button> : hasGenerated ? <p className="planner-empty-note">Rest day</p> : null}</>}
+                {cell && <><div className="planner-date">{cell.day}</div>{dayPosts.length > 0 ? dayPosts.map((post) => <button key={post.id} type="button" className="planner-event" style={{ marginBottom: 5 }} onClick={() => document.getElementById('post-' + post.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}><strong>{post.theme}</strong><span>{post.platforms.join(' + ')}</span><span className={'planner-status ' + post.status.toLowerCase()}>{post.status}</span></button>) : hasGenerated ? <p className="planner-empty-note">Rest day</p> : null}</>}
               </div>
             })}
           </div>
