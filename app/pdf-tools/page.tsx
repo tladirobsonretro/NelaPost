@@ -53,11 +53,17 @@ export default function PDFToolsPage() {
           const dataUrl = await new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('Could not read ' + file.name)); reader.onerror = () => reject(new Error('Could not read ' + file.name)); reader.readAsDataURL(file) })
           const image = new Image()
           await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error(file.name + ' is not a supported image.')); image.src = dataUrl })
+          const canvas = document.createElement('canvas')
+          canvas.width = image.naturalWidth; canvas.height = image.naturalHeight
+          const context = canvas.getContext('2d')
+          if (!context) throw new Error('Could not prepare ' + file.name + ' for PDF export.')
+          context.fillStyle = '#ffffff'; context.fillRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0)
+          const printableData = canvas.toDataURL('image/jpeg', 0.92)
           if (i > 0) pdf.addPage()
           const pageW = pdf.internal.pageSize.getWidth() - 48, pageH = pdf.internal.pageSize.getHeight() - 48
           const scale = Math.min(pageW / image.naturalWidth, pageH / image.naturalHeight)
           const w = image.naturalWidth * scale, h = image.naturalHeight * scale
-          pdf.addImage(dataUrl, file.type.includes('png') ? 'PNG' : 'JPEG', (pdf.internal.pageSize.getWidth() - w) / 2, (pdf.internal.pageSize.getHeight() - h) / 2, w, h, undefined, 'FAST')
+          pdf.addImage(printableData, 'JPEG', (pdf.internal.pageSize.getWidth() - w) / 2, (pdf.internal.pageSize.getHeight() - h) / 2, w, h, undefined, 'FAST')
         }
         saveBlob(pdf.output('blob'), 'nelapost-images.pdf')
         setMessage('Your PDF is ready. The images were fitted to A4 pages and downloaded to your device.')
