@@ -34,9 +34,9 @@ export default function Home() {
       <section aria-label="NelaPost Essentials tools" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,265px),1fr))', gap: 16 }}>
         <article style={cardStyle}>
           <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }}>▣</div>
-          <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: '0 0 9px' }}>Shop Manager</h2>
+          <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: '0 0 9px' }}>Store Manager</h2>
           <p style={{ fontSize: 13, lineHeight: 1.7, color: '#686575', margin: '0 0 22px', flex: 1 }}>Manage daily sales, products and stock, expenses, cash-ups, reports and customer invoices for your shop or small retail operation.</p>
-          <Link href="/business" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open Shop Manager <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
+          <Link href="/business" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open Store Manager <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
         </article>
         <article style={cardStyle}>
           <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }}>▦</div>
