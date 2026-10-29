@@ -12,6 +12,7 @@ export type AvatarConfig = {
 const skins: Record<string, string> = { warm:'#C9855B', deep:'#70432F', rich:'#4A2C24', golden:'#E2AC78', fair:'#F0C8A4', rose:'#D99B83' }
 const shirts: Record<string, string> = { green:'#087F5B', blue:'#3768A8', purple:'#7652A5', orange:'#D97736', pink:'#C65D85', black:'#30343B' }
 const backgrounds: Record<string, string> = { mint:'#DDF2E7', sky:'#DCEBFA', lilac:'#EAE2F7', peach:'#F9E4D6', lemon:'#F5F0C9', slate:'#E5E9ED' }
+const hairColour = '#33251F'
 
 export function cleanAvatarConfig(value: unknown): Required<AvatarConfig> {
   const config = value && typeof value === 'object' ? value as AvatarConfig : {}
@@ -27,18 +28,35 @@ export default function ProfileAvatar({ config, initials = 'N', size = 72 }: { c
   const c = cleanAvatarConfig(config)
   const skin = skins[c.skin], shirt = shirts[c.shirt], bg = backgrounds[c.background]
   return (
-    <span className="npAvatar" role="img" aria-label="Customisable profile avatar" style={{ width:size, height:size, background:bg, display:'inline-grid', placeItems:'center', borderRadius:'50%', overflow:'hidden', flexShrink:0 }}>
+    <span className="npAvatar" role="img" aria-label="Customisable block-style profile avatar" style={{ width:size, height:size, background:bg, display:'inline-grid', placeItems:'center', borderRadius:'50%', overflow:'hidden', flexShrink:0 }}>
       <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-        <path d="M15 100 Q18 72 39 69 L61 69 Q82 72 85 100Z" fill={shirt}/>
-        <path d="M42 62 L58 62 L61 75 Q50 84 39 75Z" fill={skin}/>
-        <ellipse cx="50" cy="45" rx="25" ry="30" fill={skin}/>
-        {c.hair === 'long' && <path d="M24 39 Q16 6 49 7 Q82 6 76 39 L74 72 Q67 83 65 65 L67 34 Q50 21 33 34 L35 66 Q32 81 26 70Z" fill="#33251F"/>}
-        {c.hair === 'short' && <path d="M25 42 Q18 10 49 10 Q81 10 75 42 L67 31 Q49 22 33 33Z" fill="#33251F"/>}
-        {c.hair === 'curly' && <g fill="#33251F"><circle cx="30" cy="27" r="12"/><circle cx="42" cy="17" r="12"/><circle cx="56" cy="16" r="12"/><circle cx="69" cy="26" r="12"/><circle cx="24" cy="39" r="8"/><circle cx="75" cy="39" r="8"/></g>}
-        {c.hair === 'coils' && <g fill="#33251F"><circle cx="28" cy="29" r="8"/><circle cx="38" cy="19" r="8"/><circle cx="49" cy="16" r="8"/><circle cx="60" cy="19" r="8"/><circle cx="71" cy="29" r="8"/><circle cx="24" cy="39" r="7"/><circle cx="76" cy="39" r="7"/><path d="M29 35 Q50 21 71 35 L68 43 Q50 33 32 43Z"/></g>}
-        <ellipse cx="40" cy="46" rx="2.6" ry="3.3" fill="#292522"/><ellipse cx="60" cy="46" rx="2.6" ry="3.3" fill="#292522"/>
-        <path d="M43 58 Q50 63 57 58" fill="none" stroke="#8F4C43" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M38 39 Q41 37 44 39 M56 39 Q59 37 62 39" fill="none" stroke="#33251F" strokeWidth="2.5" strokeLinecap="round"/>
+        {/* Geometric shoulders and torso */}
+        <path d="M12 100 L16 83 Q20 72 37 70 L63 70 Q80 72 84 83 L88 100Z" fill={shirt}/>
+        <path d="M40 62 L60 62 L61 74 Q50 81 39 74Z" fill={skin}/>
+
+        {/* Hair sits behind the head to create a toy-like silhouette */}
+        {c.hair === 'long' && <path d="M22 43 Q17 9 50 8 Q83 9 78 43 L76 76 Q73 84 67 78 L67 37 Q50 25 33 37 L33 78 Q27 84 24 76Z" fill={hairColour}/>}
+        {c.hair === 'short' && <path d="M24 43 Q19 9 50 9 Q81 9 76 43 L68 35 Q50 27 32 35Z" fill={hairColour}/>}
+        {c.hair === 'curly' && <g fill={hairColour}><circle cx="29" cy="29" r="11"/><circle cx="39" cy="19" r="11"/><circle cx="50" cy="15" r="11"/><circle cx="61" cy="19" r="11"/><circle cx="71" cy="29" r="11"/><circle cx="24" cy="39" r="8"/><circle cx="76" cy="39" r="8"/></g>}
+        {c.hair === 'coils' && <g fill={hairColour}><circle cx="28" cy="29" r="8"/><circle cx="38" cy="19" r="8"/><circle cx="49" cy="15" r="8"/><circle cx="60" cy="19" r="8"/><circle cx="71" cy="29" r="8"/><circle cx="24" cy="39" r="7"/><circle cx="76" cy="39" r="7"/></g>}
+
+        {/* Rounded-square head: deliberately not an oval */}
+        <rect x="25" y="19" width="50" height="53" rx="9" fill={skin}/>
+
+        {/* Simple front hairline keeps each hairstyle readable */}
+        {c.hair === 'short' && <path d="M26 39 Q28 24 41 24 L59 24 Q72 25 74 39 L67 35 Q50 29 33 36Z" fill={hairColour}/>}
+        {c.hair === 'curly' && <path d="M27 36 Q34 25 42 28 Q50 20 59 28 Q68 25 73 36 L68 41 Q50 33 32 41Z" fill={hairColour}/>}
+        {c.hair === 'coils' && <path d="M27 36 Q33 27 40 30 Q50 22 60 30 Q68 27 73 36 L68 42 Q50 34 32 42Z" fill={hairColour}/>}
+        {c.hair === 'long' && <path d="M26 39 Q28 23 42 23 L58 23 Q72 24 74 39 L67 35 Q50 28 33 35Z" fill={hairColour}/>}
+
+        {/* Tall white pill eyes with clear black pupils */}
+        <ellipse cx="40" cy="47" rx="5" ry="8" fill="#FFFFFF"/>
+        <ellipse cx="60" cy="47" rx="5" ry="8" fill="#FFFFFF"/>
+        <ellipse cx="40" cy="48" rx="2.4" ry="3.6" fill="#171717"/>
+        <ellipse cx="60" cy="48" rx="2.4" ry="3.6" fill="#171717"/>
+
+        {/* Minimal friendly expression */}
+        <path d="M43 60 Q50 64 57 60" fill="none" stroke="#7E4038" strokeWidth="2.5" strokeLinecap="round"/>
       </svg>
     </span>
   )
