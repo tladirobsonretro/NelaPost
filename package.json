@@ -16,7 +16,8 @@
     "react-dom": "latest",
     "jspdf": "^3.0.3",
     "docx": "^9.5.1",
-    "pdf-lib": "^1.17.1"
+    "pdf-lib": "^1.17.1",
+    "@huggingface/transformers": "latest"
   },
   "devDependencies": {
     "typescript": "latest",

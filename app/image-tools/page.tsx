@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 
 type OutputFormat = 'image/jpeg' | 'image/png' | 'image/webp'
 type CropMode = 'original' | 'square' | 'landscape' | 'wide' | 'portrait'
+let backgroundRemovalPipeline: Promise<any> | null = null
 const field: React.CSSProperties = { width: '100%', boxSizing: 'border-box', border: '1px solid #dfe3e8', borderRadius: 10, padding: '11px 12px', font: 'inherit', fontSize: 13, background: '#fff', color: '#171923' }
 const button: React.CSSProperties = { border: '1px solid #dce1e6', borderRadius: 10, padding: '11px 15px', background: '#fff', color: '#303440', fontSize: 12, fontWeight: 800, cursor: 'pointer' }
 function downloadBlob(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1500) }
@@ -21,9 +22,38 @@ export default function ImageToolsPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [removedUrl, setRemovedUrl] = useState('')
+  const [removeBusy, setRemoveBusy] = useState(false)
+  const [removeProgress, setRemoveProgress] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   useEffect(() => { if (!file) { setPreviewUrl(''); return }; const url = URL.createObjectURL(file); setPreviewUrl(url); return () => URL.revokeObjectURL(url) }, [file])
-  function choose(next: File | null) { setFile(next); setError(''); setMessage('') }
+  function choose(next: File | null) { setFile(next); setError(''); setMessage(''); setRemovedUrl(''); setRemoveProgress('') }
+  async function removeImageBackground() {
+    if (!file) { setError('Choose an image first.'); return }
+    setRemoveBusy(true); setError(''); setMessage(''); setRemovedUrl(''); setRemoveProgress('Loading the background-removal model…')
+    let sourceUrl = ''
+    try {
+      const { pipeline } = await import('@huggingface/transformers')
+      if (!backgroundRemovalPipeline) backgroundRemovalPipeline = pipeline('background-removal', 'xrds/isnet-general-onnx-int8', { dtype: 'q8' })
+      const remover = await backgroundRemovalPipeline
+      setRemoveProgress('Removing the background on your device…')
+      sourceUrl = URL.createObjectURL(file)
+      const results = await remover(sourceUrl)
+      if (!results?.[0] || typeof results[0].toBlob !== 'function') throw new Error('The model did not return an image. Please try another image.')
+      const blob = await results[0].toBlob()
+      if (!(blob instanceof Blob) || blob.size === 0) throw new Error('Could not create the transparent PNG. Please try again.')
+      setRemovedUrl(URL.createObjectURL(blob))
+      setMessage('Background removed. Preview the transparent PNG below, then download it.')
+      setRemoveProgress('')
+    } catch (e) {
+      backgroundRemovalPipeline = null
+      setRemoveProgress('')
+      setError('Background removal could not finish. Check your connection for the first model download and try again. ' + (e instanceof Error ? e.message : ''))
+    } finally {
+      if (sourceUrl) URL.revokeObjectURL(sourceUrl)
+      setRemoveBusy(false)
+    }
+  }
   async function processImage() {
     if (!file) { setError('Choose an image first.'); return }
     setBusy(true); setError(''); setMessage('')
@@ -89,6 +119,19 @@ export default function ImageToolsPage() {
           <select id="image-crop" value={crop} onChange={event => setCrop(event.target.value as CropMode)} style={field}><option value="original">Original proportions</option><option value="square">Square · 1:1</option><option value="landscape">Landscape · 4:3</option><option value="wide">Wide · 16:9</option><option value="portrait">Portrait · 4:5</option></select>
           {format !== 'image/png' && <><label htmlFor="image-quality" style={{ display: 'block', fontSize: 11, fontWeight: 800, margin: '16px 0 7px' }}>COMPRESSION QUALITY: {quality}%</label><input id="image-quality" type="range" min="35" max="100" step="1" value={quality} onChange={event => setQuality(Number(event.target.value))} style={{ width: '100%', accentColor: '#087f5b' }} /><div style={{ display: 'flex', justifyContent: 'space-between', color: '#9296a0', fontSize: 10 }}><span>Smaller file</span><span>Higher quality</span></div></>}
           {format === 'image/jpeg' && <><label htmlFor="image-background" style={{ display: 'block', fontSize: 11, fontWeight: 800, margin: '16px 0 7px' }}>TRANSPARENT AREAS BECOME</label><select id="image-background" value={background} onChange={event => setBackground(event.target.value)} style={field}><option value="#ffffff">White</option><option value="#000000">Black</option><option value="#f2f2f2">Light grey</option></select></>}
+          <div style={{ marginTop: 18, borderTop: '1px solid #edf0f2', paddingTop: 18 }}>
+            <h3 style={{ fontSize: 14, margin: '0 0 6px' }}>Remove Background</h3>
+            <p style={{ color: '#747887', fontSize: 12, lineHeight: 1.6, margin: '0 0 12px' }}>Use AI to isolate the main subject and create a transparent PNG. Your image is processed on your device and is not uploaded to NelaPost. The model downloads the first time you use this feature.</p>
+            <button type="button" onClick={removeImageBackground} disabled={!file || removeBusy || busy} style={{ ...button, width: '100%', background: '#fff', borderColor: '#087f5b', color: '#087f5b', opacity: !file || removeBusy || busy ? .5 : 1 }}>{removeBusy ? 'Removing background…' : 'Remove Background'}</button>
+            {removeProgress && <p role="status" style={{ color: '#626672', fontSize: 12, lineHeight: 1.5, margin: '10px 0 0' }}>{removeProgress}</p>}
+            {removedUrl && <div style={{ marginTop: 14 }}>
+              <p style={{ fontSize: 11, fontWeight: 800, margin: '0 0 8px' }}>TRANSPARENT PREVIEW</p>
+              <div style={{ minHeight: 180, display: 'grid', placeItems: 'center', overflow: 'hidden', padding: 10, borderRadius: 12, backgroundColor: '#fff', backgroundImage: 'linear-gradient(45deg,#e7e9ed 25%,transparent 25%),linear-gradient(-45deg,#e7e9ed 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e7e9ed 75%),linear-gradient(-45deg,transparent 75%,#e7e9ed 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0,0 10px,10px -10px,-10px 0px' }}>
+                <img src={removedUrl} alt="Image with background removed and transparency preserved" style={{ display: 'block', maxWidth: '100%', maxHeight: 340, objectFit: 'contain' }} />
+              </div>
+              <button type="button" onClick={() => { const a = document.createElement('a'); a.href = removedUrl; a.download = outputName(file?.name || 'image', 'image/png'); document.body.appendChild(a); a.click(); a.remove() }} style={{ ...button, width: '100%', marginTop: 10, background: '#087f5b', borderColor: '#087f5b', color: '#fff' }}>Download Transparent PNG</button>
+            </div>}
+          </div>
           <button type="button" onClick={processImage} disabled={!file || busy} style={{ ...button, width: '100%', marginTop: 20, background: '#087f5b', borderColor: '#087f5b', color: '#fff', opacity: !file || busy ? .5 : 1 }}>{busy ? 'Processing on your device…' : 'Process and download'}</button>
           {error && <p role="alert" style={{ color: '#b42318', fontSize: 12, lineHeight: 1.5, margin: '13px 0 0' }}>{error}</p>}
           {message && <p role="status" style={{ color: '#087f5b', fontSize: 12, lineHeight: 1.6, margin: '13px 0 0' }}>{message}</p>}
