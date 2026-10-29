@@ -57,7 +57,7 @@ export default function ProfilePage(){
  return <main className="profilePage">
   <div className="profileWrap">
    <header className="profileTop">
-    <Link href="/" className="profileBrand"><img src="/logo-mark.svg" alt=""/> <span>NelaPost</span></Link>
+    <Link href="/" className="profileBrand"><span>NelaPost</span></Link>
     <Link href="/" className="backLink">Back to tools</Link>
    </header>
    <section className="profileIntro">
@@ -92,7 +92,7 @@ export default function ProfilePage(){
    .profilePage,.profileLoading{min-height:100svh;background:#f6f9f7;color:#202720;font-family:Inter,Arial,sans-serif;padding:24px 16px 40px;box-sizing:border-box}
    .profileLoading{display:grid;place-items:center}.profileLoading span{width:24px;height:24px;border:2px solid #dce6df;border-top-color:#087f5b;border-radius:50%;animation:spin .7s linear infinite}
    .profileWrap{max-width:980px;margin:0 auto}.profileTop{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:42px}
-   .profileBrand{display:flex;align-items:center;gap:10px;color:#087f5b;text-decoration:none;font-size:22px;font-weight:800;letter-spacing:-.7px}.profileBrand img{width:40px;height:40px;border-radius:11px}
+   .profileBrand{display:flex;align-items:center;gap:10px;color:#087f5b;text-decoration:none;font-size:22px;font-weight:800;letter-spacing:-.7px}
    .backLink,.profileFooter a{color:#087f5b;text-decoration:none;font-size:13px;font-weight:650}
    .profileIntro{display:flex;align-items:center;gap:18px;margin-bottom:28px}.avatar{width:66px;height:66px;flex:none;display:grid;place-items:center;border-radius:50%;background:#dff2e7;color:#087f5b;font-size:23px;font-weight:800;letter-spacing:-.5px}
    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.17em;color:#087f5b;margin:0 0 7px}h1{font-size:clamp(28px,4vw,38px);letter-spacing:-1.2px;line-height:1.12;margin:0 0 8px}.profileIntro p:last-child{margin:0;color:#667169;font-size:14px;line-height:1.6}
