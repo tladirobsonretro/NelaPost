@@ -49,7 +49,7 @@ export default function Workspace(){
    </nav>
    <footer className="portalFooter">
     <span className="portalEmail" title={email}>{email}</span>
-    <button onClick={signOut}>Sign out</button>
+    <nav className="portalFooterLinks" aria-label="Account links"><Link href="/profile">Profile & Settings</Link><Link href="/about">About</Link><button onClick={signOut}>Sign out</button></nav>
    </footer>
   </section>
   <style jsx>{`
@@ -73,12 +73,14 @@ export default function Workspace(){
    .portalChoiceBusiness .portalChoiceDescription{color:#777}
    .portalFooter{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:26px;padding-top:17px;border-top:1px solid #eee;color:#888;font-size:11px}
    .portalEmail{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+   .portalFooterLinks{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+   .portalFooterLinks a{color:#087f5b;text-decoration:none;font-size:11px;font-weight:650}
    .portalFooter button{border:1px solid #e5e5e5;border-radius:8px;background:#fff;color:#222;padding:9px 12px;font-size:11px;font-weight:650}
    .portalFooter button:hover{background:#f6f6f6;border-color:#cfcfcf}
    .portalLoading{min-height:100svh;display:grid;place-items:center;background:#fafafa}
    .portalLoading span{width:22px;height:22px;border:2px solid #ddd;border-top-color:#111;border-radius:50%;animation:portalSpin .7s linear infinite}
    @keyframes portalSpin{to{transform:rotate(360deg)}}
-   @media(max-width:560px){.portalPage{padding:20px 14px}.portalWrap{padding:25px 18px;border-radius:15px}.portalBrand img{width:56px;height:56px}.portalBrand h1{font-size:30px}.portalHeading{margin:38px 0 18px}.portalHeading h2{font-size:19px}.portalChoices{grid-template-columns:1fr;gap:10px}.portalChoice{min-height:96px;padding:18px 19px}.portalChoiceName{font-size:17px}.portalFooter{margin-top:21px}}
+   @media(max-width:560px){.portalPage{padding:20px 14px}.portalWrap{padding:25px 18px;border-radius:15px}.portalBrand img{width:56px;height:56px}.portalBrand h1{font-size:30px}.portalHeading{margin:38px 0 18px}.portalHeading h2{font-size:19px}.portalChoices{grid-template-columns:1fr;gap:10px}.portalChoice{min-height:96px;padding:18px 19px}.portalChoiceName{font-size:17px}.portalFooter{margin-top:21px;align-items:flex-start;flex-direction:column}.portalFooterLinks{justify-content:flex-start}}
    @media(prefers-reduced-motion:reduce){.portalChoice,.portalLoading span{animation:none;transition:none}.portalChoice:hover{transform:none}}
   `}</style>
  </main>
