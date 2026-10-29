@@ -11,6 +11,12 @@ export default function ProfilePage(){
  const router=useRouter()
  const supabase=createClient()
  const [email,setEmail]=useState('')
+ const [avatarUrl,setAvatarUrl]=useState('')
+ const [avatarDraft,setAvatarDraft]=useState('')
+ const [avatarSaving,setAvatarSaving]=useState(false)
+ const [avatarMessage,setAvatarMessage]=useState('')
+ const [avatarError,setAvatarError]=useState('')
+ const avatarInputRef=useRef<HTMLInputElement>(null)
  const [form,setForm]=useState<ProfileForm>({firstName:'',lastName:'',phone:''})
  const [loading,setLoading]=useState(true)
  const [saving,setSaving]=useState(false)
@@ -26,6 +32,9 @@ export default function ProfilePage(){
    if(!data.user){router.replace('/login');return}
    const user=data.user
    setEmail(user.email||'')
+   const savedAvatar=String(user.user_metadata?.avatar_url||'')
+   setAvatarUrl(savedAvatar)
+   setAvatarDraft(savedAvatar)
    setForm({firstName:String(user.user_metadata?.first_name||''),lastName:String(user.user_metadata?.last_name||''),phone:String(user.user_metadata?.phone||'')})
    setLoading(false)
   }).catch(()=>{
@@ -37,6 +46,35 @@ export default function ProfilePage(){
  },[router])
 
  const initials=useMemo(()=>`${form.firstName.trim().charAt(0)}${form.lastName.trim().charAt(0)}`.trim().toUpperCase()||email.trim().charAt(0).toUpperCase()||'N',[form.firstName,form.lastName,email])
+
+ const chooseAvatar=async(file:File|null)=>{
+  setAvatarError('');setAvatarMessage('')
+  if(!file)return
+  if(!file.type.startsWith('image/')){setAvatarError('Choose an image file.');return}
+  if(file.size>12*1024*1024){setAvatarError('Choose an image smaller than 12 MB.');return}
+  try{
+   const source=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>typeof reader.result==='string'?resolve(reader.result):reject(new Error('Could not read that image.'));reader.onerror=()=>reject(new Error('Could not read that image.'));reader.readAsDataURL(file)})
+   const img=new Image()
+   await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject(new Error('This image could not be opened.'));img.src=source})
+   const side=512,scale=Math.min(1,side/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale))
+   const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h
+   const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Your browser could not prepare this image.')
+   ctx.drawImage(img,0,0,w,h)
+   const data=canvas.toDataURL('image/webp',0.78)
+   if(data.length>180000)throw new Error('This image could not be compressed enough. Please choose another image.')
+   setAvatarDraft(data)
+  }catch(err){setAvatarError(err instanceof Error?err.message:'Could not prepare that image.')}
+ }
+ const saveAvatar=async()=>{
+  setAvatarSaving(true);setAvatarError('');setAvatarMessage('')
+  try{
+   const {error}=await supabase.auth.updateUser({data:{avatar_url:avatarDraft||null}})
+   if(error)throw error
+   setAvatarUrl(avatarDraft)
+   setAvatarMessage(avatarDraft?'Profile picture updated.':'Profile picture removed.')
+  }catch(err){setAvatarError(err instanceof Error?err.message:'Could not save your profile picture. Please try again.')}
+  finally{setAvatarSaving(false)}
+ }
 
  const saveProfile=async(e:FormEvent)=>{
   e.preventDefault();setSaving(true);setMessage('');setError('')
@@ -61,7 +99,7 @@ export default function ProfilePage(){
     <Link href="/" className="backLink">Back to tools</Link>
    </header>
    <section className="profileIntro">
-    <div className="avatar" aria-label="Profile initials">{initials}</div>
+    <div className="avatar" aria-label="Profile picture">{avatarDraft?<img src={avatarDraft} alt="Your profile picture preview" />:initials}</div>
     <div><p className="eyebrow">YOUR ACCOUNT</p><h1>Profile & Settings</h1><p>Manage your details and account preferences.</p></div>
    </section>
    <div className="profileGrid">
@@ -82,7 +120,7 @@ export default function ProfilePage(){
      <div className="sectionHeading"><h2>Account settings</h2><p>Security and NelaPost preferences.</p></div>
      <div className="settingRow"><div><strong>Password & sign-in</strong><p>Reset your password securely through email.</p></div><Link href="/forgot-password" className="secondaryButton">Reset password</Link></div>
      <div className="settingRow"><div><strong>Usage & wallet</strong><p>Usage credits and paid tools are being prepared. No payments or customer balances are active yet.</p></div><span className="comingSoon">Coming soon</span></div>
-     <div className="settingRow"><div><strong>Profile avatar</strong><p>Your initials are used as a simple profile avatar for now. Photo uploads can be added later.</p></div><span className="avatarMini">{initials}</span></div>
+     
      <div className="signOutRow"><button type="button" className="secondaryButton" onClick={signOut}>Sign out</button></div>
     </section>
    </div>
@@ -94,7 +132,7 @@ export default function ProfilePage(){
    .profileWrap{max-width:980px;margin:0 auto}.profileTop{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:42px}
    .profileBrand{display:flex;align-items:center;gap:10px;color:#087f5b;text-decoration:none;font-size:22px;font-weight:800;letter-spacing:-.7px}
    .backLink,.profileFooter a{color:#087f5b;text-decoration:none;font-size:13px;font-weight:650}
-   .profileIntro{display:flex;align-items:center;gap:18px;margin-bottom:28px}.avatar{width:66px;height:66px;flex:none;display:grid;place-items:center;border-radius:50%;background:#dff2e7;color:#087f5b;font-size:23px;font-weight:800;letter-spacing:-.5px}
+   .profileIntro{display:flex;align-items:center;gap:18px;margin-bottom:28px}.avatar{width:66px;height:66px;flex:none;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:#dff2e7;color:#087f5b;font-size:23px;font-weight:800;letter-spacing:-.5px}.avatar img{width:100%;height:100%;object-fit:cover;display:block}.avatarEditor{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.avatarEditorPreview{width:82px;height:82px;font-size:26px}.avatarActions{display:flex;gap:8px;flex-wrap:wrap}.avatarFileInput{display:none}
    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.17em;color:#087f5b;margin:0 0 7px}h1{font-size:clamp(28px,4vw,38px);letter-spacing:-1.2px;line-height:1.12;margin:0 0 8px}.profileIntro p:last-child{margin:0;color:#667169;font-size:14px;line-height:1.6}
    .profileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}.profileCard{background:#fff;border:1px solid #e1e9e3;border-radius:17px;padding:clamp(18px,3vw,26px);box-shadow:0 10px 28px #1d33240a;min-width:0}
    .sectionHeading h2{font-size:18px;letter-spacing:-.4px;margin:0 0 6px}.sectionHeading p{font-size:12px;color:#758078;margin:0 0 22px;line-height:1.6}
