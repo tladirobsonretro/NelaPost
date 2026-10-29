@@ -68,7 +68,7 @@ export default function ImageToolsPage() {
       <p style={{ color: '#a85a12', fontWeight: 800, fontSize: 11, letterSpacing: 2, marginBottom: 10 }}>IMAGE TOOLS</p>
       <h1 style={{ fontSize: 'clamp(32px,6vw,46px)', letterSpacing: -1.5, margin: '0 0 12px' }}>Make every image fit.</h1>
       <p style={{ color: '#666b78', fontSize: 14, lineHeight: 1.7, maxWidth: 660, margin: '0 0 25px' }}>Resize, compress, crop and convert images for websites, CVs, product listings and social posts. Everything is processed on your device.</p>
-      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 18, alignItems: 'start' }}>
+      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 18, alignItems: 'start' }}>
         <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 18, padding: 20, boxShadow: '0 8px 26px rgba(20,24,35,.035)', minWidth: 0 }}>
           <h2 style={{ fontSize: 17, margin: '0 0 7px' }}>1. Choose an image</h2>
           <p style={{ color: '#747887', fontSize: 12, lineHeight: 1.6, margin: '0 0 14px' }}>JPG, PNG, WebP and other formats supported by your browser.</p>
