@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import AccountMenu from '../../components/AccountMenu'
 import {useEffect,useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {createClient} from '../../lib/supabase-browser'
@@ -49,7 +50,7 @@ export default function Workspace(){
    </nav>
    <footer className="portalFooter">
     <span className="portalEmail" title={email}>{email}</span>
-    <nav className="portalFooterLinks" aria-label="Account links"><Link href="/profile">Profile & Settings</Link><Link href="/about">About</Link><button onClick={signOut}>Sign out</button></nav>
+    <nav className="portalFooterLinks" aria-label="Account links"><AccountMenu /><Link href="/about">About</Link></nav>
    </footer>
   </section>
   <style jsx>{`
