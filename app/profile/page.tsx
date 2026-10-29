@@ -104,6 +104,14 @@ export default function ProfilePage(){
    </section>
    <div className="profileGrid">
     <section className="profileCard">
+     <div className="sectionHeading"><h2>Profile picture</h2><p>Upload any image you like. It will be resized for your avatar and saved to your account.</p></div>
+     <div className="avatarEditor">
+      <div className="avatar avatarEditorPreview">{avatarDraft?<img src={avatarDraft} alt="Profile picture preview" />:initials}</div>
+      <div className="avatarActions"><input ref={avatarInputRef} type="file" accept="image/*" onChange={e=>{void chooseAvatar(e.target.files?.[0]||null);e.currentTarget.value=''}} className="avatarFileInput" aria-label="Choose profile picture"/><button type="button" className="secondaryButton" onClick={()=>avatarInputRef.current?.click()}>Choose image</button>{avatarDraft&&<button type="button" className="secondaryButton" onClick={()=>{setAvatarDraft('');setAvatarError('');setAvatarMessage('')}}>Remove picture</button>}<button type="button" className="primaryButton" onClick={saveAvatar} disabled={avatarSaving||avatarDraft===avatarUrl}>{avatarSaving?'Saving…':'Save picture'}</button></div>
+     </div>
+     {avatarError&&<p className="formError" role="alert">{avatarError}</p>}{avatarMessage&&<p className="formSuccess" role="status">{avatarMessage}</p>}
+    </section>
+    <section className="profileCard">
      <div className="sectionHeading"><h2>Personal details</h2><p>Keep your account information up to date.</p></div>
      <form onSubmit={saveProfile} className="profileForm">
       <label>First name<input autoComplete="given-name" value={form.firstName} onChange={e=>setForm({...form,firstName:e.target.value})} maxLength={80} required/></label>
