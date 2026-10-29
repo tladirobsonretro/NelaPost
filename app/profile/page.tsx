@@ -16,19 +16,25 @@ export default function ProfilePage(){
  const [saving,setSaving]=useState(false)
  const [message,setMessage]=useState('')
  const [error,setError]=useState('')
+ const [loadError,setLoadError]=useState('')
 
  useEffect(()=>{
   let active=true
-  supabase.auth.getUser().then(({data,error})=>{
+  supabase.auth.getUser().then(({data,error:authError})=>{
    if(!active)return
-   if(error||!data.user){router.replace('/login');return}
+   if(authError){setLoadError('We could not load your account details. Please refresh the page and try again.');setLoading(false);return}
+   if(!data.user){router.replace('/login');return}
    const user=data.user
    setEmail(user.email||'')
    setForm({firstName:String(user.user_metadata?.first_name||''),lastName:String(user.user_metadata?.last_name||''),phone:String(user.user_metadata?.phone||'')})
    setLoading(false)
+  }).catch(()=>{
+   if(!active)return
+   setLoadError('We could not connect to your account. Check your connection and refresh the page.')
+   setLoading(false)
   })
   return()=>{active=false}
- },[])
+ },[router])
 
  const initials=useMemo(()=>`${form.firstName.trim().charAt(0)}${form.lastName.trim().charAt(0)}`.trim().toUpperCase()||email.trim().charAt(0).toUpperCase()||'N',[form.firstName,form.lastName,email])
 
@@ -46,6 +52,7 @@ export default function ProfilePage(){
  const signOut=async()=>{await supabase.auth.signOut();router.replace('/login');router.refresh()}
 
  if(loading)return <main className="profileLoading" aria-label="Loading profile"><span/></main>
+ if(loadError)return <main className="profilePage"><div className="profileWrap"><section className="profileCard"><h1>Profile unavailable</h1><p role="alert">{loadError}</p><button type="button" className="primaryButton" onClick={()=>window.location.reload()}>Try again</button><p><Link href="/workspace" className="backLink">Back to workspace</Link></p></section></div></main>
 
  return <main className="profilePage">
   <div className="profileWrap">
