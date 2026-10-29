@@ -43,8 +43,6 @@ export default function AccountMenu() {
     return [first, last].filter(Boolean).join(' ') || saved || user?.email?.split('@')[0] || 'Your account'
   }, [user])
 
-  const avatarUrl = String(user?.user_metadata?.avatar_url || '')
-
   const initials = useMemo(() => {
     const parts = displayName.trim().split(/\s+/).filter(Boolean)
     return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) || 'N').toUpperCase()
@@ -74,7 +72,7 @@ export default function AccountMenu() {
         aria-expanded={open}
         onClick={() => setOpen(value => !value)}
       >
-        <span className="accountAvatar" aria-hidden="true">{loaded && user && avatarUrl ? <img src={avatarUrl} alt="" /> : loaded && user ? initials : <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg>}</span>
+        <span className="accountAvatar" aria-hidden="true">{loaded && user ? initials : <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg>}</span>
         <svg className={`accountChevron ${open ? 'isOpen' : ''}`} viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
       </button>
       {open && (
@@ -82,7 +80,7 @@ export default function AccountMenu() {
           {loaded && user ? (
             <>
               <div className="accountIdentity">
-                <span className="accountAvatar accountAvatarLarge" aria-hidden="true">{avatarUrl ? <img src={avatarUrl} alt="" /> : initials}</span>
+                <span className="accountAvatar accountAvatarLarge" aria-hidden="true">{initials}</span>
                 <span className="accountIdentityText"><strong>{displayName}</strong><small>{user.email || 'NelaPost account'}</small></span>
               </div>
               <div className="accountDivider" />
@@ -99,7 +97,7 @@ export default function AccountMenu() {
         .accountMenu{position:relative;display:inline-flex;align-items:center;z-index:30}
         .accountTrigger{display:inline-flex;align-items:center;gap:7px;border:1px solid #dfe7e1;border-radius:999px;padding:5px 8px 5px 5px;background:#fff;color:#25372c;cursor:pointer;box-shadow:0 4px 16px rgba(20,24,35,.04)}
         .accountTrigger:hover{border-color:#b9d5c4;background:#fbfdfb}
-        .accountAvatar{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#e8f5ef;color:#087f5b;font-size:12px;font-weight:800}.accountAvatar img{width:100%;height:100%;object-fit:cover;display:block}
+        .accountAvatar{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:#e8f5ef;color:#087f5b;font-size:12px;font-weight:800}
         .accountAvatar svg,.accountDropdown a svg,.accountDropdown button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
         .accountChevron{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s ease}
         .accountChevron.isOpen{transform:rotate(180deg)}
