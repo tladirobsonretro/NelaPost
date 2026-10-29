@@ -10,6 +10,7 @@ type ProfileForm = { firstName: string; lastName: string; phone: string }
 const avatarChoices = {
   skin: [{id:'warm',label:'Warm'},{id:'deep',label:'Deep'},{id:'rich',label:'Rich'},{id:'golden',label:'Golden'},{id:'fair',label:'Fair'},{id:'rose',label:'Rose'}],
   hair: [{id:'coils',label:'Coils'},{id:'curly',label:'Curly'},{id:'short',label:'Short'},{id:'long',label:'Long'}],
+  outfit: [{id:'suit',label:'Suit'},{id:'tshirt',label:'T-shirt'},{id:'blazer',label:'Blazer + T-shirt'}],
   shirt: [{id:'green',label:'Green'},{id:'blue',label:'Blue'},{id:'purple',label:'Purple'},{id:'orange',label:'Orange'},{id:'pink',label:'Pink'},{id:'black',label:'Black'}],
   background: [{id:'mint',label:'Mint'},{id:'sky',label:'Sky'},{id:'lilac',label:'Lilac'},{id:'peach',label:'Peach'},{id:'lemon',label:'Lemon'},{id:'slate',label:'Slate'}],
 } as const
@@ -52,7 +53,7 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase.auth.updateUser({ data:{
         first_name:form.firstName.trim(), last_name:form.lastName.trim(), phone:form.phone.trim(),
-        avatar_config: { skin:avatar.skin, hair:avatar.hair, shirt:avatar.shirt, background:avatar.background }
+        avatar_config: { skin:avatar.skin, hair:avatar.hair, shirt:avatar.shirt, outfit:avatar.outfit, background:avatar.background }
       }})
       if (error) throw error
       setMessage('Your profile and avatar have been saved.')
@@ -83,12 +84,12 @@ export default function ProfilePage() {
         <section className="profileCard avatarCard">
           <div className="sectionHeading"><h2>Build your avatar</h2><p>Choose a look. No photo uploads and no image files are stored.</p></div>
           <div className="avatarPreview"><ProfileAvatar config={avatar} initials={initials} size={112}/><div><strong>Your NelaPost avatar</strong><p>Your choices are saved as a few small settings with your account.</p></div></div>
-          {(['skin','hair','shirt','background'] as const).map(group => (
+          {(['skin','hair','outfit','shirt','background'] as const).map(group => (
             <fieldset className="choiceGroup" key={group}>
-              <legend>{group === 'skin' ? 'Skin tone' : group === 'hair' ? 'Hairstyle' : group === 'shirt' ? 'Clothing colour' : 'Background colour'}</legend>
+              <legend>{group === 'skin' ? 'Skin tone' : group === 'hair' ? 'Hairstyle' : group === 'outfit' ? 'Clothing style' : group === 'shirt' ? 'Clothing colour' : 'Background colour'}</legend>
               <div className="choiceOptions">
                 {avatarChoices[group].map(option => (
-                  <button key={option.id} type="button" className={avatar[group] === option.id ? 'choice selected' : 'choice'} aria-pressed={avatar[group] === option.id} onClick={() => setAvatar(current => ({...current, [group]:option.id}))}>{group === 'skin' || group === 'shirt' || group === 'background' ? <span className={`colourDot ${option.id}`} aria-hidden="true"/> : <span className={`hairSample ${option.id}`} aria-hidden="true"/>}{option.label}</button>
+                  <button key={option.id} type="button" className={avatar[group] === option.id ? 'choice selected' : 'choice'} aria-pressed={avatar[group] === option.id} onClick={() => setAvatar(current => ({...current, [group]:option.id}))}>{group === 'skin' || group === 'shirt' || group === 'background' ? <span className={`colourDot ${option.id}`} aria-hidden="true"/> : group === 'hair' ? <span className={`hairSample ${option.id}`} aria-hidden="true"/> : null}{option.label}</button>
                 ))}
               </div>
             </fieldset>
