@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata={
  title:'NelaPost',
- description:'Free and open-source business tools, with social publishing coming soon.',
+ description:'Free & Open Source Tools',
  icons:{
   icon:[{url:'/logo-mark.svg',type:'image/svg+xml'}],
   shortcut:['/logo-mark.svg'],
