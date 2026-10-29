@@ -161,7 +161,7 @@ export default function SocialPlannerPage() {
           <Link href="/" className="planner-link">← All Essentials</Link>
         </header>
         <section className="planner-hero">
-          <div><p className="planner-kicker">SOCIAL PLANNER</p><h1>Your month, planned.</h1><p className="planner-muted">Simple ideas for what to post and when. Make a plan that fits your business, edit the captions and take your calendar with you. No social account connections and no AI required.</p></div>
+          <div><p className="planner-kicker">SOCIAL PLANNER</p><h1>Your month, planned.</h1><p className="planner-muted">Plan your content. Your way.</p></div>
           <span className="planner-badge">Free · Download-first · Private by design</span>
         </section>
         <section className="planner-panel planner-controls-panel">
