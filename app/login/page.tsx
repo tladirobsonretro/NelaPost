@@ -28,8 +28,8 @@ export default function Login(){
     const {error}=await supabase.auth.signInWithPassword({email,password})
     if(error)throw error
     setVerified(true)
-    setMessage('You’re signed in. Taking you to your workspace…')
-    router.replace('/workspace')
+    setMessage('You’re signed in. Taking you to NelaPost Essentials…')
+    router.replace('/')
     router.refresh()
    }else{
     if(!termsAccepted)throw new Error('Please accept the Terms of Service and Privacy Policy to create your account.')
