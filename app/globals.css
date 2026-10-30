@@ -269,3 +269,5 @@ button{cursor:pointer}
   body:has(.receiptModalBackdrop) .receiptModalActions { display: none !important; }
   @page { size: auto; margin: 14mm; }
 }
+/* Consistent Title Case for interface headings and actions. */
+button,h1,h2,h3,h4,h5,h6,a[role="button"],a[class*="Button"],a[class*="button"],a[style*="background"]{text-transform:capitalize}
