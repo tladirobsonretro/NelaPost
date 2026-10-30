@@ -4,26 +4,15 @@ import Link from 'next/link'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase-browser'
-import ProfileAvatar from '../../components/ProfileAvatar'
+import ProfileAvatar, { animalAvatars, isAnimalAvatarId } from '../../components/ProfileAvatar'
 
 type ProfileForm = { firstName: string; lastName: string; phone: string }
-const avatarChoices = [
-  { emoji:'🙂', label:'Smiley' },
-  { emoji:'😎', label:'Cool' },
-  { emoji:'👩', label:'Woman' },
-  { emoji:'👨', label:'Man' },
-  { emoji:'🧑', label:'Person' },
-  { emoji:'👩‍💻', label:'Woman at work' },
-  { emoji:'👨‍💻', label:'Man at work' },
-  { emoji:'🧑‍💼', label:'Business person' },
-]
-
 export default function ProfilePage() {
   const router = useRouter()
   const supabase = createClient()
   const [email, setEmail] = useState('')
   const [form, setForm] = useState<ProfileForm>({ firstName:'', lastName:'', phone:'' })
-  const [avatar, setAvatar] = useState('🙂')
+  const [avatar, setAvatar] = useState('elephant')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -39,7 +28,7 @@ export default function ProfilePage() {
       const user = data.user
       setEmail(user.email || '')
       setForm({ firstName:String(user.user_metadata?.first_name || ''), lastName:String(user.user_metadata?.last_name || ''), phone:String(user.user_metadata?.phone || '') })
-      setAvatar(String(user.user_metadata?.avatar_emoji || '🙂'))
+      setAvatar(isAnimalAvatarId(user.user_metadata?.avatar_animal) ? user.user_metadata.avatar_animal : 'elephant')
       setLoading(false)
     }).catch(() => {
       if (!active) return
@@ -56,7 +45,7 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase.auth.updateUser({ data:{
         first_name:form.firstName.trim(), last_name:form.lastName.trim(), phone:form.phone.trim(),
-        avatar_emoji: avatar
+        avatar_animal: avatar
       }})
       if (error) throw error
       setMessage('Your profile has been saved.')
@@ -72,7 +61,7 @@ export default function ProfilePage() {
     <div className="profileWrap">
       <header className="profileTop"><Link href="/" className="profileBrand">NelaPost</Link><Link href="/workspace" className="backLink">Back to tools</Link></header>
       <nav className="accountTabs" aria-label="Account pages"><Link href="/profile" aria-current="page">Profile</Link><Link href="/settings">Settings</Link></nav>
-      <section className="profileIntro"><ProfileAvatar emoji={avatar} size={48}/><div><p className="eyebrow">YOUR ACCOUNT</p><h1>Your profile</h1><p>Manage your personal details.</p></div></section>
+      <section className="profileIntro"><ProfileAvatar animal={avatar} size={48}/><div><p className="eyebrow">YOUR ACCOUNT</p><h1>Your profile</h1><p>Manage your personal details.</p></div></section>
       <form onSubmit={saveProfile} className="profileGrid">
         <section className="profileCard">
           <div className="sectionHeading"><h2>Personal details</h2><p>These details belong to you, not your business.</p></div>
@@ -85,11 +74,11 @@ export default function ProfilePage() {
           </div>
         </section>
         <section className="profileCard avatarCard">
-          <div className="sectionHeading"><h2>Avatar</h2><p>Choose a familiar emoji. Keep it simple.</p></div>
-          <div className="emojiChoices" role="group" aria-label="Choose an avatar">
-            {avatarChoices.map(option => (
-              <button key={option.label} type="button" className={avatar === option.emoji ? 'emojiChoice selected' : 'emojiChoice'} aria-label={option.label} aria-pressed={avatar === option.emoji} onClick={() => setAvatar(option.emoji)}>
-                <span aria-hidden="true">{option.emoji}</span><small>{option.label}</small>
+          <div className="sectionHeading"><h2>Avatar</h2><p>Choose an animal to represent your account.</p></div>
+          <div className="animalChoices" role="group" aria-label="Choose an animal avatar">
+            {animalAvatars.map(option => (
+              <button key={option.id} type="button" className={avatar === option.id ? 'animalChoice selected' : 'animalChoice'} aria-label={option.label} aria-pressed={avatar === option.id} onClick={() => setAvatar(option.id)}>
+                <ProfileAvatar animal={option.id} size={58}/><small>{option.label}</small>
               </button>
             ))}
           </div>
@@ -105,9 +94,9 @@ export default function ProfilePage() {
       .profileIntro{display:flex;align-items:center;gap:18px;margin-bottom:26px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.17em;color:#087f5b;margin:0 0 7px}h1{font-size:clamp(28px,4vw,38px);letter-spacing:-1.2px;line-height:1.12;margin:0 0 8px}.profileIntro p:last-child{margin:0;color:#667169;font-size:14px;line-height:1.6}
       .profileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}.profileCard{background:#fff;border:1px solid #e1e9e3;border-radius:17px;padding:clamp(18px,3vw,26px);box-shadow:0 10px 28px #1d33240a;min-width:0}.sectionHeading h2{font-size:18px;letter-spacing:-.4px;margin:0 0 6px}.sectionHeading p{font-size:12px;color:#758078;margin:0 0 22px;line-height:1.6}
       .profileForm{display:grid;gap:14px}.profileForm label{display:grid;gap:7px;font-size:12px;font-weight:700;color:#3e4c42}.profileForm input{width:100%;min-width:0;box-sizing:border-box;border:1px solid #dce4de;border-radius:9px;padding:12px 13px;font:400 14px Inter,Arial,sans-serif;color:#202720;background:#fff;outline:none}.profileForm input:focus{border-color:#087f5b;box-shadow:0 0 0 3px #087f5b15}.profileForm input[readonly]{background:#f7f9f7;color:#69746c}.fieldNote{font-size:11px;line-height:1.5;color:#7b857d;margin:-6px 0 0}
-      .emojiChoices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.emojiChoice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:76px;padding:9px 5px;border:1px solid #dfe7e1;border-radius:12px;background:#fff;color:#354238;cursor:pointer}.emojiChoice>span{font-size:28px;line-height:1.2}.emojiChoice small{font-size:10px;color:#657269}.emojiChoice.selected{border-color:#087f5b;background:#edf8f1;box-shadow:0 0 0 1px #087f5b20}.emojiChoice:focus-visible{outline:2px solid #087f5b;outline-offset:2px}
+      .animalChoices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.animalChoice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:104px;padding:12px 5px;border:1px solid #dfe7e1;border-radius:12px;background:#fff;color:#354238;cursor:pointer;transition:border-color .15s,background .15s}.animalChoice small{font-size:10px;color:#657269}.animalChoice.selected{border-color:#087f5b;background:#edf8f1;box-shadow:0 0 0 1px #087f5b20}.animalChoice:focus-visible{outline:2px solid #087f5b;outline-offset:2px}.animalChoice:hover{border-color:#a9cbb7}
       .profileSaveArea{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}.primaryButton{display:inline-flex;align-items:center;justify-content:center;border:1px solid #087f5b;border-radius:9px;padding:12px 17px;background:#087f5b;color:#fff;font-size:12px;font-weight:750;cursor:pointer;white-space:nowrap}.primaryButton:disabled{opacity:.6;cursor:wait}.formError,.formSuccess{font-size:12px;line-height:1.5;margin:0;padding:10px 12px;border-radius:8px}.formError{color:#9f2525;background:#fff0f0}.formSuccess{color:#176b48;background:#eaf7ef}.profileFooter{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;padding-top:18px;border-top:1px solid #e1e9e3}
-      @keyframes spin{to{transform:rotate(360deg)}}@media(max-width:760px){.profileGrid{grid-template-columns:1fr}.emojiChoices{grid-template-columns:repeat(4,minmax(0,1fr))}.profileTop{margin-bottom:24px}.profileIntro{align-items:flex-start}.profileCard{border-radius:14px}.profileSaveArea{justify-content:stretch}.profileSaveArea .primaryButton{width:100%}}@media(prefers-reduced-motion:reduce){.profileLoading span{animation:none}}
+      @keyframes spin{to{transform:rotate(360deg)}}@media(max-width:760px){.profileGrid{grid-template-columns:1fr}.animalChoices{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.animalChoice{min-height:92px;padding:9px 3px}.animalChoice .npAvatar{width:48px!important;height:48px!important}.profileTop{margin-bottom:24px}.profileIntro{align-items:flex-start}.profileCard{border-radius:14px}.profileSaveArea{justify-content:stretch}.profileSaveArea .primaryButton{width:100%}}@media(prefers-reduced-motion:reduce){.profileLoading span{animation:none}}
     `}</style>
   </main>
 }

@@ -2,28 +2,31 @@
 
 import React from 'react'
 
-const allowedEmojis = ['🙂','😎','👩','👨','🧑','👩‍💻','👨‍💻','🧑‍💼']
+export const animalAvatars = [
+  { id: 'elephant', label: 'Elephant' },
+  { id: 'wolf', label: 'Wolf' },
+  { id: 'lion', label: 'Lion' },
+  { id: 'fox', label: 'Fox' },
+  { id: 'owl', label: 'Owl' },
+  { id: 'bear', label: 'Bear' },
+  { id: 'panda', label: 'Panda' },
+  { id: 'tiger', label: 'Tiger' },
+  { id: 'eagle', label: 'Eagle' },
+  { id: 'shark', label: 'Shark' },
+] as const
 
-export default function ProfileAvatar({ emoji = '🙂', size = 40 }: { emoji?: string; size?: number }) {
-  const safeEmoji = allowedEmojis.includes(emoji) ? emoji : '🙂'
+export type AnimalAvatarId = typeof animalAvatars[number]['id']
+
+export function isAnimalAvatarId(value: unknown): value is AnimalAvatarId {
+  return animalAvatars.some((animal) => animal.id === value)
+}
+
+export default function ProfileAvatar({ animal = 'elephant', size = 40 }: { animal?: string; size?: number }) {
+  const safeAnimal = isAnimalAvatarId(animal) ? animal : 'elephant'
+  const label = animalAvatars.find((item) => item.id === safeAnimal)?.label || 'Elephant'
   return (
-    <span
-      className="npAvatar"
-      role="img"
-      aria-label="Profile avatar"
-      style={{
-        width: size,
-        height: size,
-        display: 'inline-grid',
-        placeItems: 'center',
-        borderRadius: '50%',
-        background: '#eaf5ee',
-        flexShrink: 0,
-        fontSize: size * 0.68,
-        lineHeight: 1,
-      }}
-    >
-      {safeEmoji}
+    <span className="npAvatar" role="img" aria-label={label + ' avatar'} style={{ width: size, height: size, display: 'inline-block', overflow: 'hidden', borderRadius: '50%', background: '#050505', flexShrink: 0, lineHeight: 0 }}>
+      <img src={'/avatars/' + safeAnimal + '.svg'} alt="" width={size} height={size} draggable={false} style={{ display: 'block', width: '100%', height: '100%' }} />
     </span>
   )
 }
