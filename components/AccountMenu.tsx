@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../lib/supabase-browser'
-import ProfileAvatar from './ProfileAvatar'
 
 type AccountUser = { id:string; email?:string; user_metadata?:Record<string, unknown> }
 
@@ -35,7 +34,6 @@ export default function AccountMenu() {
     const parts = displayName.trim().split(/\s+/).filter(Boolean)
     return (parts.length > 1 ? parts[0][0]+parts[parts.length-1][0] : parts[0]?.slice(0,2) || 'N').toUpperCase()
   }, [displayName])
-  const avatarAnimal = String(user?.user_metadata?.avatar_animal || 'elephant')
 
   const signOut = async () => {
     if (signingOut) return
@@ -46,12 +44,12 @@ export default function AccountMenu() {
 
   return <div className="accountMenu">
     <button type="button" className="accountTrigger" aria-label={open?'Close account menu':'Open account menu'} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(value=>!value)}>
-      {loaded && user ? <ProfileAvatar animal={avatarAnimal} size={34}/> : <span className="accountAvatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg></span>}
+      {loaded && user ? <span className="accountAvatar" aria-hidden="true">{initials}</span> : <span className="accountAvatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg></span>}
       <svg className={`accountChevron ${open?'isOpen':''}`} viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
     </button>
     {open && <div className="accountDropdown" role="menu">
       {loaded && user ? <>
-        <div className="accountIdentity"><ProfileAvatar animal={avatarAnimal} size={38}/><span className="accountIdentityText"><strong>{displayName}</strong><small>{user.email || 'NelaPost account'}</small></span></div>
+        <div className="accountIdentity"><span className="accountAvatar" aria-hidden="true">{initials}</span><span className="accountIdentityText"><strong>{displayName}</strong><small>{user.email || 'NelaPost account'}</small></span></div>
         <div className="accountDivider"/>
         <Link role="menuitem" href="/profile" onClick={()=>setOpen(false)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg>Profile</Link>
         <Link role="menuitem" href="/settings" onClick={()=>setOpen(false)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19 13.5 1.2 1-1.5 2.6-1.5-.5a7 7 0 0 1-1.5.9l-.3 1.6h-3l-.3-1.6a7 7 0 0 1-1.5-.9l-1.5.5-1.5-2.6 1.2-1a7 7 0 0 1 0-1.8l-1.2-1 1.5-2.6 1.5.5a7 7 0 0 1 1.5-.9l.3-1.6h3l.3 1.6a7 7 0 0 1 1.5.9l1.5-.5 1.5 2.6-1.2 1a7 7 0 0 1 0 1.8Z"/></svg>Settings</Link>
