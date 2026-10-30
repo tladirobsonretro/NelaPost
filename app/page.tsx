@@ -52,9 +52,10 @@ export default function Home() {
         </article>
         <article style={cardStyle}>
           <div style={{ ...iconStyle, background: '#f0eaff', color: '#6d28d9' }}>↗</div>
-          <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: '0 0 9px' }}>ReadyWorks</h2>
-          <p style={{ fontSize: 13, lineHeight: 1.7, color: '#686575', margin: '0 0 22px', flex: 1 }}>A simple marketplace for getting work done. Post a job and connect with available workers or find jobs and put your skills to work.</p>
-          <a href="https://ready-app-gmot.onrender.com" target="_blank" rel="noopener noreferrer" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open ReadyWorks <span aria-hidden="true" style={{ marginLeft: 8 }}>↗</span></a>
+          <h2 style={{ fontSize: 20, letterSpacing: '-.5px', margin: '0 0 5px' }}>ReadyWorks</h2>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#6d28d9', margin: '0 0 12px' }}>Where work meets opportunity.</p>
+          <p style={{ fontSize: 13, lineHeight: 1.7, color: '#686575', margin: '0 0 22px', flex: 1 }}>Need something done? Post a job, connect with available workers and choose the right person. Ready to work? Discover opportunities, respond to jobs and connect with people who need your skills.</p>
+          <a href="https://ready-app-gmot.onrender.com" target="_blank" rel="noopener noreferrer" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Explore ReadyWorks <span aria-hidden="true" style={{ marginLeft: 8 }}>↗</span></a>
         </article>
         <ToolCard icon="▧" title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
         <ToolCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
