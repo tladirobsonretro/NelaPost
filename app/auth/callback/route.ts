@@ -13,5 +13,5 @@ export async function GET(request:Request){
   await supabase.auth.signOut()
   return NextResponse.redirect(new URL('/email-confirmed',url.origin))
  }
- return NextResponse.redirect(new URL('/workspace',url.origin))
+ return NextResponse.redirect(new URL('/',url.origin))
 }
