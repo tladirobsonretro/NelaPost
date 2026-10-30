@@ -7,12 +7,12 @@ const cardStyle: React.CSSProperties = { border: '1px solid #e6e8ee', borderRadi
 const buttonStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, padding: '12px 14px', fontWeight: 700, fontSize: 13, textDecoration: 'none', width: '100%', boxSizing: 'border-box', minHeight: 44 }
 const iconStyle: React.CSSProperties = { width: 40, height: 40, borderRadius: 11, display: 'grid', placeItems: 'center', fontSize: 20, marginBottom: 15, flex: 'none' }
 
-function ToolCard({ icon, title, description, href, tint, color }: { icon: string; title: string; description: string; href: string; tint: string; color: string }) {
+function ToolCard({ icon, title, description, href, tint, color }: { icon: React.ReactNode; title: string; description: string; href: string; tint: string; color: string }) {
   return <article style={cardStyle}>
     <div style={{ ...iconStyle, background: tint, color }}>{icon}</div>
     <h2 style={{ fontSize: 18, letterSpacing: '-.4px', margin: '0 0 8px' }}>{title}</h2>
     <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>{description}</p>
-    <Link href={href} style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open {title} <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
+    <Link href={href} style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open {title} <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}><path d="M3 8h10M8 3l5 5-5 5"/></svg></Link>
   </article>
 }
 
@@ -34,19 +34,19 @@ export default function Home() {
 
         <div aria-label="NelaPost tools" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,250px),1fr))', gap: 13 }}>
           <article style={cardStyle}>
-            <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }}>▣</div>
+            <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }} aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v10h14V10M3 20h18"/><path d="M9 20v-6h6v6"/></svg></div>
             <h2 style={{ fontSize: 18, letterSpacing: '-.4px', margin: '0 0 8px' }}>Store Manager</h2>
             <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>Manage daily sales, products and stock, expenses, cash-ups, reports and customer invoices for your shop or small retail operation.</p>
             <Link href="/business" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open Store Manager <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
           </article>
           <article style={cardStyle}>
-            <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }}>▦</div>
+            <div style={{ ...iconStyle, background: '#e8f5ef', color: '#087F5B' }} aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18M7 13h3M7 17h6"/></svg></div>
             <h2 style={{ fontSize: 18, letterSpacing: '-.4px', margin: '0 0 8px' }}>Social Planner</h2>
             <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>Plan what to post and when. Get practical monthly ideas, personalise captions and download your calendar without connecting social accounts.</p>
             <Link href="/social-planner" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open Social Planner <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
           </article>
           <article style={cardStyle}>
-            <div style={{ ...iconStyle, background: '#edf4ff', color: '#1769e0' }}>▤</div>
+            <div style={{ ...iconStyle, background: '#edf4ff', color: '#1769e0' }} aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></div>
             <h2 style={{ fontSize: 18, letterSpacing: '-.4px', margin: '0 0 8px' }}>CV Studio</h2>
             <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>Build a professional, ATS-friendly CV with practical writing guidance and PDF or Word exports.</p>
             <Link href="/cv-studio" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open CV Studio <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
@@ -58,8 +58,8 @@ export default function Home() {
             <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>Need something done? Post a job, connect with available workers and choose the right person. Ready to work? Discover opportunities, respond to jobs and connect with people who need your skills.</p>
             <a href="https://ready-app-gmot.onrender.com" target="_blank" rel="noopener noreferrer" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Explore ReadyWorks <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}><path d="M4 12 12 4M5 4h7v7"/></svg></a>
           </article>
-          <ToolCard icon="▧" title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
-          <ToolCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
+          <ToolCard icon={<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5M8 12h8M8 16h8"/></svg>} title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
+          <ToolCard icon={<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 17 5-4 3 2 3-3 5 5"/></svg>} title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
         </div>
       </section>
 
