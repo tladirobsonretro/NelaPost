@@ -52,11 +52,11 @@ export default function Home() {
             <Link href="/cv-studio" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Open CV Studio <span aria-hidden="true" style={{ marginLeft: 8 }}>→</span></Link>
           </article>
           <article style={cardStyle}>
-            <div style={{ ...iconStyle, background: '#f0eaff', color: '#6d28d9' }}>↗</div>
+            <div style={{ ...iconStyle, background: '#f0eaff', color: '#6d28d9' }} aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7M3 12h18M10 12v2h4v-2"/></svg></div>
             <h2 style={{ fontSize: 18, letterSpacing: '-.4px', margin: '0 0 5px' }}>ReadyWorks</h2>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#6d28d9', margin: '0 0 10px' }}>Where work meets opportunity.</p>
             <p style={{ fontSize: 13, lineHeight: 1.65, color: '#68707b', margin: '0 0 20px', flex: 1 }}>Need something done? Post a job, connect with available workers and choose the right person. Ready to work? Discover opportunities, respond to jobs and connect with people who need your skills.</p>
-            <a href="https://ready-app-gmot.onrender.com" target="_blank" rel="noopener noreferrer" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Explore ReadyWorks <span aria-hidden="true" style={{ marginLeft: 8 }}>↗</span></a>
+            <a href="https://ready-app-gmot.onrender.com" target="_blank" rel="noopener noreferrer" style={{ ...buttonStyle, background: '#087F5B', color: '#fff' }}>Explore ReadyWorks <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}><path d="M4 12 12 4M5 4h7v7"/></svg></a>
           </article>
           <ToolCard icon="▧" title="PDF Tools" description="Merge PDFs, extract pages, rotate documents and turn images into PDFs. Files are processed in your browser." href="/pdf-tools" tint="#f0f1f4" color="#555b67" />
           <ToolCard icon="▩" title="Image Tools" description="Resize, crop, compress and convert images for social posts, product listings, CVs and websites." href="/image-tools" tint="#fff2e6" color="#a85a12" />
