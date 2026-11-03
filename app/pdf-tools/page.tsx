@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import { useRef, useState } from 'react'
-import { PDFDocument, degrees } from 'pdf-lib'
+import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib'
 import { jsPDF } from 'jspdf'
 
-type Task = 'merge' | 'extract' | 'rotate' | 'images'
+type Task = 'merge' | 'extract' | 'rotate' | 'images' | 'edit'
 const field: React.CSSProperties = { width: '100%', boxSizing: 'border-box', border: '1px solid #dfe3e8', borderRadius: 10, padding: '11px 12px', font: 'inherit', fontSize: 13, background: '#fff', color: '#171923' }
 const button: React.CSSProperties = { border: '1px solid #dce1e6', borderRadius: 10, padding: '11px 15px', background: '#fff', color: '#303440', fontSize: 12, fontWeight: 800, cursor: 'pointer' }
 function saveBlob(blob: Blob, filename: string) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1500) }
@@ -36,6 +36,12 @@ export default function PDFToolsPage() {
   const [files, setFiles] = useState<File[]>([])
   const [pageRange, setPageRange] = useState('1')
   const [rotateBy, setRotateBy] = useState('90')
+  const [editText, setEditText] = useState('')
+  const [editPage, setEditPage] = useState('1')
+  const [editX, setEditX] = useState('48')
+  const [editY, setEditY] = useState('700')
+  const [editSize, setEditSize] = useState('14')
+  const [editColor, setEditColor] = useState('dark')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -70,6 +76,22 @@ export default function PDFToolsPage() {
         return
       }
       if (!files.length) throw new Error('Choose a PDF file first.')
+      if (task === 'edit') {
+        if (!editText.trim()) throw new Error('Enter the text or typed signature you want to add.')
+        const source = await PDFDocument.load(await files[0].arrayBuffer())
+        const pageNumber = Number(editPage)
+        if (!Number.isInteger(pageNumber) || pageNumber < 1 || pageNumber > source.getPageCount()) throw new Error('Choose a page between 1 and ' + source.getPageCount() + '.')
+        const x = Number(editX), y = Number(editY), size = Number(editSize)
+        if (![x, y, size].every(Number.isFinite) || x < 0 || y < 0 || size < 4 || size > 96) throw new Error('Use valid coordinates and a font size between 4 and 96.')
+        const page = source.getPage(pageNumber - 1)
+        if (x >= page.getWidth() || y >= page.getHeight()) throw new Error('The text position is outside this page. Check the X and Y coordinates.')
+        const font = await source.embedFont(StandardFonts.Helvetica)
+        const colors: Record<string, ReturnType<typeof rgb>> = { dark: rgb(0.12, 0.14, 0.17), blue: rgb(0.04, 0.31, 0.68), green: rgb(0.03, 0.45, 0.32), red: rgb(0.72, 0.12, 0.12) }
+        page.drawText(editText, { x, y, size, font, color: colors[editColor] || colors.dark, maxWidth: Math.max(40, page.getWidth() - x - 24), lineHeight: size * 1.35 })
+        saveBlob(new Blob([await source.save({ useObjectStreams: true }) as BlobPart], { type: 'application/pdf' }), safeName(files[0].name) + '-edited.pdf')
+        setMessage('Added your text to page ' + pageNumber + ' and downloaded the edited PDF. Existing PDF text is preserved.')
+        return
+      }
       if (task === 'merge' && files.length < 2) throw new Error('Choose at least two PDFs to merge.')
       if (task === 'merge') {
         const merged = await PDFDocument.create()
@@ -102,7 +124,8 @@ export default function PDFToolsPage() {
     { id: 'merge', title: 'Merge PDFs', detail: 'Combine several PDFs into one document.' },
     { id: 'extract', title: 'Extract pages', detail: 'Keep only the pages you need.' },
     { id: 'rotate', title: 'Rotate pages', detail: 'Rotate every page in a PDF.' },
-    { id: 'images', title: 'Images to PDF', detail: 'Put images into a single PDF.' }
+    { id: 'images', title: 'Images to PDF', detail: 'Put images into a single PDF.' },
+    { id: 'edit', title: 'Edit PDF', detail: 'Add text, notes or a typed signature to a page.' }
   ]
   return <main style={{ minHeight: '100vh', background: '#f7f8fa', color: '#171923', fontFamily: 'Inter,Arial,sans-serif', padding: '24px 18px 50px', boxSizing: 'border-box' }}>
     <div style={{ maxWidth: 920, margin: '0 auto' }}>
@@ -112,15 +135,24 @@ export default function PDFToolsPage() {
       </header>
       <p style={{ color: '#087f5b', fontWeight: 800, fontSize: 11, letterSpacing: 2, marginBottom: 10 }}>PDF TOOLS</p>
       <h1 style={{ fontSize: 'clamp(32px,6vw,46px)', letterSpacing: -1.5, margin: '0 0 12px' }}>Your documents, sorted.</h1>
-      <p style={{ color: '#666b78', fontSize: 14, lineHeight: 1.7, maxWidth: 660, margin: '0 0 25px' }}>Merge files, extract pages, rotate PDFs or turn images into a PDF. Files are processed in your browser and are not uploaded to NelaPost.</p>
+      <p style={{ color: '#666b78', fontSize: 14, lineHeight: 1.7, maxWidth: 660, margin: '0 0 25px' }}>Merge files, extract pages, rotate PDFs, turn images into a PDF or add text and typed signatures to existing documents. Files are processed in your browser and are not uploaded to NelaPost.</p>
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,190px),1fr))', gap: 10, marginBottom: 20 }}>
         {tasks.map(item => <button key={item.id} type="button" onClick={() => { setTask(item.id); resetFiles([]); if (inputRef.current) inputRef.current.value = '' }} style={{ ...button, textAlign: 'left', padding: 15, background: task === item.id ? '#eaf6ef' : '#fff', borderColor: task === item.id ? '#a8d8bf' : '#dce1e6' }}><strong style={{ display: 'block', color: task === item.id ? '#087f5b' : '#303440', marginBottom: 6 }}>{item.title}</strong><span style={{ display: 'block', color: '#747887', fontWeight: 400, lineHeight: 1.5 }}>{item.detail}</span></button>)}
       </section>
       <section style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 18, padding: 22, boxShadow: '0 8px 26px rgba(20,24,35,.035)' }}>
         <h2 style={{ fontSize: 18, margin: '0 0 6px' }}>{tasks.find(item => item.id === task)?.title}</h2>
-        <p style={{ color: '#747887', fontSize: 12, lineHeight: 1.6, margin: '0 0 17px' }}>{task === 'merge' ? 'Choose two or more PDFs. Files are merged in the order you select them.' : task === 'extract' ? 'Choose a PDF and enter pages such as 1, 3, 5-7.' : task === 'rotate' ? 'Choose a PDF and rotate every page by 90, 180 or 270 degrees.' : 'Choose JPG, PNG or other browser-supported images. Each image becomes one A4 page.'}</p>
+        <p style={{ color: '#747887', fontSize: 12, lineHeight: 1.6, margin: '0 0 17px' }}>{task === 'merge' ? 'Choose two or more PDFs. Files are merged in the order you select them.' : task === 'extract' ? 'Choose a PDF and enter pages such as 1, 3, 5-7.' : task === 'rotate' ? 'Choose a PDF and rotate every page by 90, 180 or 270 degrees.' : task === 'images' ? 'Choose JPG, PNG or other browser-supported images. Each image becomes one A4 page.' : 'Add a text note, label or typed signature to a selected page. Your original content stays in place.'}</p>
         <input ref={inputRef} type="file" accept={task === 'images' ? 'image/*' : 'application/pdf,.pdf'} multiple={task === 'merge' || task === 'images'} onChange={event => task === 'images' ? resetFiles(Array.from(event.target.files || [])) : addFiles(event.target.files)} style={{ ...field, padding: 10 }} />
         {files.length > 0 && <div style={{ marginTop: 13, padding: 12, background: '#f7f8fa', borderRadius: 10 }}><div style={{ fontSize: 11, fontWeight: 800, marginBottom: 6 }}>{files.length} file(s) selected</div>{files.map((file, i) => <div key={file.name + i} style={{ fontSize: 12, color: '#626672', padding: '4px 0', overflowWrap: 'anywhere' }}>{i + 1}. {file.name} <span style={{ color: '#9296a0' }}>({(file.size / 1024 / 1024).toFixed(2)} MB)</span></div>)}</div>}
+        {task === 'edit' && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: 12, marginTop: 16 }}>
+          <div style={{ gridColumn: '1 / -1' }}><label htmlFor="pdf-edit-text" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>TEXT OR TYPED SIGNATURE</label><textarea id="pdf-edit-text" value={editText} onChange={event => setEditText(event.target.value)} placeholder="Type the text you want to place on the PDF…" rows={3} style={{ ...field, resize: 'vertical' }} /></div>
+          <div><label htmlFor="pdf-edit-page" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>PAGE NUMBER</label><input id="pdf-edit-page" type="number" min="1" value={editPage} onChange={event => setEditPage(event.target.value)} style={field} /></div>
+          <div><label htmlFor="pdf-edit-size" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>FONT SIZE</label><input id="pdf-edit-size" type="number" min="4" max="96" value={editSize} onChange={event => setEditSize(event.target.value)} style={field} /></div>
+          <div><label htmlFor="pdf-edit-x" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>X POSITION</label><input id="pdf-edit-x" type="number" min="0" value={editX} onChange={event => setEditX(event.target.value)} style={field} /></div>
+          <div><label htmlFor="pdf-edit-y" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>Y POSITION</label><input id="pdf-edit-y" type="number" min="0" value={editY} onChange={event => setEditY(event.target.value)} style={field} /></div>
+          <div><label htmlFor="pdf-edit-color" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>TEXT COLOUR</label><select id="pdf-edit-color" value={editColor} onChange={event => setEditColor(event.target.value)} style={field}><option value="dark">Black</option><option value="blue">Blue</option><option value="green">Green</option><option value="red">Red</option></select></div>
+          <p style={{ gridColumn: '1 / -1', color: '#747887', fontSize: 11, lineHeight: 1.6, margin: 0 }}>Position uses PDF points measured from the bottom-left corner of the page. A4 pages are approximately 595 × 842 points. This adds new text over the page; it does not rewrite or remove existing PDF text.</p>
+        </div>}
         {task === 'extract' && <div style={{ marginTop: 16 }}><label htmlFor="pdf-pages" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>PAGES TO KEEP</label><input id="pdf-pages" value={pageRange} onChange={event => setPageRange(event.target.value)} placeholder="e.g. 1, 3, 5-7" style={field} /></div>}
         {task === 'rotate' && <div style={{ marginTop: 16 }}><label htmlFor="pdf-rotate" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 7 }}>ROTATION</label><select id="pdf-rotate" value={rotateBy} onChange={event => setRotateBy(event.target.value)} style={field}><option value="90">90° clockwise</option><option value="180">180°</option><option value="270">270° clockwise</option></select></div>}
         {error && <p role="alert" style={{ color: '#b42318', fontSize: 12, lineHeight: 1.5, margin: '14px 0 0' }}>{error}</p>}
